@@ -1,0 +1,24 @@
+[tool.poetry]
+name = "caliber"
+version = "0.1.0"
+description = "A post-hoc calibration library."
+authors = ["Gianluca Detommaso <detommaso.gianluca@gmail.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = ">=3.9,<3.12"
+numpy = "^1.26.2"
+matplotlib = "^3.8.2"
+scipy = "^1.11.4"
+tqdm = "^4.66.1"
+scikit-learn = "^1.3.2"
+tabulate = "^0.9.0"
+pandas = "^2.1.4"
+pre-commit = "^3.6.0"
+absolufy-imports = "^0.3.1"
+pytest = "^7.4.4"
+pytest-cov = "^4.1.0"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
