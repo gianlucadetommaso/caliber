@@ -10,11 +10,17 @@ from caliber.binary_classification.linear_scaling.performance.base import (
 class RecallFixedPrecisionBinaryClassificationLinearScaling(
     CustomPerformanceBinaryClassificationLinearScaling
 ):
-    def __init__(self, threshold: float, minimize_options: Optional[dict] = None):
+    def __init__(
+        self,
+        threshold: float,
+        minimize_options: Optional[dict] = None,
+        has_intercept: bool = True,
+    ):
         super().__init__(
             loss_fn=precision_fixed_recall,
             threshold=threshold,
             minimize_options=minimize_options,
+            has_intercept=has_intercept,
         )
 
 

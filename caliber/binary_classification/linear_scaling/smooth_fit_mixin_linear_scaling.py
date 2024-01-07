@@ -8,6 +8,5 @@ from caliber.binary_classification.base_smooth_fit_mixin import (
 class BinaryClassificationLinearScalingSmoothFitMixin(
     BinaryClassificationSmoothFitMixin
 ):
-    @staticmethod
-    def _get_x0() -> np.ndarray:
-        return np.array([0.0, 1.0])
+    def _get_x0(self) -> np.ndarray:
+        return np.array([0.0, 1.0]) if self._has_intercept else np.array(1.0)

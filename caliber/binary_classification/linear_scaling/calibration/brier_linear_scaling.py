@@ -14,5 +14,11 @@ class BrierBinaryClassificationLinearScaling(
     BinaryClassificationLinearScalingSmoothFitMixin,
     CustomCalibrationBinaryClassificationLinearScaling,
 ):
-    def __init__(self, minimize_options: Optional[dict] = None):
-        super().__init__(loss_fn=brier_score_loss, minimize_options=minimize_options)
+    def __init__(
+        self, minimize_options: Optional[dict] = None, has_intercept: bool = True
+    ):
+        super().__init__(
+            loss_fn=brier_score_loss,
+            minimize_options=minimize_options,
+            has_intercept=has_intercept,
+        )

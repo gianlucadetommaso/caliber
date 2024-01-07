@@ -10,11 +10,17 @@ from caliber.binary_classification.linear_scaling.performance.base import (
 class PredictiveValuesBinaryClassificationLinearScaling(
     CustomPerformanceBinaryClassificationLinearScaling
 ):
-    def __init__(self, threshold: float, minimize_options: Optional[dict] = None):
+    def __init__(
+        self,
+        threshold: float,
+        minimize_options: Optional[dict] = None,
+        has_intercept: bool = True,
+    ):
         super().__init__(
             loss_fn=predictive_values_loss_fn,
             threshold=threshold,
             minimize_options=minimize_options,
+            has_intercept=has_intercept,
         )
 
 
