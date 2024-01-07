@@ -73,18 +73,60 @@ for dataset_name, dataset in datasets.items():
     test_probs = model.predict_proba(test_inputs)[:, 1]
     test_preds = (test_probs >= THRESHOLD).astype(int)
 
-    posthoc_models = [
-        BalancedAccuracyBinaryClassificationLinearScaling(threshold=THRESHOLD),
-        PositiveF1BinaryClassificationLinearScaling(threshold=THRESHOLD),
-        NegativeF1BinaryClassificationLinearScaling(threshold=THRESHOLD),
-        PredictiveValuesBinaryClassificationLinearScaling(threshold=THRESHOLD),
-        PositiveNegativeRatesBinaryClassificationLinearScaling(threshold=THRESHOLD),
-        RighteousnessBinaryClassificationLinearScaling(threshold=THRESHOLD),
-        BrierBinaryClassificationLinearScaling(),
-        CrossEntropyBinaryClassificationLinearScaling(),
-        ASCEBinaryClassificationLinearScaling(),
-        ECEBinaryClassificationLinearScaling(),
-    ]
+    posthoc_models = {
+        "balanced_accuracy_linear_scaling": BalancedAccuracyBinaryClassificationLinearScaling(
+            threshold=THRESHOLD
+        ),
+        "balanced_accuracy_temperature_scaling": BalancedAccuracyBinaryClassificationLinearScaling(
+            threshold=THRESHOLD, has_intercept=False
+        ),
+        "positive_f1_linear_scaling": PositiveF1BinaryClassificationLinearScaling(
+            threshold=THRESHOLD
+        ),
+        "positive_f1_temperature_scaling": PositiveF1BinaryClassificationLinearScaling(
+            threshold=THRESHOLD, has_intercept=False
+        ),
+        "negative_f1_linear_scaling": NegativeF1BinaryClassificationLinearScaling(
+            threshold=THRESHOLD
+        ),
+        "negative_f1_temperature_scaling": NegativeF1BinaryClassificationLinearScaling(
+            threshold=THRESHOLD, has_intercept=False
+        ),
+        "predictive_values_linear_scaling": PredictiveValuesBinaryClassificationLinearScaling(
+            threshold=THRESHOLD
+        ),
+        "predictive_values_temperature_scaling": PredictiveValuesBinaryClassificationLinearScaling(
+            threshold=THRESHOLD, has_intercept=False
+        ),
+        "positive_negative_rates_linear_scaling": PositiveNegativeRatesBinaryClassificationLinearScaling(
+            threshold=THRESHOLD
+        ),
+        "positive_negative_rates_temperature_scaling": PositiveNegativeRatesBinaryClassificationLinearScaling(
+            threshold=THRESHOLD, has_intercept=False
+        ),
+        "righteousness_linear_scaling": RighteousnessBinaryClassificationLinearScaling(
+            threshold=THRESHOLD
+        ),
+        "righteousness_temperature_scaling": RighteousnessBinaryClassificationLinearScaling(
+            threshold=THRESHOLD, has_intercept=False
+        ),
+        "brier_linear_scaling": BrierBinaryClassificationLinearScaling(),
+        "brier_temperature_scaling": BrierBinaryClassificationLinearScaling(
+            has_intercept=False
+        ),
+        "cross_entropy_linear_scaling": CrossEntropyBinaryClassificationLinearScaling(),
+        "cross_entropy_temperature_scaling": CrossEntropyBinaryClassificationLinearScaling(
+            has_intercept=False
+        ),
+        "asce_linear_scaling": ASCEBinaryClassificationLinearScaling(),
+        "asce_temperature_scaling": ASCEBinaryClassificationLinearScaling(
+            has_intercept=False
+        ),
+        "ece_linear_scaling": ECEBinaryClassificationLinearScaling(),
+        "ece_temperature_scaling": ECEBinaryClassificationLinearScaling(
+            has_intercept=False
+        ),
+    }
     performance_metrics = {
         "accuracy": accuracy_score,
         "balanced_accuracy": balanced_accuracy_score,
@@ -101,7 +143,7 @@ for dataset_name, dataset in datasets.items():
 
     results = {
         **{model.__class__.__name__: dict()},
-        **{m.__class__.__name__: dict() for m in posthoc_models},
+        **{m_name: dict() for m_name, m in posthoc_models.items()},
     }
 
     for metric_name, metric in performance_metrics.items():
@@ -113,18 +155,14 @@ for dataset_name, dataset in datasets.items():
             test_targets, test_probs
         )
 
-    for m in posthoc_models:
+    for m_name, m in posthoc_models.items():
         m.fit(val_probs, val_targets)
         posthoc_test_probs = m.predict_proba(test_probs)
         posthoc_test_preds = m.predict(test_probs)
         for metric_name, metric in performance_metrics.items():
-            results[m.__class__.__name__][metric_name] = metric(
-                test_targets, posthoc_test_preds
-            )
+            results[m_name][metric_name] = metric(test_targets, posthoc_test_preds)
         for metric_name, metric in calibration_metrics.items():
-            results[m.__class__.__name__][metric_name] = metric(
-                test_targets, posthoc_test_probs
-            )
+            results[m_name][metric_name] = metric(test_targets, posthoc_test_probs)
 
     print(
         tabulate(

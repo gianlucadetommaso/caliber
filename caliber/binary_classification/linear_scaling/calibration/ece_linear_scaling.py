@@ -13,7 +13,11 @@ class ECEBinaryClassificationLinearScaling(
     BinaryClassificationLinearScalingBruteFitMixin,
     CustomCalibrationBinaryClassificationLinearScaling,
 ):
-    def __init__(self, minimize_options: Optional[dict] = None):
+    def __init__(
+        self, minimize_options: Optional[dict] = None, has_intercept: bool = True
+    ):
         super().__init__(
-            loss_fn=expected_calibration_error, minimize_options=minimize_options
+            loss_fn=expected_calibration_error,
+            minimize_options=minimize_options,
+            has_intercept=has_intercept,
         )
