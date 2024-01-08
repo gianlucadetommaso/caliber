@@ -32,3 +32,5 @@ from caliber.binary_classification.linear_scaling.performance.recall_fixed_preci
 from caliber.binary_classification.linear_scaling.performance.righteousness_linear_scaling import (
     RighteousnessBinaryClassificationLinearScaling,
 )
+from caliber.binary_classification.binning.histogram_binning.base import HistogramBinningBinaryClassificationModel
+from caliber.binary_classification.binning.isotonic_regression.base import IsotonicRegressionBinaryClassificationModel

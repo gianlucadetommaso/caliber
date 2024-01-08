@@ -18,11 +18,13 @@ from caliber import (
     BrierBinaryClassificationLinearScaling,
     CrossEntropyBinaryClassificationLinearScaling,
     ECEBinaryClassificationLinearScaling,
+    HistogramBinningBinaryClassificationModel,
     NegativeF1BinaryClassificationLinearScaling,
     PositiveF1BinaryClassificationLinearScaling,
     PositiveNegativeRatesBinaryClassificationLinearScaling,
     PredictiveValuesBinaryClassificationLinearScaling,
     RighteousnessBinaryClassificationLinearScaling,
+    IsotonicRegressionBinaryClassificationModel
 )
 from caliber.binary_classification.metrics import (
     average_squared_calibration_error,
@@ -126,6 +128,8 @@ for dataset_name, dataset in datasets.items():
         "ece_temperature_scaling": ECEBinaryClassificationLinearScaling(
             has_intercept=False
         ),
+        "histogram_binning": HistogramBinningBinaryClassificationModel(),
+        "isotonic_regression": IsotonicRegressionBinaryClassificationModel()
     }
     performance_metrics = {
         "accuracy": accuracy_score,

@@ -12,7 +12,9 @@ def expected_calibration_error(
         mask = bin_indices == i
         prob_bin = np.mean(mask)
         if prob_bin > 0:
-            acc = np.mean((probs[mask] >= 0.5) == targets[mask])
-            conf = np.mean(probs[mask])
+            _probs = probs[mask]
+            _targets = targets[mask]
+            acc = np.mean((_probs >= 0.5) == _targets)
+            conf = np.mean(np.maximum(1 - _probs, _probs))
             ece += prob_bin * np.abs(acc - conf)
     return ece
