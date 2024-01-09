@@ -18,6 +18,10 @@ from caliber import (
     BrierBinaryClassificationLinearScaling,
     CrossEntropyBinaryClassificationLinearScaling,
     ECEBinaryClassificationLinearScaling,
+    HistogramBinningBinaryClassificationModel,
+    IsotonicRegressionBinaryClassificationModel,
+    IterativeBinningBinaryClassificationModel,
+    ModelBiasBinaryClassificationConstantShift,
     NegativeF1BinaryClassificationLinearScaling,
     PositiveF1BinaryClassificationLinearScaling,
     PositiveNegativeRatesBinaryClassificationLinearScaling,
@@ -125,6 +129,19 @@ for dataset_name, dataset in datasets.items():
         "ece_linear_scaling": ECEBinaryClassificationLinearScaling(),
         "ece_temperature_scaling": ECEBinaryClassificationLinearScaling(
             has_intercept=False
+        ),
+        "constant_shift": ModelBiasBinaryClassificationConstantShift(),
+        "histogram_binning": HistogramBinningBinaryClassificationModel(),
+        "isotonic_regression": IsotonicRegressionBinaryClassificationModel(),
+        "iterative_histogram_binning": IterativeBinningBinaryClassificationModel(),
+        "iterative_linear_binning": IterativeBinningBinaryClassificationModel(
+            bin_model=BrierBinaryClassificationLinearScaling(),
+            bin_loss_fn=brier_score_loss,
+        ),
+        "iterative_logistic_binning": IterativeBinningBinaryClassificationModel(
+            bin_model=CrossEntropyBinaryClassificationLinearScaling(),
+            bin_loss_fn=log_loss,
+            early_stopping_loss_fn=log_loss,
         ),
     }
     performance_metrics = {
