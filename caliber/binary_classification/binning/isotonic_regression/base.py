@@ -1,9 +1,12 @@
 import numpy as np
+
 from caliber.binary_classification.binning.base import BinningBinaryClassificationModel
 
 
 class IsotonicRegressionBinaryClassificationModel(BinningBinaryClassificationModel):
-    def _fit_bin(self, i: int, mask: np.ndarray, probs: np.ndarray, targets: np.ndarray):
+    def _fit_bin(
+        self, i: int, mask: np.ndarray, probs: np.ndarray, targets: np.ndarray
+    ):
         prob_bin = np.mean(mask)
         if prob_bin > 0:
             if i == 1:

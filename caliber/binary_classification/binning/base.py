@@ -36,7 +36,9 @@ class BinningBinaryClassificationModel:
         return np.linspace(0, 1, self._n_bins + 1)
 
     @abc.abstractmethod
-    def _fit_bin(self, i: int, mask: np.ndarray, probs: np.ndarray, targets: np.ndarray):
+    def _fit_bin(
+        self, i: int, mask: np.ndarray, probs: np.ndarray, targets: np.ndarray
+    ):
         pass
 
     @abc.abstractmethod

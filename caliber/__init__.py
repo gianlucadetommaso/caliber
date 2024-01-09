@@ -1,3 +1,15 @@
+from caliber.binary_classification.binning.histogram_binning.base import (
+    HistogramBinningBinaryClassificationModel,
+)
+from caliber.binary_classification.binning.isotonic_regression.base import (
+    IsotonicRegressionBinaryClassificationModel,
+)
+from caliber.binary_classification.binning.iterative_binning.base import (
+    IterativeBinningBinaryClassificationModel,
+)
+from caliber.binary_classification.constant_shift.model_bias.base import (
+    ModelBiasBinaryClassificationConstantShift,
+)
 from caliber.binary_classification.linear_scaling.calibration.asce_linear_scaling import (
     ASCEBinaryClassificationLinearScaling,
 )
@@ -32,5 +44,3 @@ from caliber.binary_classification.linear_scaling.performance.recall_fixed_preci
 from caliber.binary_classification.linear_scaling.performance.righteousness_linear_scaling import (
     RighteousnessBinaryClassificationLinearScaling,
 )
-from caliber.binary_classification.binning.histogram_binning.base import HistogramBinningBinaryClassificationModel
-from caliber.binary_classification.binning.isotonic_regression.base import IsotonicRegressionBinaryClassificationModel

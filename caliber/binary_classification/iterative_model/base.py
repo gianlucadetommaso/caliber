@@ -1,7 +1,8 @@
 import abc
-from typing import Any, Tuple
-import numpy as np
 from copy import deepcopy
+from typing import Any, Tuple
+
+import numpy as np
 
 
 class BinaryClassificationIterativeModel:
@@ -28,7 +29,9 @@ class BinaryClassificationIterativeModel:
         pass
 
     @abc.abstractmethod
-    def _update(self, model: Any, features: np.ndarray, targets: np.ndarray) -> Tuple[Any, np.ndarray, np.ndarray]:
+    def _update(
+        self, model: Any, features: np.ndarray, targets: np.ndarray
+    ) -> Tuple[Any, np.ndarray, np.ndarray]:
         pass
 
     @abc.abstractmethod
