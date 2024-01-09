@@ -1,2 +1,2 @@
 # caliber
-A post-hoc calibration library.
+A library for post-hoc model improvements.
