@@ -39,8 +39,16 @@ class IterativeBinningBinaryClassificationModel:
         self._params = None
         self._bin_edges = None
 
-    def fit(self, probs: np.ndarray, targets: np.ndarray) -> dict:
+    def fit(
+        self,
+        probs: np.ndarray,
+        targets: np.ndarray,
+        groups: Optional[np.ndarray] = None,
+    ) -> dict:
         n_data = len(probs)
+        if groups is None:
+            groups = self._initialize_groups(n_data)
+
         perm = self._rng.choice(n_data, n_data, replace=False)
         calib_size = int(np.ceil(n_data * self.split))
         calib_probs, val_probs = probs[perm[:calib_size]], probs[perm[calib_size:]]
@@ -48,14 +56,18 @@ class IterativeBinningBinaryClassificationModel:
             targets[perm[:calib_size]],
             targets[perm[calib_size:]],
         )
+        calib_groups, val_groups = (
+            groups[perm[:calib_size]],
+            groups[perm[calib_size:]],
+        )
 
         self._bin_edges = self._get_bin_edges()
         self._params = []
         val_losses = [self.early_stopping_loss_fn(val_targets, val_probs)]
 
         for t in range(self.max_rounds):
-            bin_idx, bin_type, calib_mask = self._get_worst_bin(
-                calib_targets, calib_probs
+            bin_idx, bin_type, group_idx, calib_mask = self._get_worst_bin(
+                calib_targets, calib_probs, calib_groups
             )
 
             calib_prob_bin = np.mean(calib_mask)
@@ -67,9 +79,13 @@ class IterativeBinningBinaryClassificationModel:
                 break
 
             model = self._fit_bin_model(calib_probs, calib_targets, calib_mask)
-            calib_probs = self._predict_bin_proba(model, calib_probs, calib_mask)
-            val_mask = self._get_mask(val_probs, bin_idx, bin_type)
-            val_probs = self._predict_bin_proba(model, val_probs, val_mask)
+            calib_probs[calib_mask] = self._predict_bin_proba(
+                model, calib_probs, calib_mask
+            )
+            val_mask = self._get_mask(
+                val_probs, bin_idx, bin_type, val_groups[:, group_idx]
+            )
+            val_probs[val_mask] = self._predict_bin_proba(model, val_probs, val_mask)
 
             val_losses.append(self.early_stopping_loss_fn(val_targets, val_probs))
 
@@ -79,21 +95,28 @@ class IterativeBinningBinaryClassificationModel:
                 )
                 break
 
-            self._update_params(bin_idx, bin_type, model)
+            self._update_params(bin_idx, bin_type, group_idx, model)
 
         return dict(n_iter=len(val_losses) - 1, val_losses=val_losses)
 
-    def predict_proba(self, probs: np.ndarray) -> np.ndarray:
+    def predict_proba(
+        self, probs: np.ndarray, groups: Optional[np.ndarray] = None
+    ) -> np.ndarray:
         if self._params is None:
             raise ValueError("Run `fit` first.")
+        if groups is None:
+            groups = self._initialize_groups(len(probs))
+
         probs = np.copy(probs)
-        for bin_idx, bin_type, model in self._params:
-            mask = self._get_mask(probs, bin_idx, bin_type)
-            probs = self._predict_bin_proba(model, probs, mask)
+        for bin_idx, bin_type, group_idx, model in self._params:
+            mask = self._get_mask(probs, bin_idx, bin_type, groups[:, group_idx])
+            probs[mask] = self._predict_bin_proba(model, probs, mask)
         return probs
 
-    def predict(self, probs: np.ndarray) -> np.ndarray:
-        return (self.predict_proba(probs) >= 0.5).astype(int)
+    def predict(
+        self, probs: np.ndarray, groups: Optional[np.ndarray] = None
+    ) -> np.ndarray:
+        return (self.predict_proba(probs, groups) >= 0.5).astype(int)
 
     def _weighted_bin_loss_fn(
         self, targets: np.ndarray, probs: np.ndarray, mask: np.ndarray
@@ -104,26 +127,35 @@ class IterativeBinningBinaryClassificationModel:
         return prob_mask * self.bin_loss_fn(targets, probs)
 
     def _get_worst_bin(
-        self, targets: np.ndarray, probs: np.ndarray
-    ) -> Tuple[int, str, np.ndarray]:
+        self, targets: np.ndarray, probs: np.ndarray, groups: np.ndarray
+    ) -> Tuple[int, str, int, np.ndarray]:
         bin_indices = np.digitize(probs, self._bin_edges)
+        n_groups = groups.shape[1]
 
-        def _fun(i: int, _bin_type: str):
-            mask = self._get_mask(probs, i, _bin_type, bin_indices)
+        def _fun(i: int, _bin_type: str, j: int):
+            mask = self._get_mask(probs, i, _bin_type, groups[:, j], bin_indices)
             return self._weighted_bin_loss_fn(targets, probs, mask)
 
-        idx_bin_type, idx_bin_idx = np.unravel_index(
+        group_idx, idx_bin_type, idx_bin_idx = np.unravel_index(
             np.argmax(
                 [
-                    [_fun(i, bt) for i in range(1, self.n_bins + 1)]
-                    for bt in self._bin_types
+                    [
+                        [_fun(i, bt, j) for i in range(1, self.n_bins + 1)]
+                        for bt in self._bin_types
+                    ]
+                    for j in range(n_groups)
                 ]
             ),
-            (len(self._bin_types), self.n_bins),
+            (n_groups, len(self._bin_types), self.n_bins),
         )
         bin_idx = idx_bin_idx + 1
         bin_type = self._bin_types[idx_bin_type]
-        return bin_idx, bin_type, self._get_mask(probs, bin_idx, bin_type, bin_indices)
+        return (
+            bin_idx,
+            bin_type,
+            group_idx,
+            self._get_mask(probs, bin_idx, bin_type, groups[:, group_idx], bin_indices),
+        )
 
     def _fit_bin_model(
         self, probs: np.ndarray, targets: np.ndarray, mask: np.ndarray
@@ -137,16 +169,17 @@ class IterativeBinningBinaryClassificationModel:
         probs: np.ndarray,
         bin_idx: int,
         bin_type: str,
+        group: np.ndarray,
         bin_indices: Optional[np.ndarray] = None,
     ) -> np.ndarray:
         if bin_indices is None:
             bin_indices = np.digitize(probs, self._bin_edges)
         if bin_type == "=":
-            return bin_indices == bin_idx
+            return (bin_indices == bin_idx) * group
         elif bin_type == ">=":
-            return bin_indices >= bin_idx
+            return (bin_indices >= bin_idx) * group
         elif bin_type == "<=":
-            return bin_indices <= bin_idx
+            return (bin_indices <= bin_idx) * group
         else:
             raise ValueError(f"bin_type={bin_type} not recognized.")
 
@@ -156,8 +189,14 @@ class IterativeBinningBinaryClassificationModel:
     ) -> np.ndarray:
         return model.predict_proba(probs[mask])
 
-    def _update_params(self, bin_idx: int, bin_type: str, patch: np.ndarray) -> None:
-        self._params.append((bin_idx, bin_type, patch))
+    def _update_params(
+        self, bin_idx: int, bin_type: str, group_idx: int, patch: np.ndarray
+    ) -> None:
+        self._params.append((bin_idx, bin_type, group_idx, patch))
 
     def _get_bin_edges(self):
         return np.linspace(0, 1, self.n_bins + 1)
+
+    @staticmethod
+    def _initialize_groups(size: int):
+        return np.ones((size, 1)).astype(bool)
