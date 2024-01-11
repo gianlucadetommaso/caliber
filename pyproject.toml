@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "caliber"
-version = "0.1.1"
+version = "0.1.2"
 description = "A library for post-hoc model improvements."
 authors = ["Gianluca Detommaso <detommaso.gianluca@gmail.com>"]
 readme = "README.md"
