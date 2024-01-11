@@ -1,3 +1,5 @@
+from functools import partial
+
 from sklearn.datasets import load_breast_cancer, make_moons
 from sklearn.metrics import (
     accuracy_score,
@@ -140,7 +142,7 @@ for dataset_name, dataset in datasets.items():
         ),
         "iterative_logistic_binning": IterativeBinningBinaryClassificationModel(
             bin_model=CrossEntropyBinaryClassificationLinearScaling(),
-            bin_loss_fn=log_loss,
+            bin_loss_fn=partial(log_loss, labels=[0, 1]),
             early_stopping_loss_fn=log_loss,
         ),
     }

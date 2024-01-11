@@ -16,7 +16,7 @@ class IterativeBinningBinaryClassificationModel:
         self,
         n_bins: int = 100,
         max_rounds: int = 1000,
-        min_prob_bin: float = 0.0,
+        min_prob_bin: float = 0.01,
         split: float = 0.8,
         seed: int = 0,
         bin_types: Tuple[str] = ("<=", ">="),
@@ -122,9 +122,9 @@ class IterativeBinningBinaryClassificationModel:
         self, targets: np.ndarray, probs: np.ndarray, mask: np.ndarray
     ) -> float:
         prob_mask = np.mean(mask)
-        if not prob_mask:
+        if prob_mask < self.min_prob_bin:
             return 0.0
-        return prob_mask * self.bin_loss_fn(targets, probs)
+        return prob_mask * self.bin_loss_fn(targets[mask], probs[mask])
 
     def _get_worst_bin(
         self, targets: np.ndarray, probs: np.ndarray, groups: np.ndarray
