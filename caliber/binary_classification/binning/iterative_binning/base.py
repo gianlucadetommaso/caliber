@@ -89,7 +89,7 @@ class IterativeBinningBinaryClassificationModel:
 
             val_losses.append(self.early_stopping_loss_fn(val_targets, val_probs))
 
-            if val_losses[-1] > val_losses[-2]:
+            if val_losses[-1] >= val_losses[-2]:
                 logging.info(
                     f"Early stopping triggered after {t} rounds. The loss started increasing on the validation data."
                 )
@@ -190,9 +190,9 @@ class IterativeBinningBinaryClassificationModel:
         return model.predict_proba(probs[mask])
 
     def _update_params(
-        self, bin_idx: int, bin_type: str, group_idx: int, patch: np.ndarray
+        self, bin_idx: int, bin_type: str, group_idx: int, model: Any
     ) -> None:
-        self._params.append((bin_idx, bin_type, group_idx, patch))
+        self._params.append((bin_idx, bin_type, group_idx, model))
 
     def _get_bin_edges(self):
         return np.linspace(0, 1, self.n_bins + 1)
