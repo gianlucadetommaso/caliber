@@ -1,3 +1,4 @@
+from functools import partial
 from typing import Optional
 
 import numpy as np
@@ -15,9 +16,10 @@ class PrecisionFixedRecallBinaryClassificationLinearScaling(
         threshold: float,
         minimize_options: Optional[dict] = None,
         has_intercept: bool = True,
+        min_recall: float = 0.8,
     ):
         super().__init__(
-            loss_fn=precision_fixed_recall,
+            loss_fn=partial(precision_fixed_recall, min_recall=min_recall),
             threshold=threshold,
             minimize_options=minimize_options,
             has_intercept=has_intercept,
@@ -25,7 +27,7 @@ class PrecisionFixedRecallBinaryClassificationLinearScaling(
 
 
 def precision_fixed_recall(
-    targets: np.ndarray, preds: np.ndarray, min_recall: float = 0.8
+    targets: np.ndarray, preds: np.ndarray, min_recall: float
 ) -> float:
     n_pos_targets = np.sum(targets)
     n_pos_preds = np.sum(preds)
