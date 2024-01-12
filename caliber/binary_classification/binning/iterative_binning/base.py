@@ -122,7 +122,7 @@ class IterativeBinningBinaryClassificationModel:
         self, targets: np.ndarray, probs: np.ndarray, mask: np.ndarray
     ) -> float:
         prob_mask = np.mean(mask)
-        if prob_mask < self.min_prob_bin:
+        if prob_mask == 0.0 or prob_mask < self.min_prob_bin:
             return 0.0
         return prob_mask * self.bin_loss_fn(targets[mask], probs[mask])
 
