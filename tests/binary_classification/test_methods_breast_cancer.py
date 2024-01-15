@@ -97,7 +97,7 @@ GROUPED_METHODS = {
         bin_model=BrierBinaryClassificationLinearScaling(),
         bin_loss_fn=brier_score_loss,
     ),
-    "smooth_histogram_binning": SmoothHistogramBinningBinaryClassificationModel(),
+    "smooth_grouped_histogram_binning": SmoothHistogramBinningBinaryClassificationModel(),
 }
 
 
