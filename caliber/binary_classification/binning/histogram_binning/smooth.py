@@ -26,7 +26,7 @@ class SmoothHistogramBinningBinaryClassificationModel:
         groups: Optional[np.ndarray] = None,
     ):
         if groups is None:
-            groups = np.ones_like(probs)
+            groups = self._initialize_groups(len(probs))
         self._bin_edges = self._get_bin_edges()
         kernels = self._get_kernels(probs, self.smoothness)
         A = np.mean(
@@ -45,6 +45,8 @@ class SmoothHistogramBinningBinaryClassificationModel:
         self, probs: np.ndarray, groups: Optional[np.ndarray] = None
     ) -> np.ndarray:
         probs = np.copy(probs)
+        if groups is None:
+            groups = self._initialize_groups(len(probs))
         kernels = self._get_kernels(probs, self.smoothness)
         probs += np.sum(self._params * kernels[:, :, None] * groups[:, None], (1, 2))
         return np.clip(probs, 0, 1)
@@ -59,3 +61,7 @@ class SmoothHistogramBinningBinaryClassificationModel:
 
     def _get_kernels(self, probs: np.ndarray, smoothness) -> np.ndarray:
         return np.stack([norm.pdf(probs, i, smoothness) for i in self._bin_edges]).T
+
+    @staticmethod
+    def _initialize_groups(size: int):
+        return np.ones((size, 1)).astype(bool)
