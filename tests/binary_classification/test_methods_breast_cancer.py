@@ -21,6 +21,7 @@ from caliber import (
     PositiveNegativeRatesBinaryClassificationLinearScaling,
     PredictiveValuesBinaryClassificationLinearScaling,
     RighteousnessBinaryClassificationLinearScaling,
+    SmoothHistogramBinningBinaryClassificationModel,
 )
 
 THRESHOLD = 0.5
@@ -82,6 +83,7 @@ METHODS = {
     ),
     "constant_shift": ModelBiasBinaryClassificationConstantShift(),
     "histogram_binning": HistogramBinningBinaryClassificationModel(),
+    "smooth_histogram_binning": SmoothHistogramBinningBinaryClassificationModel(),
     "isotonic_regression": IsotonicRegressionBinaryClassificationModel(),
     "iterative_histogram_binning": IterativeBinningBinaryClassificationModel(),
     "iterative_linear_binning": IterativeBinningBinaryClassificationModel(
@@ -94,7 +96,8 @@ GROUPED_METHODS = {
     "iterative_grouped_linear_binning": IterativeBinningBinaryClassificationModel(
         bin_model=BrierBinaryClassificationLinearScaling(),
         bin_loss_fn=brier_score_loss,
-    )
+    ),
+    "smooth_grouped_histogram_binning": SmoothHistogramBinningBinaryClassificationModel(),
 }
 
 

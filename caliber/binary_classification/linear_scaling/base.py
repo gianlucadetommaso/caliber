@@ -18,6 +18,7 @@ class CustomBinaryClassificationLinearScaling(CustomBinaryClassificationModel, a
         super().__init__(loss_fn, minimize_options)
 
     def _predict_proba(self, params: np.ndarray, probs: np.ndarray) -> np.ndarray:
+        probs = np.clip(probs, 1e-6, 1 - 1e-6)
         return (
             expit(params[0] + params[1] * logit(probs))
             if self._has_intercept
