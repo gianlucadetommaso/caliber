@@ -37,10 +37,8 @@ class CustomBinaryClassificationModel:
 
     @staticmethod
     def _check_targets(targets: np.ndarray) -> None:
-        if set(targets) != {0, 1}:
-            raise ValueError(
-                "`targets` must must include only values in {0, 1}. Both classes must be present."
-            )
+        if set(targets) not in [{0, 1}, {0}, {1}]:
+            raise ValueError("`targets` must must include only values in {0, 1}.")
         if targets.ndim != 1:
             raise ValueError("`targets` must be a one-dimensional array.")
 
