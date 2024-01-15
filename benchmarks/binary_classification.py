@@ -65,7 +65,7 @@ def load_breast_cancer_data(test_size=0.1, random_state=0):
     return _train_inputs, _test_inputs, _train_targets, _test_targets
 
 
-def load_adult_data():
+def load_adult_data(random_state: int = 0):
     url = "https://archive.ics.uci.edu/ml/machine-learning-databases/adult/adult.data"
 
     # Define column names for the dataset
@@ -97,6 +97,7 @@ def load_adult_data():
     _train_inputs, _test_inputs, _train_targets, _test_targets = train_test_split(
         adult_data[feature_columns].to_numpy().astype(float),
         adult_data["income"].values,
+        random_state=random_state,
     )
     return _train_inputs, _test_inputs, _train_targets, _test_targets
 
