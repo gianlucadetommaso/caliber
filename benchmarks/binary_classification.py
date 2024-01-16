@@ -24,13 +24,13 @@ from caliber import (
     HistogramBinningBinaryClassificationModel,
     IsotonicRegressionBinaryClassificationModel,
     IterativeBinningBinaryClassificationModel,
+    IterativeSmoothHistogramBinningBinaryClassificationModel,
     ModelBiasBinaryClassificationConstantShift,
     NegativeF1BinaryClassificationLinearScaling,
     PositiveF1BinaryClassificationLinearScaling,
     PositiveNegativeRatesBinaryClassificationLinearScaling,
     PredictiveValuesBinaryClassificationLinearScaling,
     RighteousnessBinaryClassificationLinearScaling,
-    SmoothHistogramBinningBinaryClassificationModel,
 )
 from caliber.binary_classification.metrics import (
     average_smooth_squared_calibration_error,
@@ -113,6 +113,8 @@ for dataset_name, dataset in datasets.items():
 
     clustering_model = GaussianMixture(n_components=N_GROUPS)
     clustering_model.fit(train_inputs)
+    train_group_scores = clustering_model.predict_proba(train_inputs)
+    test_group_scores = clustering_model.predict_proba(test_inputs)
     train_group_preds = clustering_model.predict(train_inputs)
     test_group_preds = clustering_model.predict(test_inputs)
     train_groups = np.zeros((len(train_group_preds), N_GROUPS)).astype(bool)
@@ -123,6 +125,10 @@ for dataset_name, dataset in datasets.items():
     train_size = int(len(train_inputs) * TRAIN_VAL_SPLIT)
     train_inputs, val_inputs = train_inputs[:train_size], train_inputs[train_size:]
     train_targets, val_targets = train_targets[:train_size], train_targets[train_size:]
+    train_group_scores, val_group_scores = (
+        train_group_scores[:train_size],
+        train_group_scores[train_size:],
+    )
     train_groups, val_groups = train_groups[:train_size], train_groups[train_size:]
 
     model = MLPClassifier(random_state=42)
@@ -188,8 +194,8 @@ for dataset_name, dataset in datasets.items():
         "constant_shift": ModelBiasBinaryClassificationConstantShift(),
         "histogram_binning": HistogramBinningBinaryClassificationModel(),
         "isotonic_regression": IsotonicRegressionBinaryClassificationModel(),
-        "smooth_histogram_binning": SmoothHistogramBinningBinaryClassificationModel(),
-        "smooth_grouped_histogram_binning": SmoothHistogramBinningBinaryClassificationModel(),
+        "iterative_smooth_histogram_binning": IterativeSmoothHistogramBinningBinaryClassificationModel(),
+        "iterative_smooth_grouped_histogram_binning": IterativeSmoothHistogramBinningBinaryClassificationModel(),
         "iterative_histogram_binning": IterativeBinningBinaryClassificationModel(),
         "iterative_linear_binning": IterativeBinningBinaryClassificationModel(
             bin_model=BrierBinaryClassificationLinearScaling(),
@@ -236,6 +242,10 @@ for dataset_name, dataset in datasets.items():
             m.fit(val_probs, val_targets)
             posthoc_test_probs = m.predict_proba(test_probs)
             posthoc_test_preds = m.predict(test_probs)
+        elif m_name == "iterative_smooth_grouped_histogram_binning":
+            m.fit(val_probs, val_targets, val_group_scores)
+            posthoc_test_probs = m.predict_proba(test_probs, test_group_scores)
+            posthoc_test_preds = m.predict(test_probs, test_group_scores)
         else:
             m.fit(val_probs, val_targets, val_groups)
             posthoc_test_probs = m.predict_proba(test_probs, test_groups)

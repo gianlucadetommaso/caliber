@@ -15,13 +15,13 @@ from caliber import (
     HistogramBinningBinaryClassificationModel,
     IsotonicRegressionBinaryClassificationModel,
     IterativeBinningBinaryClassificationModel,
+    IterativeSmoothHistogramBinningBinaryClassificationModel,
     ModelBiasBinaryClassificationConstantShift,
     NegativeF1BinaryClassificationLinearScaling,
     PositiveF1BinaryClassificationLinearScaling,
     PositiveNegativeRatesBinaryClassificationLinearScaling,
     PredictiveValuesBinaryClassificationLinearScaling,
     RighteousnessBinaryClassificationLinearScaling,
-    SmoothHistogramBinningBinaryClassificationModel,
 )
 
 THRESHOLD = 0.5
@@ -83,7 +83,7 @@ METHODS = {
     ),
     "constant_shift": ModelBiasBinaryClassificationConstantShift(),
     "histogram_binning": HistogramBinningBinaryClassificationModel(),
-    "smooth_histogram_binning": SmoothHistogramBinningBinaryClassificationModel(),
+    "iterative_smooth_histogram_binning": IterativeSmoothHistogramBinningBinaryClassificationModel(),
     "isotonic_regression": IsotonicRegressionBinaryClassificationModel(),
     "iterative_histogram_binning": IterativeBinningBinaryClassificationModel(),
     "iterative_linear_binning": IterativeBinningBinaryClassificationModel(
@@ -97,7 +97,10 @@ GROUPED_METHODS = {
         bin_model=BrierBinaryClassificationLinearScaling(),
         bin_loss_fn=brier_score_loss,
     ),
-    "smooth_grouped_histogram_binning": SmoothHistogramBinningBinaryClassificationModel(),
+}
+
+GROUP_SCORED_METHODS = {
+    "iterative_smooth_grouped_histogram_binning": IterativeSmoothHistogramBinningBinaryClassificationModel(),
 }
 
 
@@ -116,6 +119,8 @@ train_inputs, test_inputs, train_targets, test_targets = load_breast_cancer_data
 
 clustering_model = GaussianMixture(n_components=N_GROUPS)
 clustering_model.fit(train_inputs)
+train_group_scores = clustering_model.predict_proba(train_inputs)
+test_group_scores = clustering_model.predict_proba(test_inputs)
 train_group_preds = clustering_model.predict(train_inputs)
 test_group_preds = clustering_model.predict(test_inputs)
 train_groups = np.zeros((len(train_group_preds), N_GROUPS)).astype(bool)
@@ -126,6 +131,10 @@ test_groups[np.arange(len(test_groups)), test_group_preds] = True
 train_size = int(len(train_inputs) * TRAIN_VAL_SPLIT)
 train_inputs, val_inputs = train_inputs[:train_size], train_inputs[train_size:]
 train_targets, val_targets = train_targets[:train_size], train_targets[train_size:]
+train_group_scores, val_group_scores = (
+    train_group_scores[:train_size],
+    train_group_scores[train_size:],
+)
 train_groups, val_groups = train_groups[:train_size], train_groups[train_size:]
 
 model = MLPClassifier(random_state=42)
@@ -139,12 +148,29 @@ test_preds = (test_probs >= THRESHOLD).astype(int)
 @pytest.mark.parametrize("m", list(METHODS.values()))
 def test_method(m):
     m.fit(val_probs, val_targets)
-    m.predict_proba(test_probs)
-    m.predict(test_probs)
+    probs = m.predict_proba(test_probs)
+    preds = m.predict(test_probs)
+    check_probs_preds(probs, preds)
 
 
 @pytest.mark.parametrize("m", list(GROUPED_METHODS.values()))
 def test_grouped_method(m):
     m.fit(val_probs, val_targets, val_groups)
-    m.predict_proba(test_probs, test_groups)
-    m.predict(test_probs, test_groups)
+    probs = m.predict_proba(test_probs, test_groups)
+    preds = m.predict(test_probs, test_groups)
+    check_probs_preds(probs, preds)
+
+
+@pytest.mark.parametrize("m", list(GROUP_SCORED_METHODS.values()))
+def test_group_scored_method(m):
+    m.fit(val_probs, val_targets, val_group_scores)
+    probs = m.predict_proba(test_probs, test_group_scores)
+    preds = m.predict(test_probs, test_group_scores)
+    check_probs_preds(probs, preds)
+
+
+def check_probs_preds(probs: np.ndarray, preds: np.ndarray):
+    assert probs.ndim == 1
+    assert np.all(probs <= 1) and np.all(probs >= 0)
+    assert preds.ndim == 1
+    assert set(preds) in [{0, 1}, {0}, {1}]
