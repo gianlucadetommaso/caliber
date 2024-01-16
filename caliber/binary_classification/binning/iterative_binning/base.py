@@ -79,9 +79,6 @@ class IterativeBinningBinaryClassificationModel:
                 break
 
             model = self._fit_bin_model(calib_probs, calib_targets, calib_mask)
-            calib_probs[calib_mask] = self._predict_bin_proba(
-                model, calib_probs, calib_mask
-            )
             val_mask = self._get_mask(
                 val_probs, bin_idx, bin_type, val_groups[:, group_idx]
             )
@@ -95,6 +92,9 @@ class IterativeBinningBinaryClassificationModel:
                 )
                 break
 
+            calib_probs[calib_mask] = self._predict_bin_proba(
+                model, calib_probs, calib_mask
+            )
             self._update_params(bin_idx, bin_type, group_idx, model)
 
         return dict(n_iter=len(val_losses) - 1, val_losses=val_losses)

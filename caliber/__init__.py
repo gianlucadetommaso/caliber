@@ -2,7 +2,7 @@ from caliber.binary_classification.binning.histogram_binning.base import (
     HistogramBinningBinaryClassificationModel,
 )
 from caliber.binary_classification.binning.histogram_binning.smooth import (
-    SmoothHistogramBinningBinaryClassificationModel,
+    IterativeSmoothHistogramBinningBinaryClassificationModel,
 )
 from caliber.binary_classification.binning.isotonic_regression.base import (
     IsotonicRegressionBinaryClassificationModel,
