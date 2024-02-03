@@ -1,0 +1,4 @@
+from caliber.binary_classification.data.adult import load_adult_data
+from caliber.binary_classification.data.breast_cancer import load_breast_cancer_data
+from caliber.binary_classification.data.heart_disease import load_heart_disease_data
+from caliber.binary_classification.data.two_moons import load_two_moons_data

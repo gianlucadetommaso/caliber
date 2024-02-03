@@ -13,6 +13,12 @@ from caliber.binary_classification.binning.iterative_binning.base import (
 from caliber.binary_classification.constant_shift.model_bias.base import (
     ModelBiasBinaryClassificationConstantShift,
 )
+from caliber.binary_classification.group_conditional_unbiased.base import (
+    GroupConditionalUnbiasedBinaryClassificationModel,
+)
+from caliber.binary_classification.iterative_fitting.base import (
+    IterativeFittingBinaryClassificationModel,
+)
 from caliber.binary_classification.linear_scaling.calibration.asce_linear_scaling import (
     ASCEBinaryClassificationLinearScaling,
 )

@@ -1,6 +1,4 @@
 import numpy as np
-import pandas as pd
-from sklearn.datasets import load_breast_cancer, make_moons
 from sklearn.metrics import (
     accuracy_score,
     balanced_accuracy_score,
@@ -11,19 +9,18 @@ from sklearn.metrics import (
     recall_score,
 )
 from sklearn.mixture import GaussianMixture
-from sklearn.model_selection import train_test_split
-from sklearn.neural_network import MLPClassifier
 from tabulate import tabulate
+from xgboost import XGBClassifier
 
 from caliber import (
-    ASCEBinaryClassificationLinearScaling,
     BalancedAccuracyBinaryClassificationLinearScaling,
     BrierBinaryClassificationLinearScaling,
     CrossEntropyBinaryClassificationLinearScaling,
-    ECEBinaryClassificationLinearScaling,
+    GroupConditionalUnbiasedBinaryClassificationModel,
     HistogramBinningBinaryClassificationModel,
     IsotonicRegressionBinaryClassificationModel,
     IterativeBinningBinaryClassificationModel,
+    IterativeFittingBinaryClassificationModel,
     IterativeSmoothHistogramBinningBinaryClassificationModel,
     ModelBiasBinaryClassificationConstantShift,
     NegativeF1BinaryClassificationLinearScaling,
@@ -31,6 +28,11 @@ from caliber import (
     PositiveNegativeRatesBinaryClassificationLinearScaling,
     PredictiveValuesBinaryClassificationLinearScaling,
     RighteousnessBinaryClassificationLinearScaling,
+)
+from caliber.binary_classification.data import (
+    load_breast_cancer_data,
+    load_heart_disease_data,
+    load_two_moons_data,
 )
 from caliber.binary_classification.metrics import (
     average_smooth_squared_calibration_error,
@@ -43,67 +45,8 @@ TRAIN_VAL_SPLIT = 0.5
 N_GROUPS = 5
 
 
-def load_two_moons_data(
-    n_train_samples=1000, n_test_samples=1000, noise=0.1, random_state=0
-):
-    _train_inputs, _train_targets = make_moons(
-        n_samples=n_train_samples, noise=noise, random_state=random_state
-    )
-    _test_inputs, _test_targets = make_moons(
-        n_samples=n_test_samples, noise=noise, random_state=random_state + 1
-    )
-    return _train_inputs, _test_inputs, _train_targets, _test_targets
-
-
-def load_breast_cancer_data(test_size=0.1, random_state=0):
-    data = load_breast_cancer()
-    inputs = data.data
-    targets = data.target
-    _train_inputs, _test_inputs, _train_targets, _test_targets = train_test_split(
-        inputs, targets, test_size=test_size, random_state=random_state
-    )
-    return _train_inputs, _test_inputs, _train_targets, _test_targets
-
-
-def load_adult_data(random_state: int = 0):
-    url = "https://archive.ics.uci.edu/ml/machine-learning-databases/adult/adult.data"
-
-    # Define column names for the dataset
-    column_names = [
-        "age",
-        "workclass",
-        "fnlwgt",
-        "education",
-        "education-num",
-        "marital-status",
-        "occupation",
-        "relationship",
-        "race",
-        "sex",
-        "capital-gain",
-        "capital-loss",
-        "hours-per-week",
-        "native-country",
-        "income",
-    ]
-
-    # Read the data into a pandas DataFrame
-    adult_data = pd.read_csv(
-        url, header=None, names=column_names, na_values=" ?", skipinitialspace=True
-    )
-    adult_data["income"] = adult_data["income"].map({"<=50K": 0, ">50K": 1})
-    adult_data = pd.get_dummies(adult_data)
-    feature_columns = [c for c in adult_data.columns if c != "income"]
-    _train_inputs, _test_inputs, _train_targets, _test_targets = train_test_split(
-        adult_data[feature_columns].to_numpy().astype(float),
-        adult_data["income"].values,
-        random_state=random_state,
-    )
-    return _train_inputs, _test_inputs, _train_targets, _test_targets
-
-
 datasets = {
-    "adult": load_adult_data(),
+    "heart_disease": load_heart_disease_data(),
     "two_moons": load_two_moons_data(),
     "breast_cancer": load_breast_cancer_data(),
 }
@@ -125,13 +68,9 @@ for dataset_name, dataset in datasets.items():
     train_size = int(len(train_inputs) * TRAIN_VAL_SPLIT)
     train_inputs, val_inputs = train_inputs[:train_size], train_inputs[train_size:]
     train_targets, val_targets = train_targets[:train_size], train_targets[train_size:]
-    train_group_scores, val_group_scores = (
-        train_group_scores[:train_size],
-        train_group_scores[train_size:],
-    )
     train_groups, val_groups = train_groups[:train_size], train_groups[train_size:]
 
-    model = MLPClassifier(random_state=42)
+    model = XGBClassifier(random_state=42)
     model.fit(train_inputs, train_targets)
 
     val_probs = model.predict_proba(val_inputs)[:, 1]
@@ -183,14 +122,6 @@ for dataset_name, dataset in datasets.items():
         "cross_entropy_temperature_scaling": CrossEntropyBinaryClassificationLinearScaling(
             has_intercept=False
         ),
-        "asce_linear_scaling": ASCEBinaryClassificationLinearScaling(),
-        "asce_temperature_scaling": ASCEBinaryClassificationLinearScaling(
-            has_intercept=False
-        ),
-        "ece_linear_scaling": ECEBinaryClassificationLinearScaling(),
-        "ece_temperature_scaling": ECEBinaryClassificationLinearScaling(
-            has_intercept=False
-        ),
         "constant_shift": ModelBiasBinaryClassificationConstantShift(),
         "histogram_binning": HistogramBinningBinaryClassificationModel(),
         "isotonic_regression": IsotonicRegressionBinaryClassificationModel(),
@@ -200,13 +131,11 @@ for dataset_name, dataset in datasets.items():
         "iterative_linear_binning": IterativeBinningBinaryClassificationModel(
             bin_model=BrierBinaryClassificationLinearScaling(),
         ),
-        "iterative_logistic_binning": IterativeBinningBinaryClassificationModel(
-            bin_model=CrossEntropyBinaryClassificationLinearScaling(),
-            early_stopping_loss_fn=log_loss,
-        ),
         "iterative_grouped_linear_binning": IterativeBinningBinaryClassificationModel(
             bin_model=BrierBinaryClassificationLinearScaling(),
         ),
+        "grouped_conditional_unbiased": GroupConditionalUnbiasedBinaryClassificationModel(),
+        "iterative_grouped_fitting": IterativeFittingBinaryClassificationModel(),
     }
     performance_metrics = {
         "accuracy": accuracy_score,
@@ -242,10 +171,6 @@ for dataset_name, dataset in datasets.items():
             m.fit(val_probs, val_targets)
             posthoc_test_probs = m.predict_proba(test_probs)
             posthoc_test_preds = m.predict(test_probs)
-        elif m_name == "iterative_smooth_grouped_histogram_binning":
-            m.fit(val_probs, val_targets, val_group_scores)
-            posthoc_test_probs = m.predict_proba(test_probs, test_group_scores)
-            posthoc_test_preds = m.predict(test_probs, test_group_scores)
         else:
             m.fit(val_probs, val_targets, val_groups)
             posthoc_test_probs = m.predict_proba(test_probs, test_groups)
