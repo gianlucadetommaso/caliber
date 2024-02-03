@@ -1,9 +1,7 @@
 import numpy as np
 import pytest
-from sklearn.datasets import load_breast_cancer
 from sklearn.metrics import brier_score_loss
 from sklearn.mixture import GaussianMixture
-from sklearn.model_selection import train_test_split
 from sklearn.neural_network import MLPClassifier
 
 from caliber import (
@@ -12,9 +10,11 @@ from caliber import (
     BrierBinaryClassificationLinearScaling,
     CrossEntropyBinaryClassificationLinearScaling,
     ECEBinaryClassificationLinearScaling,
+    GroupConditionalUnbiasedBinaryClassificationModel,
     HistogramBinningBinaryClassificationModel,
     IsotonicRegressionBinaryClassificationModel,
     IterativeBinningBinaryClassificationModel,
+    IterativeFittingBinaryClassificationModel,
     IterativeSmoothHistogramBinningBinaryClassificationModel,
     ModelBiasBinaryClassificationConstantShift,
     NegativeF1BinaryClassificationLinearScaling,
@@ -23,6 +23,7 @@ from caliber import (
     PredictiveValuesBinaryClassificationLinearScaling,
     RighteousnessBinaryClassificationLinearScaling,
 )
+from caliber.binary_classification.data import load_breast_cancer_data
 
 THRESHOLD = 0.5
 TRAIN_VAL_SPLIT = 0.5
@@ -97,21 +98,13 @@ GROUPED_METHODS = {
         bin_model=BrierBinaryClassificationLinearScaling(),
         bin_loss_fn=brier_score_loss,
     ),
+    "iterative_grouped_fitting": IterativeFittingBinaryClassificationModel(),
+    "grouped_conditional_unbiased": GroupConditionalUnbiasedBinaryClassificationModel(),
 }
 
 GROUP_SCORED_METHODS = {
     "iterative_smooth_grouped_histogram_binning": IterativeSmoothHistogramBinningBinaryClassificationModel(),
 }
-
-
-def load_breast_cancer_data(test_size=0.1, random_state=0):
-    data = load_breast_cancer()
-    inputs = data.data
-    targets = data.target
-    _train_inputs, _test_inputs, _train_targets, _test_targets = train_test_split(
-        inputs, targets, test_size=test_size, random_state=random_state
-    )
-    return _train_inputs, _test_inputs, _train_targets, _test_targets
 
 
 train_inputs, test_inputs, train_targets, test_targets = load_breast_cancer_data()

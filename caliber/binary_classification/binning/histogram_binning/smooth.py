@@ -18,7 +18,7 @@ class IterativeSmoothHistogramBinningBinaryClassificationModel:
         smoothness: float = 0.1,
         max_rounds: int = 1000,
     ):
-        self._n_bins = n_bins
+        self.n_bins = n_bins
         self._rng = np.random.default_rng(seed)
         self.split = split
         self._params = None
@@ -103,7 +103,7 @@ class IterativeSmoothHistogramBinningBinaryClassificationModel:
         return np.clip(probs, 0, 1)
 
     def _get_bin_edges(self):
-        return np.linspace(0, 1, self._n_bins + 1)
+        return np.linspace(0, 1, self.n_bins + 1)
 
     def _get_kernels(self, probs: np.ndarray, smoothness) -> np.ndarray:
         return np.stack([norm.pdf(probs, i, smoothness) for i in self._bin_edges]).T
@@ -122,8 +122,10 @@ class IterativeSmoothHistogramBinningBinaryClassificationModel:
             * groups[:, None, :, None, None]
             * groups[:, None, None, None],
             0,
-        ).reshape((self._n_bins + 1) * groups.shape[1], -1)
+        ).reshape((self.n_bins + 1) * groups.shape[1], -1)
         b = np.mean(
             kernels[:, :, None] * groups[:, None] * (targets - probs)[:, None, None], 0
         ).flatten()
-        return np.linalg.solve(A, b).reshape(self._n_bins + 1, groups.shape[1])
+        return np.linalg.lstsq(A, b, rcond=None)[0].reshape(
+            self.n_bins + 1, groups.shape[1]
+        )
