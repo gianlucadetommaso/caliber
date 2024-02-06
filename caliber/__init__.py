@@ -53,3 +53,6 @@ from caliber.binary_classification.linear_scaling.performance.recall_fixed_preci
 from caliber.binary_classification.linear_scaling.performance.righteousness_linear_scaling import (
     RighteousnessBinaryClassificationLinearScaling,
 )
+from caliber.binary_classification.ood.ood_histogram_binning import (
+    OODHistogramBinningBinaryClassificationModel,
+)

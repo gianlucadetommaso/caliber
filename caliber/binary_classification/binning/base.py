@@ -14,7 +14,7 @@ class BinningBinaryClassificationModel:
         bin_indices = np.digitize(probs, self._bin_edges)
         self._params = []
 
-        for i in range(1, self._n_bins + 1):
+        for i in range(1, self._n_bins + 2):
             mask = bin_indices == i
             self._fit_bin(i, mask, probs, targets)
 
@@ -24,7 +24,7 @@ class BinningBinaryClassificationModel:
         bin_indices = np.digitize(probs, self._bin_edges)
         probs = np.copy(probs)
 
-        for i in range(1, self._n_bins + 1):
+        for i in range(1, self._n_bins + 2):
             mask = bin_indices == i
             probs[mask] = self._predict_bin(i, mask, probs)
         return probs

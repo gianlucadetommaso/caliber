@@ -104,7 +104,7 @@ class IterativeFittingBinaryClassificationModel:
     ):
         bin_indices = np.digitize(probs, self._bin_edges)
         features = np.stack(
-            [bin_indices == i + 1 for i in range(self.n_bins + 1)], axis=1
+            [bin_indices == i for i in range(1, self.n_bins + 2)], axis=1
         )
         if groups is not None:
             features = np.concatenate([features * g[:, None] for g in groups.T], axis=1)
