@@ -140,13 +140,13 @@ class IterativeBinningBinaryClassificationModel:
             np.argmax(
                 [
                     [
-                        [_fun(i, bt, j) for i in range(1, self.n_bins + 1)]
+                        [_fun(i, bt, j) for i in range(1, self.n_bins + 2)]
                         for bt in self._bin_types
                     ]
                     for j in range(n_groups)
                 ]
             ),
-            (n_groups, len(self._bin_types), self.n_bins),
+            (n_groups, len(self._bin_types), self.n_bins + 1),
         )
         bin_idx = idx_bin_idx + 1
         bin_type = self._bin_types[idx_bin_type]
