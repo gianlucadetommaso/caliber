@@ -56,3 +56,4 @@ from caliber.binary_classification.linear_scaling.performance.righteousness_line
 from caliber.binary_classification.ood.ood_histogram_binning import (
     OODHistogramBinningBinaryClassificationModel,
 )
+from caliber.multiclass_classification.ood.ood_histogram_binning import OODHistogramBinningMulticlassClassificationModel
