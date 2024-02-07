@@ -32,19 +32,25 @@ class OODHistogramBinningMulticlassClassificationModel:
         dist_bin_indices = np.digitize(distances, self._dist_bin_edges)
         top_class_indices = np.argmax(probs, axis=1)
 
-        self._params = 0.5 * np.ones((self._n_prob_bins + 1, self._n_dist_bins + 1, self._n_classes))
+        self._params = 0.5 * np.ones(
+            (self._n_prob_bins + 1, self._n_dist_bins + 1, self._n_classes)
+        )
 
         for i in range(1, self._n_prob_bins + 2):
             for j in range(1, self._n_dist_bins + 2):
                 for c in range(self._n_classes):
-                    mask = self._get_mask(i, j, c, prob_bin_indices, dist_bin_indices, top_class_indices)
+                    mask = self._get_mask(
+                        i, j, c, prob_bin_indices, dist_bin_indices, top_class_indices
+                    )
                     self._fit_bin(i, j, c, mask, targets)
 
     def predict_proba(self, probs: np.ndarray, distances: np.ndarray) -> np.ndarray:
         if self._prob_bin_edges is None:
             raise ValueError("Run `fit` first.")
         if probs.shape[1] != self._n_classes:
-            raise ValueError("The number of classes when fitting and predicting must be the same.")
+            raise ValueError(
+                "The number of classes when fitting and predicting must be the same."
+            )
 
         prob_bin_indices = np.digitize(probs, self._prob_bin_edges)
         dist_bin_indices = np.digitize(distances, self._dist_bin_edges)
@@ -55,7 +61,9 @@ class OODHistogramBinningMulticlassClassificationModel:
         for i in range(1, self._n_prob_bins + 2):
             for j in range(1, self._n_dist_bins + 2):
                 for c in range(0, self._n_classes):
-                    mask = self._get_mask(i, j, c, prob_bin_indices, dist_bin_indices, top_class_indices)
+                    mask = self._get_mask(
+                        i, j, c, prob_bin_indices, dist_bin_indices, top_class_indices
+                    )
                     probs[mask, c] = self._params[i - 1, j - 1, c]
         return probs
 
@@ -76,7 +84,9 @@ class OODHistogramBinningMulticlassClassificationModel:
             cdf = self._ood_threshold.cdf(
                 self._dist_bin_edges[j - 1] - self._conf_distance
             )
-            self._params[i - 1, j - 1, c] = (1 - cdf) * np.mean(targets[mask] == c) + 0.5 * cdf
+            self._params[i - 1, j - 1, c] = (1 - cdf) * np.mean(
+                targets[mask] == c
+            ) + 0.5 * cdf
 
     def _get_mask(
         self,
@@ -85,9 +95,11 @@ class OODHistogramBinningMulticlassClassificationModel:
         class_idx: int,
         prob_bin_indices: np.ndarray,
         dist_bin_indices: np.ndarray,
-        top_class_indices: np.ndarray
+        top_class_indices: np.ndarray,
     ) -> np.ndarray:
-        cond = (prob_bin_indices[:, class_idx] == prob_bin_idx) * (top_class_indices == class_idx)
+        cond = (prob_bin_indices[:, class_idx] == prob_bin_idx) * (
+            top_class_indices == class_idx
+        )
         if dist_bin_idx > self._conf_distance:
             cond *= dist_bin_indices == dist_bin_idx
         return cond

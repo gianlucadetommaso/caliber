@@ -1,10 +1,13 @@
-from sklearn import svm
-from caliber.binary_classification.data import load_digits_data
-from caliber import OODHistogramBinningMulticlassClassificationModel
-from caliber.multiclass_classification.metrics import expected_calibration_error, brier_score
 import numpy as np
+from sklearn import svm
 from tabulate import tabulate
 
+from caliber import OODHistogramBinningMulticlassClassificationModel
+from caliber.binary_classification.data import load_digits_data
+from caliber.multiclass_classification.metrics import (
+    brier_score,
+    expected_calibration_error,
+)
 
 SEED = 0
 TRAIN_VAL_SPLIT = 0.5
@@ -47,16 +50,15 @@ print(
             [
                 "before",
                 expected_calibration_error(test_targets, test_probs),
-                brier_score(test_targets, test_probs)
+                brier_score(test_targets, test_probs),
             ],
             [
                 "after",
                 expected_calibration_error(test_targets, calib_test_probs),
-                brier_score(test_targets, calib_test_probs)
+                brier_score(test_targets, calib_test_probs),
             ],
         ],
         headers=["", "ECE", "Brier score"],
         tablefmt="rounded_outline",
     )
 )
-
