@@ -4,7 +4,7 @@ import numpy as np
 def expected_calibration_error(
     targets: np.ndarray, probs: np.ndarray, n_bins: int = 10
 ) -> float:
-    bin_edges = np.linspace(0, 1, n_bins)
+    bin_edges = np.linspace(0, 1, n_bins + 1)
     bin_indices = np.digitize(probs, bin_edges)
 
     ece = 0
