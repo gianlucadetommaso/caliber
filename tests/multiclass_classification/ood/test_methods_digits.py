@@ -1,8 +1,8 @@
 import numpy as np
 from sklearn import svm
 
-from caliber import OODHistogramBinningMulticlassClassificationModel
-from caliber.binary_classification.data import load_digits_data
+from caliber import DistanceAwareHistogramBinningMulticlassClassificationModel
+from data import load_digits_data
 
 SEED = 0
 TRAIN_VAL_SPLIT = 0.5
@@ -32,7 +32,7 @@ test_distances = distance_fn(test_inputs, train_inputs)
 
 
 def test_method():
-    calib_model = OODHistogramBinningMulticlassClassificationModel()
+    calib_model = DistanceAwareHistogramBinningMulticlassClassificationModel()
     calib_model.fit(val_probs, val_distances, val_targets)
     calib_test_probs = calib_model.predict_proba(test_probs, test_distances)
     calib_test_preds = calib_model.predict(test_probs, test_distances)

@@ -1,15 +1,20 @@
 import numpy as np
 from scipy.stats import norm
-from sklearn.calibration import calibration_curve
 
 
 def average_squared_calibration_error(
-    targets: np.ndarray, probs: np.ndarray, n_bins: int = 10
+    targets: np.ndarray, probs: np.ndarray, n_bins: int = 10, min_prob_bin: float = 0.0
 ) -> float:
-    binned_ey, binned_probs = calibration_curve(
-        targets, probs, n_bins=n_bins, strategy="quantile"
-    )
-    return float(np.mean((binned_ey - binned_probs) ** 2))
+    bin_edges = np.linspace(0, 1, n_bins + 1)
+    bin_indices = np.digitize(probs, bin_edges)
+
+    asce = 0
+    for i in range(1, n_bins + 1):
+        mask = bin_indices == i
+        prob_bin = np.mean(mask)
+        if prob_bin > min_prob_bin:
+            asce += prob_bin * np.mean(targets[mask] - probs[mask]) ** 2
+    return asce
 
 
 def average_smooth_squared_calibration_error(

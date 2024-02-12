@@ -24,9 +24,9 @@ def load_heart_disease_data(random_state: int = 0):
     heart_disease_df["target"] = (heart_disease_df["target"] >= 1).astype(int)
     heart_disease_df = pd.get_dummies(heart_disease_df)
     feature_columns = [c for c in heart_disease_df.columns if c != "target"]
-    _train_inputs, _test_inputs, _train_targets, _test_targets = train_test_split(
+    train_inputs, test_inputs, train_targets, test_targets = train_test_split(
         heart_disease_df[feature_columns].to_numpy().astype(float),
         heart_disease_df["target"].values,
         random_state=random_state,
     )
-    return _train_inputs, _test_inputs, _train_targets, _test_targets
+    return train_inputs, test_inputs, train_targets, test_targets

@@ -23,7 +23,7 @@ from caliber import (
     PredictiveValuesBinaryClassificationLinearScaling,
     RighteousnessBinaryClassificationLinearScaling,
 )
-from caliber.binary_classification.data import load_breast_cancer_data
+from data import load_breast_cancer_data
 
 THRESHOLD = 0.5
 TRAIN_VAL_SPLIT = 0.5

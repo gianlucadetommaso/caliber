@@ -1,8 +1,8 @@
 import numpy as np
 from sklearn.neural_network import MLPClassifier
 
-from caliber import OODHistogramBinningBinaryClassificationModel
-from caliber.binary_classification.data import load_two_moons_data
+from caliber import DistanceAwareHistogramBinningBinaryClassificationModel
+from data import load_two_moons_data
 
 TRAIN_VAL_SPLIT = 0.5
 
@@ -29,7 +29,7 @@ test_distances = distance_fn(test_inputs, train_inputs)
 
 
 def test_method():
-    calib_model = OODHistogramBinningBinaryClassificationModel()
+    calib_model = DistanceAwareHistogramBinningBinaryClassificationModel()
     calib_model.fit(val_probs, val_distances, val_targets)
     calib_test_probs = calib_model.predict_proba(test_probs, test_distances)
     calib_test_preds = calib_model.predict(test_probs, test_distances)

@@ -8,7 +8,9 @@ class HistogramBinningBinaryClassificationModel(BinningBinaryClassificationModel
         self, i: int, mask: np.ndarray, probs: np.ndarray, targets: np.ndarray
     ):
         prob_bin = np.mean(mask)
-        self._params.append(np.mean(targets[mask]) if prob_bin > 0 else np.nan)
+        self._params.append(
+            np.mean(targets[mask]) if prob_bin >= self.min_prob_bin else np.nan
+        )
 
     def _predict_bin(self, i: int, mask: np.ndarray, probs: np.ndarray):
         if not np.isnan(self._params[i - 1]):

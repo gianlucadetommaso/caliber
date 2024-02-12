@@ -7,3 +7,9 @@ from caliber.binary_classification.metrics.bias import (
     squared_model_bias,
 )
 from caliber.binary_classification.metrics.ece import expected_calibration_error
+from caliber.binary_classification.metrics.rates import (
+    false_negative_rate,
+    false_positive_rate,
+    true_negative_rate,
+    true_positive_rate,
+)
