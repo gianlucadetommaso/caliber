@@ -29,16 +29,12 @@ from caliber import (
     PredictiveValuesBinaryClassificationLinearScaling,
     RighteousnessBinaryClassificationLinearScaling,
 )
-from caliber.binary_classification.data import (
-    load_breast_cancer_data,
-    load_heart_disease_data,
-    load_two_moons_data,
-)
 from caliber.binary_classification.metrics import (
     average_smooth_squared_calibration_error,
     average_squared_calibration_error,
     expected_calibration_error,
 )
+from data import load_breast_cancer_data, load_heart_disease_data, load_two_moons_data
 
 THRESHOLD = 0.5
 TRAIN_VAL_SPLIT = 0.5
