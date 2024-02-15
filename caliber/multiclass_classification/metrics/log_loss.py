@@ -1,5 +1,5 @@
-from sklearn import metrics
 import numpy as np
+from sklearn import metrics
 
 
 def log_loss(targets: np.ndarray, probs: np.ndarray) -> np.ndarray:

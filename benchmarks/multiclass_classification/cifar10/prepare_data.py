@@ -1,10 +1,10 @@
-from models.cnn_cifar10.cnn import CNN
+import numpy as np
 import torch
+import torch.nn.functional as F
 import torchvision
 import torchvision.transforms as transforms
-import torch.nn.functional as F
-import numpy as np
 
+from models.cnn_cifar10.cnn import CNN
 
 BATCH_SIZE = 4
 CALIB_TEST_SPLIT = 0.8
@@ -18,15 +18,27 @@ def distance(_outputs: np.ndarray, _train_outputs: np.ndarray):
 
 if __name__ == "__main__":
     transform = transforms.Compose(
-        [transforms.ToTensor(),
-         transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))])
+        [transforms.ToTensor(), transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))]
+    )
 
-    cifar10_train_dataset = torchvision.datasets.CIFAR10(root="./data", train=True, download=True, transform=transform)
-    cifar10_train_data_loader = torch.utils.data.DataLoader(cifar10_train_dataset, batch_size=BATCH_SIZE, shuffle=True, num_workers=2)
-    cifar10_dataset = torchvision.datasets.CIFAR10(root="./data", train=False, download=True, transform=transform)
-    cifar10_data_loader = torch.utils.data.DataLoader(cifar10_dataset, batch_size=BATCH_SIZE, shuffle=True, num_workers=2)
-    cifar100_dataset = torchvision.datasets.CIFAR100(root="./data", train=False, download=True, transform=transform)
-    cifar100_data_loader = torch.utils.data.DataLoader(cifar100_dataset, batch_size=BATCH_SIZE, shuffle=True, num_workers=2)
+    cifar10_train_dataset = torchvision.datasets.CIFAR10(
+        root="./data", train=True, download=True, transform=transform
+    )
+    cifar10_train_data_loader = torch.utils.data.DataLoader(
+        cifar10_train_dataset, batch_size=BATCH_SIZE, shuffle=True, num_workers=2
+    )
+    cifar10_dataset = torchvision.datasets.CIFAR10(
+        root="./data", train=False, download=True, transform=transform
+    )
+    cifar10_data_loader = torch.utils.data.DataLoader(
+        cifar10_dataset, batch_size=BATCH_SIZE, shuffle=True, num_workers=2
+    )
+    cifar100_dataset = torchvision.datasets.CIFAR100(
+        root="./data", train=False, download=True, transform=transform
+    )
+    cifar100_data_loader = torch.utils.data.DataLoader(
+        cifar100_dataset, batch_size=BATCH_SIZE, shuffle=True, num_workers=2
+    )
 
     cnn = CNN()
     cnn.load_state_dict(torch.load("../../../models/cnn_cifar10/params.pth"))

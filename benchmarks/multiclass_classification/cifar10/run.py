@@ -1,13 +1,22 @@
 import numpy as np
-from sklearn.metrics import accuracy_score, balanced_accuracy_score, log_loss, average_precision_score, roc_auc_score
-from caliber.binary_classification.metrics import false_positive_rate, false_negative_rate
+from sklearn.metrics import (
+    accuracy_score,
+    average_precision_score,
+    balanced_accuracy_score,
+    log_loss,
+    roc_auc_score,
+)
 from tabulate import tabulate
 
 from caliber import (
     BrierMulticlassClassificationLinearScaling,
     CrossEntropyMulticlassClassificationLinearScaling,
+    DistanceAwareInterpolantMulticlassClassificationModel,
     HistogramBinningMulticlassClassificationModel,
-    DistanceAwareInterpolantMulticlassClassificationModel
+)
+from caliber.binary_classification.metrics import (
+    false_negative_rate,
+    false_positive_rate,
 )
 from caliber.multiclass_classification.metrics import (
     average_squared_calibration_error,
@@ -25,7 +34,10 @@ data = np.load("cifar10_data.npy", allow_pickle=True).tolist()
 
 calib_size = int(len(data["probs"]) * TRAIN_VAL_SPLIT)
 calib_probs, test_probs = data["probs"][:calib_size], data["probs"][calib_size:]
-calib_distances, test_distances = data["distances"][:calib_size], data["distances"][calib_size:]
+calib_distances, test_distances = (
+    data["distances"][:calib_size],
+    data["distances"][calib_size:],
+)
 calib_targets, test_targets = data["targets"][:calib_size], data["targets"][calib_size:]
 test_preds = np.argmax(test_probs, axis=1)
 
@@ -34,7 +46,9 @@ ood_probs = ood_data["probs"]
 ood_distances = ood_data["distances"]
 
 inout_probs = np.concatenate((test_probs, ood_probs))
-inout_targets = np.concatenate((np.ones(test_probs.shape[0]), np.zeros(ood_probs.shape[0])))
+inout_targets = np.concatenate(
+    (np.ones(test_probs.shape[0]), np.zeros(ood_probs.shape[0]))
+)
 
 models = {
     "histogram_binning": HistogramBinningMulticlassClassificationModel(),
@@ -52,7 +66,7 @@ models = {
     ),
     "dai_brier_ls_unshared": DistanceAwareInterpolantMulticlassClassificationModel(
         CrossEntropyMulticlassClassificationLinearScaling()
-    )
+    ),
 }
 performance_metrics = {
     "accuracy": accuracy_score,
@@ -69,7 +83,7 @@ ood_metrics = {
     "ROCAUC": roc_auc_score,
     "PRAUC": average_precision_score,
     "FPR95": false_positive_rate,
-    "FNR95": false_negative_rate
+    "FNR95": false_negative_rate,
 }
 
 results = {
@@ -78,18 +92,17 @@ results = {
 }
 
 for metric_name, metric in performance_metrics.items():
-    results["uncalibrated"][metric_name] = metric(
-        test_targets, test_preds
-    )
+    results["uncalibrated"][metric_name] = metric(test_targets, test_preds)
 for metric_name, metric in calibration_metrics.items():
-    results["uncalibrated"][metric_name] = metric(
-        test_targets, test_probs
-    )
+    results["uncalibrated"][metric_name] = metric(test_targets, test_probs)
 
 inout_confs = inout_probs.max(1)
 for metric_name, metric in ood_metrics.items():
     results["uncalibrated"][metric_name] = metric(
-        inout_targets, inout_confs if metric.__name__ not in ["false_positive_rate", "false_negative_rate"] else inout_confs >= 0.95
+        inout_targets,
+        inout_confs
+        if metric.__name__ not in ["false_positive_rate", "false_negative_rate"]
+        else inout_confs >= 0.95,
     )
 
 for m_name, m in models.items():
@@ -110,16 +123,17 @@ for m_name, m in models.items():
         results[m_name][metric_name] = metric(test_targets, posthoc_test_probs)
     for metric_name, metric in ood_metrics.items():
         results[m_name][metric_name] = metric(
-            inout_targets, posthoc_inout_confs if metric.__name__ not in ["false_positive_rate", "false_negative_rate"] else posthoc_inout_confs >= 0.95
+            inout_targets,
+            posthoc_inout_confs
+            if metric.__name__ not in ["false_positive_rate", "false_negative_rate"]
+            else posthoc_inout_confs >= 0.95,
         )
 
 print(
     tabulate(
         [[m] + list(r.values()) for m, r in results.items()],
-        headers=[""]
-        + list(results[list(results.keys())[0]].keys()),
+        headers=[""] + list(results[list(results.keys())[0]].keys()),
         tablefmt="rounded_outline",
     ),
     "\n\n",
 )
-

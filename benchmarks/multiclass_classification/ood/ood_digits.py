@@ -4,8 +4,8 @@ from sklearn.metrics import accuracy_score, average_precision_score, roc_auc_sco
 from tabulate import tabulate
 
 from caliber import (
-    DistanceAwareHistogramBinningMulticlassClassificationModel,
     CrossEntropyMulticlassClassificationLinearScaling,
+    DistanceAwareHistogramBinningMulticlassClassificationModel,
     DistanceAwareInterpolantMulticlassClassificationModel,
     HistogramBinningMulticlassClassificationModel,
 )
@@ -61,13 +61,15 @@ dahb.fit(val_probs, val_distances, val_targets)
 calib_test_probs = dahb.predict_proba(test_probs, test_distances)
 calib_test_preds = dahb.predict(test_probs, test_distances)
 calib_ood_probs = dahb.predict_proba(ood_probs, ood_distances)
-calib_inout_probs = np.max(np.concatenate((calib_test_probs, calib_ood_probs), axis=0), axis=1)
+calib_inout_probs = np.max(
+    np.concatenate((calib_test_probs, calib_ood_probs), axis=0), axis=1
+)
 
 results["DAHB"] = dict(
     model=dahb,
     test_probs=calib_test_probs,
     test_preds=calib_test_preds,
-    inout_probs=calib_inout_probs
+    inout_probs=calib_inout_probs,
 )
 
 hb = HistogramBinningMulticlassClassificationModel()
