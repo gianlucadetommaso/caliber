@@ -5,6 +5,7 @@ from tabulate import tabulate
 
 from caliber import (
     DistanceAwareHistogramBinningMulticlassClassificationModel,
+    CrossEntropyMulticlassClassificationLinearScaling,
     DistanceAwareInterpolantMulticlassClassificationModel,
     HistogramBinningMulticlassClassificationModel,
 )
@@ -55,19 +56,19 @@ results["uncalibrated"] = dict(
     model=model, test_probs=test_probs, test_preds=test_preds, inout_probs=inout_probs
 )
 
-# dahb = DistanceAwareHistogramBinningMulticlassClassificationModel()
-# dahb.fit(val_probs, val_distances, val_targets)
-# calib_test_probs = dahb.predict_proba(test_probs, test_distances)
-# calib_test_preds = dahb.predict(test_probs, test_distances)
-# calib_ood_probs = dahb.predict_proba(ood_probs, ood_distances)
-# calib_inout_probs = np.max(np.concatenate((calib_test_probs, calib_ood_probs), axis=0), axis=1)
-#
-# results["DAHB"] = dict(
-#     model=dahb,
-#     test_probs=calib_test_probs,
-#     test_preds=calib_test_preds,
-#     inout_probs=calib_inout_probs
-# )
+dahb = DistanceAwareHistogramBinningMulticlassClassificationModel()
+dahb.fit(val_probs, val_distances, val_targets)
+calib_test_probs = dahb.predict_proba(test_probs, test_distances)
+calib_test_preds = dahb.predict(test_probs, test_distances)
+calib_ood_probs = dahb.predict_proba(ood_probs, ood_distances)
+calib_inout_probs = np.max(np.concatenate((calib_test_probs, calib_ood_probs), axis=0), axis=1)
+
+results["DAHB"] = dict(
+    model=dahb,
+    test_probs=calib_test_probs,
+    test_preds=calib_test_preds,
+    inout_probs=calib_inout_probs
+)
 
 hb = HistogramBinningMulticlassClassificationModel()
 hb.fit(val_probs, val_targets)
@@ -85,19 +86,53 @@ results["HB"] = dict(
     inout_probs=calib_inout_probs,
 )
 
-dai = DistanceAwareInterpolantMulticlassClassificationModel(
-    HistogramBinningMulticlassClassificationModel()
-)
-dai.fit(val_probs, val_distances, val_targets)
-calib_test_probs = dai.predict_proba(test_probs, test_distances)
-calib_test_preds = dai.predict(test_probs, test_distances)
-calib_ood_probs = dai.predict_proba(ood_probs, ood_distances)
+ls = CrossEntropyMulticlassClassificationLinearScaling()
+ls.fit(val_probs, val_targets)
+calib_test_probs = ls.predict_proba(test_probs)
+calib_test_preds = ls.predict(test_probs)
+calib_ood_probs = ls.predict_proba(ood_probs)
 calib_inout_probs = np.max(
     np.concatenate((calib_test_probs, calib_ood_probs), axis=0), axis=1
 )
 
-results["DAI"] = dict(
-    model=dai,
+results["LS"] = dict(
+    model=ls,
+    test_probs=calib_test_probs,
+    test_preds=calib_test_preds,
+    inout_probs=calib_inout_probs,
+)
+
+daihb = DistanceAwareInterpolantMulticlassClassificationModel(
+    HistogramBinningMulticlassClassificationModel()
+)
+daihb.fit(val_probs, val_distances, val_targets)
+calib_test_probs = daihb.predict_proba(test_probs, test_distances)
+calib_test_preds = daihb.predict(test_probs, test_distances)
+calib_ood_probs = daihb.predict_proba(ood_probs, ood_distances)
+calib_inout_probs = np.max(
+    np.concatenate((calib_test_probs, calib_ood_probs), axis=0), axis=1
+)
+
+results["DAIHB"] = dict(
+    model=daihb,
+    test_probs=calib_test_probs,
+    test_preds=calib_test_preds,
+    inout_probs=calib_inout_probs,
+)
+
+dails = DistanceAwareInterpolantMulticlassClassificationModel(
+    CrossEntropyMulticlassClassificationLinearScaling()
+)
+dails.fit(val_probs, val_distances, val_targets)
+calib_test_probs = dails.predict_proba(test_probs, test_distances)
+calib_test_preds = dails.predict(test_probs, test_distances)
+calib_ood_probs = dails.predict_proba(ood_probs, ood_distances)
+calib_inout_probs = np.max(
+    np.concatenate((calib_test_probs, calib_ood_probs), axis=0), axis=1
+)
+
+results["DAILS"] = dict(
+    model=dails,
     test_probs=calib_test_probs,
     test_preds=calib_test_preds,
     inout_probs=calib_inout_probs,

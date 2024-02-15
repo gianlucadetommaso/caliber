@@ -1,7 +1,6 @@
 from typing import Optional
 
-from sklearn.metrics import log_loss
-
+from caliber.multiclass_classification.metrics import log_loss
 from caliber.multiclass_classification.linear_scaling.calibration.base import (
     CustomCalibrationMulticlassClassificationLinearScaling,
 )
