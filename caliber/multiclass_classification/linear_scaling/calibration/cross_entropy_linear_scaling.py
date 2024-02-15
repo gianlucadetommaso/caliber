@@ -1,13 +1,12 @@
 from typing import Optional
 
-from sklearn.metrics import log_loss
-
 from caliber.multiclass_classification.linear_scaling.calibration.base import (
     CustomCalibrationMulticlassClassificationLinearScaling,
 )
 from caliber.multiclass_classification.linear_scaling.smooth_fit_mixin_linear_scaling import (
     MulticlassClassificationLinearScalingSmoothFitMixin,
 )
+from caliber.multiclass_classification.metrics import log_loss
 
 
 class CrossEntropyMulticlassClassificationLinearScaling(
