@@ -10,8 +10,9 @@ from sklearn.neural_network import MLPClassifier
 from tabulate import tabulate
 
 from caliber import (
+    DistanceAwareExponentialInterpolantBinaryClassificationModel,
     DistanceAwareHistogramBinningBinaryClassificationModel,
-    DistanceAwareInterpolantBinaryClassificationModel,
+    DistanceAwareKolmogorovInterpolantBinaryClassificationModel,
     HistogramBinningBinaryClassificationModel,
 )
 from caliber.binary_classification.metrics import expected_calibration_error
@@ -86,17 +87,34 @@ results["HB"] = dict(
     inout_probs=calib_inout_probs,
 )
 
-dai = DistanceAwareInterpolantBinaryClassificationModel(
+daiexp = DistanceAwareExponentialInterpolantBinaryClassificationModel(
     HistogramBinningBinaryClassificationModel()
 )
-dai.fit(val_probs, val_distances, val_targets)
-calib_test_probs = dai.predict_proba(test_probs, test_distances)
-calib_test_preds = dai.predict(test_probs, test_distances)
-calib_ood_probs = dai.predict_proba(ood_probs, ood_distances)
+daiexp.fit(val_probs, val_distances, val_targets)
+calib_test_probs = daiexp.predict_proba(test_probs, test_distances)
+calib_test_preds = daiexp.predict(test_probs, test_distances)
+calib_ood_probs = daiexp.predict_proba(ood_probs, ood_distances)
 calib_inout_probs = np.concatenate((calib_test_probs, calib_ood_probs))
 
-results["DAI"] = dict(
-    model=dai,
+results["DAIEXP"] = dict(
+    model=daiexp,
+    test_probs=calib_test_probs,
+    test_preds=calib_test_preds,
+    ood_probs=calib_ood_probs,
+    inout_probs=calib_inout_probs,
+)
+
+daikol = DistanceAwareKolmogorovInterpolantBinaryClassificationModel(
+    HistogramBinningBinaryClassificationModel()
+)
+daikol.fit(val_probs, val_distances, val_targets)
+calib_test_probs = daikol.predict_proba(test_probs, test_distances)
+calib_test_preds = daikol.predict(test_probs, test_distances)
+calib_ood_probs = daikol.predict_proba(ood_probs, ood_distances)
+calib_inout_probs = np.concatenate((calib_test_probs, calib_ood_probs))
+
+results["DAIKOL"] = dict(
+    model=daikol,
     test_probs=calib_test_probs,
     test_preds=calib_test_preds,
     ood_probs=calib_ood_probs,
@@ -117,7 +135,7 @@ fig, axes = plt.subplots(
     nrows=len(results) - 1, ncols=2, figsize=(3 * (len(results) - 1), 6)
 )
 for i, k in enumerate({k: v for k, v in results.items() if k != "uncalibrated"}):
-    if k in ["DAHB", "DAI"]:
+    if k in ["DAHB", "DAIEXP", "DAIKOL"]:
         calib_grid_probs = results[k]["model"].predict_proba(grid_probs, grid_distances)
     else:
         calib_grid_probs = results[k]["model"].predict_proba(grid_probs)

@@ -11,7 +11,8 @@ from tabulate import tabulate
 from caliber import (
     BrierMulticlassClassificationLinearScaling,
     CrossEntropyMulticlassClassificationLinearScaling,
-    DistanceAwareInterpolantMulticlassClassificationModel,
+    DistanceAwareExponentialInterpolantMulticlassClassificationModel,
+    DistanceAwareKolmogorovInterpolantMulticlassClassificationModel,
     HistogramBinningMulticlassClassificationModel,
 )
 from caliber.binary_classification.metrics import (
@@ -64,7 +65,10 @@ models = {
     "brier_linear_scaling_unshared": BrierMulticlassClassificationLinearScaling(
         has_shared_slope=False
     ),
-    "dai_brier_ls_unshared": DistanceAwareInterpolantMulticlassClassificationModel(
+    "dai_exp_ce_ls_unshared": DistanceAwareExponentialInterpolantMulticlassClassificationModel(
+        CrossEntropyMulticlassClassificationLinearScaling()
+    ),
+    "dai_kolm_ce_ls_unshared": DistanceAwareKolmogorovInterpolantMulticlassClassificationModel(
         CrossEntropyMulticlassClassificationLinearScaling()
     ),
 }

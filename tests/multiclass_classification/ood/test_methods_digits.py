@@ -1,11 +1,22 @@
 import numpy as np
+import pytest
 from sklearn import svm
 
-from caliber import DistanceAwareHistogramBinningMulticlassClassificationModel
+from caliber import (
+    DistanceAwareExponentialInterpolantMulticlassClassificationModel,
+    DistanceAwareHistogramBinningMulticlassClassificationModel,
+    DistanceAwareKolmogorovInterpolantMulticlassClassificationModel,
+)
 from data import load_digits_data
 
 SEED = 0
 TRAIN_VAL_SPLIT = 0.5
+
+METHODS = {
+    "da_hb": DistanceAwareHistogramBinningMulticlassClassificationModel(),
+    "da_exponential": DistanceAwareExponentialInterpolantMulticlassClassificationModel(),
+    "da_kolmogorov": DistanceAwareKolmogorovInterpolantMulticlassClassificationModel(),
+}
 
 
 def distance_fn(inputs, _train_inputs):
@@ -31,11 +42,11 @@ val_distances = distance_fn(val_inputs, train_inputs)
 test_distances = distance_fn(test_inputs, train_inputs)
 
 
-def test_method():
-    calib_model = DistanceAwareHistogramBinningMulticlassClassificationModel()
-    calib_model.fit(val_probs, val_distances, val_targets)
-    calib_test_probs = calib_model.predict_proba(test_probs, test_distances)
-    calib_test_preds = calib_model.predict(test_probs, test_distances)
+@pytest.mark.parametrize("m", list(METHODS.values()))
+def test_method(m):
+    m.fit(val_probs, val_distances, val_targets)
+    calib_test_probs = m.predict_proba(test_probs, test_distances)
+    calib_test_preds = m.predict(test_probs, test_distances)
     check_probs_preds(calib_test_probs, calib_test_preds)
 
 

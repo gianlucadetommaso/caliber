@@ -22,7 +22,8 @@ class DistanceAwareKolmogorovInterpolantMulticlassClassificationModel:
 
         ecdf = stats.ecdf(distances).cdf
         w = kolmogorov(
-            np.sqrt(len(distances)) * np.abs(ecdf.evaluate(distances) - self._train_ecdf.evaluate(distances))
+            np.sqrt(len(distances))
+            * np.abs(ecdf.evaluate(distances) - self._train_ecdf.evaluate(distances))
         )[:, None]
         return w * probs + (1 - w) / probs.shape[1]
 
