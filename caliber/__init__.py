@@ -53,11 +53,14 @@ from caliber.binary_classification.linear_scaling.performance.recall_fixed_preci
 from caliber.binary_classification.linear_scaling.performance.righteousness_linear_scaling import (
     RighteousnessBinaryClassificationLinearScaling,
 )
+from caliber.binary_classification.ood.da_exp_interpolant import (
+    DistanceAwareExponentialInterpolantBinaryClassificationModel,
+)
 from caliber.binary_classification.ood.da_histogram_binning import (
     DistanceAwareHistogramBinningBinaryClassificationModel,
 )
-from caliber.binary_classification.ood.da_interpolant import (
-    DistanceAwareInterpolantBinaryClassificationModel,
+from caliber.binary_classification.ood.da_kolmogorov_interpolant import (
+    DistanceAwareKolmogorovInterpolantBinaryClassificationModel,
 )
 from caliber.multiclass_classification.binning.histogram_binning import (
     HistogramBinningMulticlassClassificationModel,
@@ -68,9 +71,12 @@ from caliber.multiclass_classification.linear_scaling.calibration.brier_linear_s
 from caliber.multiclass_classification.linear_scaling.calibration.cross_entropy_linear_scaling import (
     CrossEntropyMulticlassClassificationLinearScaling,
 )
+from caliber.multiclass_classification.ood.da_exp_interpolant import (
+    DistanceAwareExponentialInterpolantMulticlassClassificationModel,
+)
 from caliber.multiclass_classification.ood.da_histogram_binning import (
     DistanceAwareHistogramBinningMulticlassClassificationModel,
 )
-from caliber.multiclass_classification.ood.da_interpolant import (
-    DistanceAwareInterpolantMulticlassClassificationModel,
+from caliber.multiclass_classification.ood.da_kolmogorov_interpolant import (
+    DistanceAwareKolmogorovInterpolantMulticlassClassificationModel,
 )

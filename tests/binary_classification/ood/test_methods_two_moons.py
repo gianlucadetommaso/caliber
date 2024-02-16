@@ -1,10 +1,21 @@
 import numpy as np
+import pytest
 from sklearn.neural_network import MLPClassifier
 
-from caliber import DistanceAwareHistogramBinningBinaryClassificationModel
+from caliber import (
+    DistanceAwareExponentialInterpolantBinaryClassificationModel,
+    DistanceAwareHistogramBinningBinaryClassificationModel,
+    DistanceAwareKolmogorovInterpolantBinaryClassificationModel,
+)
 from data import load_two_moons_data
 
 TRAIN_VAL_SPLIT = 0.5
+
+METHODS = {
+    "da_hb": DistanceAwareHistogramBinningBinaryClassificationModel(),
+    "da_exponential": DistanceAwareExponentialInterpolantBinaryClassificationModel(),
+    "da_kolmogorov": DistanceAwareKolmogorovInterpolantBinaryClassificationModel(),
+}
 
 
 def distance_fn(inputs, _train_inputs):
@@ -28,11 +39,11 @@ val_distances = distance_fn(val_inputs, train_inputs)
 test_distances = distance_fn(test_inputs, train_inputs)
 
 
-def test_method():
-    calib_model = DistanceAwareHistogramBinningBinaryClassificationModel()
-    calib_model.fit(val_probs, val_distances, val_targets)
-    calib_test_probs = calib_model.predict_proba(test_probs, test_distances)
-    calib_test_preds = calib_model.predict(test_probs, test_distances)
+@pytest.mark.parametrize("m", list(METHODS.values()))
+def test_method(m):
+    m.fit(val_probs, val_distances, val_targets)
+    calib_test_probs = m.predict_proba(test_probs, test_distances)
+    calib_test_preds = m.predict(test_probs, test_distances)
     check_probs_preds(calib_test_probs, calib_test_preds)
 
 

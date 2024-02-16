@@ -5,8 +5,9 @@ from tabulate import tabulate
 
 from caliber import (
     CrossEntropyMulticlassClassificationLinearScaling,
+    DistanceAwareExponentialInterpolantMulticlassClassificationModel,
     DistanceAwareHistogramBinningMulticlassClassificationModel,
-    DistanceAwareInterpolantMulticlassClassificationModel,
+    DistanceAwareKolmogorovInterpolantMulticlassClassificationModel,
     HistogramBinningMulticlassClassificationModel,
 )
 from caliber.multiclass_classification.metrics import (
@@ -104,12 +105,10 @@ results["LS"] = dict(
     inout_probs=calib_inout_probs,
 )
 
-daihb = DistanceAwareInterpolantMulticlassClassificationModel(
-    HistogramBinningMulticlassClassificationModel()
-)
+daihb = DistanceAwareHistogramBinningMulticlassClassificationModel()
 daihb.fit(val_probs, val_distances, val_targets)
-calib_test_probs = daihb.predict_proba(test_probs, test_distances)
 calib_test_preds = daihb.predict(test_probs, test_distances)
+calib_test_probs = daihb.predict_proba(test_probs, test_distances)
 calib_ood_probs = daihb.predict_proba(ood_probs, ood_distances)
 calib_inout_probs = np.max(
     np.concatenate((calib_test_probs, calib_ood_probs), axis=0), axis=1
@@ -122,19 +121,37 @@ results["DAIHB"] = dict(
     inout_probs=calib_inout_probs,
 )
 
-dails = DistanceAwareInterpolantMulticlassClassificationModel(
+daiexpls = DistanceAwareExponentialInterpolantMulticlassClassificationModel(
     CrossEntropyMulticlassClassificationLinearScaling()
 )
-dails.fit(val_probs, val_distances, val_targets)
-calib_test_probs = dails.predict_proba(test_probs, test_distances)
-calib_test_preds = dails.predict(test_probs, test_distances)
-calib_ood_probs = dails.predict_proba(ood_probs, ood_distances)
+daiexpls.fit(val_probs, val_distances, val_targets)
+calib_test_probs = daiexpls.predict_proba(test_probs, test_distances)
+calib_test_preds = daiexpls.predict(test_probs, test_distances)
+calib_ood_probs = daiexpls.predict_proba(ood_probs, ood_distances)
 calib_inout_probs = np.max(
     np.concatenate((calib_test_probs, calib_ood_probs), axis=0), axis=1
 )
 
-results["DAILS"] = dict(
-    model=dails,
+results["DAIEXPLS"] = dict(
+    model=daiexpls,
+    test_probs=calib_test_probs,
+    test_preds=calib_test_preds,
+    inout_probs=calib_inout_probs,
+)
+
+daikolmls = DistanceAwareKolmogorovInterpolantMulticlassClassificationModel(
+    CrossEntropyMulticlassClassificationLinearScaling()
+)
+daikolmls.fit(val_probs, val_distances, val_targets)
+calib_test_probs = daikolmls.predict_proba(test_probs, test_distances)
+calib_test_preds = daikolmls.predict(test_probs, test_distances)
+calib_ood_probs = daikolmls.predict_proba(ood_probs, ood_distances)
+calib_inout_probs = np.max(
+    np.concatenate((calib_test_probs, calib_ood_probs), axis=0), axis=1
+)
+
+results["DAIKOLMLS"] = dict(
+    model=daikolmls,
     test_probs=calib_test_probs,
     test_preds=calib_test_preds,
     inout_probs=calib_inout_probs,

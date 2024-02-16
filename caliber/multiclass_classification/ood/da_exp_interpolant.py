@@ -4,7 +4,7 @@ import numpy as np
 from scipy import stats
 
 
-class DistanceAwareInterpolantMulticlassClassificationModel:
+class DistanceAwareExponentialInterpolantMulticlassClassificationModel:
     def __init__(self, model: Optional[Any] = None, conf_distance: float = 0.99):
         self.model = model
         self.conf_distance = conf_distance
