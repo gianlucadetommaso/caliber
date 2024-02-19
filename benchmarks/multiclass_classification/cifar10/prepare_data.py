@@ -65,6 +65,7 @@ if __name__ == "__main__":
         "./cifar10_data.npy",
         dict(
             probs=probs,
+            outputs=outputs,
             distances=distances,
             targets=targets,
         ),
@@ -86,6 +87,7 @@ if __name__ == "__main__":
         "./cifar100_data.npy",
         dict(
             probs=probs,
+            outputs=outputs,
             distances=distances,
             targets=targets,
         ),

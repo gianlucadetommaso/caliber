@@ -14,6 +14,7 @@ from caliber import (
     DistanceAwareExponentialInterpolantMulticlassClassificationModel,
     DistanceAwareKolmogorovInterpolantMulticlassClassificationModel,
     HistogramBinningMulticlassClassificationModel,
+    KolmogorovInterpolantMulticlassClassificationModel,
 )
 from caliber.binary_classification.metrics import (
     false_negative_rate,
@@ -35,6 +36,7 @@ data = np.load("cifar10_data.npy", allow_pickle=True).tolist()
 
 calib_size = int(len(data["probs"]) * TRAIN_VAL_SPLIT)
 calib_probs, test_probs = data["probs"][:calib_size], data["probs"][calib_size:]
+calib_outputs, test_outputs = data["outputs"][:calib_size], data["outputs"][calib_size:]
 calib_distances, test_distances = (
     data["distances"][:calib_size],
     data["distances"][calib_size:],
@@ -44,11 +46,12 @@ test_preds = np.argmax(test_probs, axis=1)
 
 ood_data = np.load("cifar100_data.npy", allow_pickle=True).tolist()
 ood_probs = ood_data["probs"]
+ood_outputs = ood_data["outputs"]
 ood_distances = ood_data["distances"]
 
 inout_probs = np.concatenate((test_probs, ood_probs))
 inout_targets = np.concatenate(
-    (np.ones(test_probs.shape[0]), np.zeros(ood_probs.shape[0]))
+    (np.zeros(test_probs.shape[0]), np.ones(ood_probs.shape[0]))
 )
 
 models = {
@@ -69,6 +72,9 @@ models = {
         CrossEntropyMulticlassClassificationLinearScaling()
     ),
     "dai_kolm_ce_ls_unshared": DistanceAwareKolmogorovInterpolantMulticlassClassificationModel(
+        CrossEntropyMulticlassClassificationLinearScaling()
+    ),
+    "kolm_ce_ls_unshared": KolmogorovInterpolantMulticlassClassificationModel(
         CrossEntropyMulticlassClassificationLinearScaling()
     ),
 }
@@ -104,9 +110,9 @@ inout_confs = inout_probs.max(1)
 for metric_name, metric in ood_metrics.items():
     results["uncalibrated"][metric_name] = metric(
         inout_targets,
-        inout_confs
+        1 - inout_confs
         if metric.__name__ not in ["false_positive_rate", "false_negative_rate"]
-        else inout_confs >= 0.95,
+        else inout_confs < 0.95,
     )
 
 for m_name, m in models.items():
@@ -115,6 +121,11 @@ for m_name, m in models.items():
         posthoc_test_probs = m.predict_proba(test_probs, test_distances)
         posthoc_test_preds = m.predict(test_probs, test_distances)
         posthoc_ood_probs = m.predict_proba(ood_probs, ood_distances)
+    elif m_name.startswith("kolm"):
+        m.fit(calib_probs, calib_outputs, calib_targets)
+        posthoc_test_probs = m.predict_proba(test_probs, test_outputs)
+        posthoc_test_preds = m.predict(test_probs, test_outputs)
+        posthoc_ood_probs = m.predict_proba(ood_probs, ood_outputs)
     else:
         m.fit(calib_probs, calib_targets)
         posthoc_test_probs = m.predict_proba(test_probs)
@@ -128,9 +139,9 @@ for m_name, m in models.items():
     for metric_name, metric in ood_metrics.items():
         results[m_name][metric_name] = metric(
             inout_targets,
-            posthoc_inout_confs
+            1 - posthoc_inout_confs
             if metric.__name__ not in ["false_positive_rate", "false_negative_rate"]
-            else posthoc_inout_confs >= 0.95,
+            else posthoc_inout_confs < 0.95,
         )
 
 print(

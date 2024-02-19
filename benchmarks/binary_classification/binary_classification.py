@@ -16,6 +16,7 @@ from caliber import (
     BalancedAccuracyBinaryClassificationLinearScaling,
     BrierBinaryClassificationLinearScaling,
     CrossEntropyBinaryClassificationLinearScaling,
+    FocalBinaryClassificationLinearScaling,
     GroupConditionalUnbiasedBinaryClassificationModel,
     HistogramBinningBinaryClassificationModel,
     IsotonicRegressionBinaryClassificationModel,
@@ -116,6 +117,10 @@ for dataset_name, dataset in datasets.items():
         ),
         "cross_entropy_linear_scaling": CrossEntropyBinaryClassificationLinearScaling(),
         "cross_entropy_temperature_scaling": CrossEntropyBinaryClassificationLinearScaling(
+            has_intercept=False
+        ),
+        "focal_linear_scaling": FocalBinaryClassificationLinearScaling(),
+        "focal_temperature_scaling": FocalBinaryClassificationLinearScaling(
             has_intercept=False
         ),
         "constant_shift": ModelBiasBinaryClassificationConstantShift(),
