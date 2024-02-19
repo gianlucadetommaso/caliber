@@ -5,6 +5,7 @@ from sklearn import svm
 from caliber import (
     BrierMulticlassClassificationLinearScaling,
     CrossEntropyMulticlassClassificationLinearScaling,
+    FocalMulticlassClassificationLinearScaling,
     HistogramBinningMulticlassClassificationModel,
 )
 from data import load_iris_data
@@ -22,10 +23,16 @@ METHODS = {
     "brier_linear_scaling_shared": BrierMulticlassClassificationLinearScaling(
         has_shared_slope=True
     ),
+    "focal_linear_scaling_shared": FocalMulticlassClassificationLinearScaling(
+        has_shared_slope=True
+    ),
     "cross_entropy_linear_scaling_unshared": CrossEntropyMulticlassClassificationLinearScaling(
         has_shared_slope=False
     ),
     "brier_linear_scaling_unshared": BrierMulticlassClassificationLinearScaling(
+        has_shared_slope=False
+    ),
+    "focal_linear_scaling_unshared": FocalMulticlassClassificationLinearScaling(
         has_shared_slope=False
     ),
 }

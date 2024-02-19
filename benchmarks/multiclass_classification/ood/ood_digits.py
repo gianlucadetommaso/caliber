@@ -1,5 +1,6 @@
 import numpy as np
 from sklearn import svm
+from sklearn.manifold import LocallyLinearEmbedding
 from sklearn.metrics import accuracy_score, average_precision_score, roc_auc_score
 from tabulate import tabulate
 
@@ -9,6 +10,7 @@ from caliber import (
     DistanceAwareHistogramBinningMulticlassClassificationModel,
     DistanceAwareKolmogorovInterpolantMulticlassClassificationModel,
     HistogramBinningMulticlassClassificationModel,
+    KolmogorovInterpolantMulticlassClassificationModel,
 )
 from caliber.multiclass_classification.metrics import (
     brier_score_loss,
@@ -30,10 +32,21 @@ def distance_fn(inputs, _train_inputs):
 rng = np.random.default_rng(SEED)
 
 train_inputs, test_inputs, train_targets, test_targets = load_digits_data()
+
+lle = LocallyLinearEmbedding(method="modified", n_neighbors=64, n_components=32)
+lle.fit(np.concatenate((train_inputs, test_inputs)))
+train_embeddings = lle.transform(train_inputs)
+test_embeddings = lle.transform(test_inputs)
+
 train_size = int(len(train_inputs) * TRAIN_VAL_SPLIT)
 train_inputs, val_inputs = train_inputs[:train_size], train_inputs[train_size:]
+train_embeddings, val_embeddings = (
+    train_embeddings[:train_size],
+    train_embeddings[train_size:],
+)
 train_targets, val_targets = train_targets[:train_size], train_targets[train_size:]
 ood_inputs = np.rot90(test_inputs.reshape(-1, 8, 8), axes=(1, 2)).reshape(-1, 64)
+ood_embeddings = lle.transform(ood_inputs)
 
 model = svm.SVC(gamma=0.001, probability=True, random_state=SEED)
 model.fit(train_inputs, train_targets)
@@ -152,6 +165,24 @@ calib_inout_probs = np.max(
 
 results["DAIKOLMLS"] = dict(
     model=daikolmls,
+    test_probs=calib_test_probs,
+    test_preds=calib_test_preds,
+    inout_probs=calib_inout_probs,
+)
+
+kolmls = KolmogorovInterpolantMulticlassClassificationModel(
+    CrossEntropyMulticlassClassificationLinearScaling()
+)
+kolmls.fit(val_probs, val_embeddings, val_targets)
+calib_test_probs = kolmls.predict_proba(test_probs, test_embeddings)
+calib_test_preds = kolmls.predict(test_probs, test_embeddings)
+calib_ood_probs = kolmls.predict_proba(ood_probs, ood_embeddings)
+calib_inout_probs = np.max(
+    np.concatenate((calib_test_probs, calib_ood_probs), axis=0), axis=1
+)
+
+results["KOLMLS"] = dict(
+    model=kolmls,
     test_probs=calib_test_probs,
     test_preds=calib_test_preds,
     inout_probs=calib_inout_probs,

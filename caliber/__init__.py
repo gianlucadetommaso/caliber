@@ -31,6 +31,9 @@ from caliber.binary_classification.linear_scaling.calibration.cross_entropy_line
 from caliber.binary_classification.linear_scaling.calibration.ece_linear_scaling import (
     ECEBinaryClassificationLinearScaling,
 )
+from caliber.binary_classification.linear_scaling.calibration.focal_linear_scaling import (
+    FocalBinaryClassificationLinearScaling,
+)
 from caliber.binary_classification.linear_scaling.performance.bal_acc_linear_scaling import (
     BalancedAccuracyBinaryClassificationLinearScaling,
 )
@@ -71,6 +74,9 @@ from caliber.multiclass_classification.linear_scaling.calibration.brier_linear_s
 from caliber.multiclass_classification.linear_scaling.calibration.cross_entropy_linear_scaling import (
     CrossEntropyMulticlassClassificationLinearScaling,
 )
+from caliber.multiclass_classification.linear_scaling.calibration.focal_linear_scaling import (
+    FocalMulticlassClassificationLinearScaling,
+)
 from caliber.multiclass_classification.ood.da_exp_interpolant import (
     DistanceAwareExponentialInterpolantMulticlassClassificationModel,
 )
@@ -79,4 +85,7 @@ from caliber.multiclass_classification.ood.da_histogram_binning import (
 )
 from caliber.multiclass_classification.ood.da_kolmogorov_interpolant import (
     DistanceAwareKolmogorovInterpolantMulticlassClassificationModel,
+)
+from caliber.multiclass_classification.ood.kolmogorov_interpolant import (
+    KolmogorovInterpolantMulticlassClassificationModel,
 )

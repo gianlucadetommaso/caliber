@@ -6,6 +6,7 @@ from tabulate import tabulate
 from caliber import (
     BrierMulticlassClassificationLinearScaling,
     CrossEntropyMulticlassClassificationLinearScaling,
+    FocalMulticlassClassificationLinearScaling,
     HistogramBinningMulticlassClassificationModel,
 )
 from caliber.multiclass_classification.metrics import (
@@ -48,10 +49,16 @@ for dataset_name, dataset in datasets.items():
         "brier_linear_scaling_shared": BrierMulticlassClassificationLinearScaling(
             has_shared_slope=True
         ),
+        "focal_linear_scaling_shared": FocalMulticlassClassificationLinearScaling(
+            has_shared_slope=True
+        ),
         "cross_entropy_linear_scaling_unshared": CrossEntropyMulticlassClassificationLinearScaling(
             has_shared_slope=False
         ),
         "brier_linear_scaling_unshared": BrierMulticlassClassificationLinearScaling(
+            has_shared_slope=False
+        ),
+        "focal_linear_scaling_unshared": FocalMulticlassClassificationLinearScaling(
             has_shared_slope=False
         ),
     }
