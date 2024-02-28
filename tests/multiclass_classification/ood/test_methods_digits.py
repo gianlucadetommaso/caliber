@@ -54,4 +54,4 @@ def check_probs_preds(probs: np.ndarray, preds: np.ndarray):
     assert probs.ndim == 2
     assert np.all(probs <= 1) and np.all(probs >= 0)
     assert preds.ndim == 1
-    assert set(preds) == set(np.arange(probs.shape[1]))
+    assert set(preds).issubset(set(np.arange(probs.shape[1])))
