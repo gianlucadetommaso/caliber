@@ -65,6 +65,9 @@ from caliber.binary_classification.ood.da_histogram_binning import (
 from caliber.binary_classification.ood.da_kolmogorov_interpolant import (
     DistanceAwareKolmogorovInterpolantBinaryClassificationModel,
 )
+from caliber.binary_classification.ood.mahalanobis import (
+    MahalanobisBinaryClassificationModel,
+)
 from caliber.multiclass_classification.binning.histogram_binning import (
     HistogramBinningMulticlassClassificationModel,
 )
