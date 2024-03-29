@@ -1,6 +1,8 @@
-import numpy as np
 from typing import Optional
+
+import numpy as np
 from scipy import stats
+from scipy.linalg.lapack import dtrtri
 
 
 class MahalanobisBinaryClassificationModel:
@@ -46,8 +48,9 @@ class MahalanobisBinaryClassificationModel:
     @staticmethod
     def _get_mean_and_chol(embeddings: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
         mean = np.mean(embeddings, 0)
-        inv_cov = np.linalg.inv(np.cov(embeddings.T))
-        chol = np.linalg.cholesky(inv_cov)
+        cov = np.cov(embeddings.T)
+        chol = np.linalg.cholesky(cov)
+        chol = dtrtri(chol, lower=True)[0].T
         return mean, chol
 
     def _get_probs(
