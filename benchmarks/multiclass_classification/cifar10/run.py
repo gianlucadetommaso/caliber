@@ -110,9 +110,11 @@ inout_confs = inout_probs.max(1)
 for metric_name, metric in ood_metrics.items():
     results["uncalibrated"][metric_name] = metric(
         inout_targets,
-        1 - inout_confs
-        if metric.__name__ not in ["false_positive_rate", "false_negative_rate"]
-        else inout_confs < 0.95,
+        (
+            1 - inout_confs
+            if metric.__name__ not in ["false_positive_rate", "false_negative_rate"]
+            else inout_confs < 0.95
+        ),
     )
 
 for m_name, m in models.items():
@@ -139,9 +141,11 @@ for m_name, m in models.items():
     for metric_name, metric in ood_metrics.items():
         results[m_name][metric_name] = metric(
             inout_targets,
-            1 - posthoc_inout_confs
-            if metric.__name__ not in ["false_positive_rate", "false_negative_rate"]
-            else posthoc_inout_confs < 0.95,
+            (
+                1 - posthoc_inout_confs
+                if metric.__name__ not in ["false_positive_rate", "false_negative_rate"]
+                else posthoc_inout_confs < 0.95
+            ),
         )
 
 print(

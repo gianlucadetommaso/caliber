@@ -89,3 +89,6 @@ from caliber.multiclass_classification.ood.da_kolmogorov_interpolant import (
 from caliber.multiclass_classification.ood.kolmogorov_interpolant import (
     KolmogorovInterpolantMulticlassClassificationModel,
 )
+from caliber.binary_classification.ood.mahalanobis import (
+    MahalanobisBinaryClassificationModel,
+)
