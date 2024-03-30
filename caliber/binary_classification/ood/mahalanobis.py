@@ -43,7 +43,7 @@ class MahalanobisBinaryClassificationModel:
         return self._get_probs(embeddings, self._mean, self._chol)
 
     def predict(self, embeddings: np.ndarray) -> np.ndarray:
-        return self.predict_proba(embeddings) > self.threshold
+        return (self.predict_proba(embeddings) > self.threshold).astype(int)
 
     @staticmethod
     def _get_mean_and_chol(embeddings: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
