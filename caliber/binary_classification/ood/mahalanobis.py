@@ -4,9 +4,12 @@ import numpy as np
 from scipy import stats
 from scipy.linalg.lapack import dtrtri
 
+from caliber.binary_classification.base import AbstractBinaryClassificationModel
 
-class MahalanobisBinaryClassificationModel:
+
+class MahalanobisBinaryClassificationModel(AbstractBinaryClassificationModel):
     def __init__(self, threshold: float):
+        super().__init__()
         self.threshold = threshold
         self._mean, self._chol = None, None
         self._quantile = stats.norm.ppf(threshold)

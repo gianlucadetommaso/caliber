@@ -4,12 +4,15 @@ from typing import Optional
 import numpy as np
 from scipy.stats import norm
 
+from caliber.binary_classification.base import AbstractBinaryClassificationModel
 from caliber.binary_classification.metrics.asce import (
     average_smooth_squared_calibration_error,
 )
 
 
-class IterativeSmoothHistogramBinningBinaryClassificationModel:
+class IterativeSmoothHistogramBinningBinaryClassificationModel(
+    AbstractBinaryClassificationModel
+):
     def __init__(
         self,
         n_bins: int = 10,
@@ -18,10 +21,10 @@ class IterativeSmoothHistogramBinningBinaryClassificationModel:
         smoothness: float = 0.1,
         max_rounds: int = 1000,
     ):
+        super().__init__()
         self.n_bins = n_bins
         self._rng = np.random.default_rng(seed)
         self.split = split
-        self._params = None
         self._bin_edges = None
         self.smoothness = smoothness
         self.max_rounds = max_rounds
@@ -90,7 +93,7 @@ class IterativeSmoothHistogramBinningBinaryClassificationModel:
     def predict(
         self, probs: np.ndarray, groups: Optional[np.ndarray] = None
     ) -> np.ndarray:
-        return (self.predict_proba(probs, groups) >= 0.5).astype(int)
+        return (self.predict_proba(probs, groups) > 0.5).astype(int)
 
     def _update_proba(
         self, params: np.ndarray, probs: np.ndarray, groups: Optional[np.ndarray] = None

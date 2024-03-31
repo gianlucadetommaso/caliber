@@ -9,8 +9,8 @@ from sklearn.metrics import (
 from tabulate import tabulate
 
 from caliber import (
-    BrierMulticlassClassificationLinearScaling,
-    CrossEntropyMulticlassClassificationLinearScaling,
+    BrierLinearScalingMulticlassClassificationModel,
+    CrossEntropyLinearScalingMulticlassClassificationModel,
     DistanceAwareExponentialInterpolantMulticlassClassificationModel,
     DistanceAwareKolmogorovInterpolantMulticlassClassificationModel,
     HistogramBinningMulticlassClassificationModel,
@@ -56,26 +56,26 @@ inout_targets = np.concatenate(
 
 models = {
     "histogram_binning": HistogramBinningMulticlassClassificationModel(),
-    "cross_entropy_linear_scaling_shared": CrossEntropyMulticlassClassificationLinearScaling(
+    "cross_entropy_linear_scaling_shared": CrossEntropyLinearScalingMulticlassClassificationModel(
         has_shared_slope=True
     ),
-    "brier_linear_scaling_shared": BrierMulticlassClassificationLinearScaling(
+    "brier_linear_scaling_shared": BrierLinearScalingMulticlassClassificationModel(
         has_shared_slope=True
     ),
-    "cross_entropy_linear_scaling_unshared": CrossEntropyMulticlassClassificationLinearScaling(
+    "cross_entropy_linear_scaling_unshared": CrossEntropyLinearScalingMulticlassClassificationModel(
         has_shared_slope=False
     ),
-    "brier_linear_scaling_unshared": BrierMulticlassClassificationLinearScaling(
+    "brier_linear_scaling_unshared": BrierLinearScalingMulticlassClassificationModel(
         has_shared_slope=False
     ),
     "dai_exp_ce_ls_unshared": DistanceAwareExponentialInterpolantMulticlassClassificationModel(
-        CrossEntropyMulticlassClassificationLinearScaling()
+        CrossEntropyLinearScalingMulticlassClassificationModel()
     ),
     "dai_kolm_ce_ls_unshared": DistanceAwareKolmogorovInterpolantMulticlassClassificationModel(
-        CrossEntropyMulticlassClassificationLinearScaling()
+        CrossEntropyLinearScalingMulticlassClassificationModel()
     ),
     "kolm_ce_ls_unshared": KolmogorovInterpolantMulticlassClassificationModel(
-        CrossEntropyMulticlassClassificationLinearScaling()
+        CrossEntropyLinearScalingMulticlassClassificationModel()
     ),
 }
 performance_metrics = {

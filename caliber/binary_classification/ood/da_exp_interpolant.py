@@ -3,9 +3,14 @@ from typing import Any, Optional
 import numpy as np
 from scipy import stats
 
+from caliber.binary_classification.base import AbstractBinaryClassificationModel
 
-class DistanceAwareExponentialInterpolantBinaryClassificationModel:
+
+class DistanceAwareExponentialInterpolantBinaryClassificationModel(
+    AbstractBinaryClassificationModel
+):
     def __init__(self, model: Optional[Any] = None, conf_distance: float = 0.99):
+        super().__init__()
         self.model = model
         self._rv = None
         self.conf_distance = conf_distance
@@ -25,7 +30,7 @@ class DistanceAwareExponentialInterpolantBinaryClassificationModel:
         return (1 - cdf) * probs + 0.5 * cdf
 
     def predict(self, probs: np.ndarray, distances: np.ndarray) -> np.ndarray:
-        return (self.predict_proba(probs, distances) >= 0.5).astype(int)
+        return (self.predict_proba(probs, distances) > 0.5).astype(int)
 
     def _get_cdf(self, distances: np.ndarray) -> np.ndarray:
         d = distances - self._quantile_distance

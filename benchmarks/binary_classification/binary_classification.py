@@ -13,10 +13,10 @@ from tabulate import tabulate
 from xgboost import XGBClassifier
 
 from caliber import (
-    BalancedAccuracyBinaryClassificationLinearScaling,
-    BrierBinaryClassificationLinearScaling,
-    CrossEntropyBinaryClassificationLinearScaling,
-    FocalBinaryClassificationLinearScaling,
+    BalancedAccuracyLinearScalingBinaryClassificationModel,
+    BrierLinearScalingBinaryClassificationModel,
+    CrossEntropyLinearScalingBinaryClassificationModel,
+    FocalLinearScalingBinaryClassificationModel,
     GroupConditionalUnbiasedBinaryClassificationModel,
     HistogramBinningBinaryClassificationModel,
     IsotonicRegressionBinaryClassificationModel,
@@ -24,11 +24,11 @@ from caliber import (
     IterativeFittingBinaryClassificationModel,
     IterativeSmoothHistogramBinningBinaryClassificationModel,
     ModelBiasBinaryClassificationConstantShift,
-    NegativeF1BinaryClassificationLinearScaling,
-    PositiveF1BinaryClassificationLinearScaling,
-    PositiveNegativeRatesBinaryClassificationLinearScaling,
-    PredictiveValuesBinaryClassificationLinearScaling,
-    RighteousnessBinaryClassificationLinearScaling,
+    NegativeF1LinearScalingBinaryClassificationModel,
+    PositiveF1LinearScalingBinaryClassificationModel,
+    PositiveNegativeRatesLinearScalingBinaryClassificationModel,
+    PredictiveValuesLinearScalingBinaryClassificationModel,
+    RighteousnessLinearScalingBinaryClassificationModel,
 )
 from caliber.binary_classification.metrics import (
     average_smooth_squared_calibration_error,
@@ -75,52 +75,52 @@ for dataset_name, dataset in datasets.items():
     test_preds = (test_probs >= THRESHOLD).astype(int)
 
     posthoc_models = {
-        "balanced_accuracy_linear_scaling": BalancedAccuracyBinaryClassificationLinearScaling(
+        "balanced_accuracy_linear_scaling": BalancedAccuracyLinearScalingBinaryClassificationModel(
             threshold=THRESHOLD
         ),
-        "balanced_accuracy_temperature_scaling": BalancedAccuracyBinaryClassificationLinearScaling(
+        "balanced_accuracy_temperature_scaling": BalancedAccuracyLinearScalingBinaryClassificationModel(
             threshold=THRESHOLD, has_intercept=False
         ),
-        "positive_f1_linear_scaling": PositiveF1BinaryClassificationLinearScaling(
+        "positive_f1_linear_scaling": PositiveF1LinearScalingBinaryClassificationModel(
             threshold=THRESHOLD
         ),
-        "positive_f1_temperature_scaling": PositiveF1BinaryClassificationLinearScaling(
+        "positive_f1_temperature_scaling": PositiveF1LinearScalingBinaryClassificationModel(
             threshold=THRESHOLD, has_intercept=False
         ),
-        "negative_f1_linear_scaling": NegativeF1BinaryClassificationLinearScaling(
+        "negative_f1_linear_scaling": NegativeF1LinearScalingBinaryClassificationModel(
             threshold=THRESHOLD
         ),
-        "negative_f1_temperature_scaling": NegativeF1BinaryClassificationLinearScaling(
+        "negative_f1_temperature_scaling": NegativeF1LinearScalingBinaryClassificationModel(
             threshold=THRESHOLD, has_intercept=False
         ),
-        "predictive_values_linear_scaling": PredictiveValuesBinaryClassificationLinearScaling(
+        "predictive_values_linear_scaling": PredictiveValuesLinearScalingBinaryClassificationModel(
             threshold=THRESHOLD
         ),
-        "predictive_values_temperature_scaling": PredictiveValuesBinaryClassificationLinearScaling(
+        "predictive_values_temperature_scaling": PredictiveValuesLinearScalingBinaryClassificationModel(
             threshold=THRESHOLD, has_intercept=False
         ),
-        "positive_negative_rates_linear_scaling": PositiveNegativeRatesBinaryClassificationLinearScaling(
+        "positive_negative_rates_linear_scaling": PositiveNegativeRatesLinearScalingBinaryClassificationModel(
             threshold=THRESHOLD
         ),
-        "positive_negative_rates_temperature_scaling": PositiveNegativeRatesBinaryClassificationLinearScaling(
+        "positive_negative_rates_temperature_scaling": PositiveNegativeRatesLinearScalingBinaryClassificationModel(
             threshold=THRESHOLD, has_intercept=False
         ),
-        "righteousness_linear_scaling": RighteousnessBinaryClassificationLinearScaling(
+        "righteousness_linear_scaling": RighteousnessLinearScalingBinaryClassificationModel(
             threshold=THRESHOLD
         ),
-        "righteousness_temperature_scaling": RighteousnessBinaryClassificationLinearScaling(
+        "righteousness_temperature_scaling": RighteousnessLinearScalingBinaryClassificationModel(
             threshold=THRESHOLD, has_intercept=False
         ),
-        "brier_linear_scaling": BrierBinaryClassificationLinearScaling(),
-        "brier_temperature_scaling": BrierBinaryClassificationLinearScaling(
+        "brier_linear_scaling": BrierLinearScalingBinaryClassificationModel(),
+        "brier_temperature_scaling": BrierLinearScalingBinaryClassificationModel(
             has_intercept=False
         ),
-        "cross_entropy_linear_scaling": CrossEntropyBinaryClassificationLinearScaling(),
-        "cross_entropy_temperature_scaling": CrossEntropyBinaryClassificationLinearScaling(
+        "cross_entropy_linear_scaling": CrossEntropyLinearScalingBinaryClassificationModel(),
+        "cross_entropy_temperature_scaling": CrossEntropyLinearScalingBinaryClassificationModel(
             has_intercept=False
         ),
-        "focal_linear_scaling": FocalBinaryClassificationLinearScaling(),
-        "focal_temperature_scaling": FocalBinaryClassificationLinearScaling(
+        "focal_linear_scaling": FocalLinearScalingBinaryClassificationModel(),
+        "focal_temperature_scaling": FocalLinearScalingBinaryClassificationModel(
             has_intercept=False
         ),
         "constant_shift": ModelBiasBinaryClassificationConstantShift(),
@@ -130,10 +130,10 @@ for dataset_name, dataset in datasets.items():
         "iterative_smooth_grouped_histogram_binning": IterativeSmoothHistogramBinningBinaryClassificationModel(),
         "iterative_histogram_binning": IterativeBinningBinaryClassificationModel(),
         "iterative_linear_binning": IterativeBinningBinaryClassificationModel(
-            bin_model=BrierBinaryClassificationLinearScaling(),
+            bin_model=BrierLinearScalingBinaryClassificationModel(),
         ),
         "iterative_grouped_linear_binning": IterativeBinningBinaryClassificationModel(
-            bin_model=BrierBinaryClassificationLinearScaling(),
+            bin_model=BrierLinearScalingBinaryClassificationModel(),
         ),
         "grouped_conditional_unbiased": GroupConditionalUnbiasedBinaryClassificationModel(),
         "iterative_grouped_fitting": IterativeFittingBinaryClassificationModel(),

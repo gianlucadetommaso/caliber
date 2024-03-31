@@ -4,9 +4,14 @@ import numpy as np
 from scipy import stats
 from scipy.special import kolmogorov
 
+from caliber.multiclass_classification.base import AbstractMulticlassClassificationModel
 
-class DistanceAwareKolmogorovInterpolantMulticlassClassificationModel:
+
+class DistanceAwareKolmogorovInterpolantMulticlassClassificationModel(
+    AbstractMulticlassClassificationModel
+):
     def __init__(self, model: Optional[Any] = None):
+        super().__init__()
         self.model = model
         self._train_ecdf = None
 

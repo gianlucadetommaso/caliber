@@ -4,9 +4,14 @@ import numpy as np
 from scipy import stats
 from scipy.special import kolmogorov
 
+from caliber.binary_classification.base import AbstractBinaryClassificationModel
 
-class DistanceAwareKolmogorovInterpolantBinaryClassificationModel:
+
+class DistanceAwareKolmogorovInterpolantBinaryClassificationModel(
+    AbstractBinaryClassificationModel
+):
     def __init__(self, model: Optional[Any] = None):
+        super().__init__()
         self.model = model
         self._train_ecdf = None
 
