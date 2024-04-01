@@ -29,7 +29,7 @@ sphinx-rtd-theme = {version = "^2.0.0", optional = true}
 
 [tool.poetry.extras]
 torch = ["torch", "torchvision"]
-docs = ["Sphinx", "sphinx-autodoc-typehints", "sphinx-rtd-theme", "sphinx-gallery", "furo"]
+docs = ["sphinx", "sphinx-autodoc-typehints", "sphinx-rtd-theme", "sphinx-gallery", "furo"]
 
 [build-system]
 requires = ["poetry-core"]
