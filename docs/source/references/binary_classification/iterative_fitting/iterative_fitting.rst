@@ -1,5 +1,5 @@
 Iterative Fitting Binary Classification Model
-==========================================
+=============================================
 
 .. _binary_classification_iterative_fitting:
 
