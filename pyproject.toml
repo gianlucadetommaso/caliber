@@ -21,9 +21,14 @@ pytest-cov = "^4.1.0"
 xgboost = "^2.0.3"
 torch = {version = "^2.2.0", optional = true}
 torchvision = {version = "^0.17.0", optional = true}
+sphinx = {version = "^7.2.6", optional = true}
+sphinx-autodoc-typehints = {version = "^2.0.0", optional = true}
+sphinx-gallery = {version = "^0.15.0", optional = true}
+furo = {version = "^2024.1.29", optional = true}
 
 [tool.poetry.extras]
 torch = ["torch", "torchvision"]
+docs = ["Sphinx", "sphinx-autodoc-typehints", "sphinx-gallery", "furo"]
 
 [build-system]
 requires = ["poetry-core"]

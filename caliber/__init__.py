@@ -44,13 +44,13 @@ from caliber.binary_classification.minimizing.linear_scaling.performance.f1_line
 from caliber.binary_classification.minimizing.linear_scaling.performance.positive_negative_rates_linear_scaling import (
     PositiveNegativeRatesLinearScalingBinaryClassificationModel,
 )
-from caliber.binary_classification.minimizing.linear_scaling.performance.precision_fixed_recall import (
+from caliber.binary_classification.minimizing.linear_scaling.performance.precision_fixed_recall_linear_scaling import (
     PrecisionFixedRecallLinearScalingBinaryClassificationModel,
 )
 from caliber.binary_classification.minimizing.linear_scaling.performance.predictive_values_linear_scaling import (
     PredictiveValuesLinearScalingBinaryClassificationModel,
 )
-from caliber.binary_classification.minimizing.linear_scaling.performance.recall_fixed_precision import (
+from caliber.binary_classification.minimizing.linear_scaling.performance.recall_fixed_precision_linear_scaling import (
     RecallFixedPrecisionLinearScalingBinaryClassificationModel,
 )
 from caliber.binary_classification.minimizing.linear_scaling.performance.righteousness_linear_scaling import (
@@ -64,9 +64,6 @@ from caliber.binary_classification.ood.da_histogram_binning import (
 )
 from caliber.binary_classification.ood.da_kolmogorov_interpolant import (
     DistanceAwareKolmogorovInterpolantBinaryClassificationModel,
-)
-from caliber.binary_classification.ood.mahalanobis import (
-    MahalanobisBinaryClassificationModel,
 )
 from caliber.multiclass_classification.binning.histogram_binning import (
     HistogramBinningMulticlassClassificationModel,
@@ -92,3 +89,4 @@ from caliber.multiclass_classification.ood.da_kolmogorov_interpolant import (
 from caliber.multiclass_classification.ood.kolmogorov_interpolant import (
     KolmogorovInterpolantMulticlassClassificationModel,
 )
+from caliber.ood.mahalanobis import MahalanobisBinaryClassificationModel
