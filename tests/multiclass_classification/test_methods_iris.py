@@ -3,9 +3,9 @@ import pytest
 from sklearn import svm
 
 from caliber import (
-    BrierMulticlassClassificationLinearScaling,
-    CrossEntropyMulticlassClassificationLinearScaling,
-    FocalMulticlassClassificationLinearScaling,
+    BrierLinearScalingMulticlassClassificationModel,
+    CrossEntropyLinearScalingMulticlassClassificationModel,
+    FocalLinearScalingMulticlassClassificationModel,
     HistogramBinningMulticlassClassificationModel,
 )
 from data import load_iris_data
@@ -17,22 +17,22 @@ N_GROUPS = 5
 
 METHODS = {
     "histogram_binning": HistogramBinningMulticlassClassificationModel(),
-    "cross_entropy_linear_scaling_shared": CrossEntropyMulticlassClassificationLinearScaling(
+    "cross_entropy_linear_scaling_shared": CrossEntropyLinearScalingMulticlassClassificationModel(
         has_shared_slope=True
     ),
-    "brier_linear_scaling_shared": BrierMulticlassClassificationLinearScaling(
+    "brier_linear_scaling_shared": BrierLinearScalingMulticlassClassificationModel(
         has_shared_slope=True
     ),
-    "focal_linear_scaling_shared": FocalMulticlassClassificationLinearScaling(
+    "focal_linear_scaling_shared": FocalLinearScalingMulticlassClassificationModel(
         has_shared_slope=True
     ),
-    "cross_entropy_linear_scaling_unshared": CrossEntropyMulticlassClassificationLinearScaling(
+    "cross_entropy_linear_scaling_unshared": CrossEntropyLinearScalingMulticlassClassificationModel(
         has_shared_slope=False
     ),
-    "brier_linear_scaling_unshared": BrierMulticlassClassificationLinearScaling(
+    "brier_linear_scaling_unshared": BrierLinearScalingMulticlassClassificationModel(
         has_shared_slope=False
     ),
-    "focal_linear_scaling_unshared": FocalMulticlassClassificationLinearScaling(
+    "focal_linear_scaling_unshared": FocalLinearScalingMulticlassClassificationModel(
         has_shared_slope=False
     ),
 }

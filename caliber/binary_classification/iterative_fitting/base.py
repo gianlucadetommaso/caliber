@@ -5,8 +5,10 @@ import numpy as np
 from scipy.optimize import minimize
 from sklearn.metrics import log_loss
 
+from caliber.binary_classification.base import AbstractBinaryClassificationModel
 
-class IterativeFittingBinaryClassificationModel:
+
+class IterativeFittingBinaryClassificationModel(AbstractBinaryClassificationModel):
     def __init__(
         self,
         max_rounds: int = 1000,
@@ -16,13 +18,13 @@ class IterativeFittingBinaryClassificationModel:
         early_stopping_loss_fn: Callable[[np.ndarray, np.ndarray], float] = log_loss,
         n_bins: int = 10,
     ):
+        super().__init__()
         self.max_rounds = max_rounds
         self.split = split
         self.loss_fn = loss_fn
         self.early_stopping_loss_fn = early_stopping_loss_fn
         self._rng = np.random.default_rng(seed)
         self.n_bins = n_bins
-        self._params = None
         self._bin_edges = None
 
     def fit(
@@ -89,7 +91,7 @@ class IterativeFittingBinaryClassificationModel:
     def predict(
         self, probs: np.ndarray, groups: Optional[np.ndarray] = None
     ) -> np.ndarray:
-        return (self.predict_proba(probs, groups) >= 0.5).astype(int)
+        return (self.predict_proba(probs, groups) > 0.5).astype(int)
 
     @staticmethod
     def _predict_proba(

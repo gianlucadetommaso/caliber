@@ -3,9 +3,14 @@ from typing import Any, Optional
 import numpy as np
 from scipy import stats
 
+from caliber.multiclass_classification.base import AbstractMulticlassClassificationModel
 
-class DistanceAwareExponentialInterpolantMulticlassClassificationModel:
+
+class DistanceAwareExponentialInterpolantMulticlassClassificationModel(
+    AbstractMulticlassClassificationModel
+):
     def __init__(self, model: Optional[Any] = None, conf_distance: float = 0.99):
+        super().__init__()
         self.model = model
         self.conf_distance = conf_distance
         self._quantile_distance = None

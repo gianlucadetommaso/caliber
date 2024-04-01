@@ -5,13 +5,14 @@ from typing import Any, Callable, Optional, Tuple
 import numpy as np
 from sklearn.metrics import brier_score_loss
 
+from caliber.binary_classification.base import AbstractBinaryClassificationModel
 from caliber.binary_classification.constant_shift.model_bias.base import (
     ModelBiasBinaryClassificationConstantShift,
 )
 from caliber.binary_classification.metrics.bias import absolute_model_bias
 
 
-class IterativeBinningBinaryClassificationModel:
+class IterativeBinningBinaryClassificationModel(AbstractBinaryClassificationModel):
     def __init__(
         self,
         n_bins: int = 100,
@@ -26,6 +27,7 @@ class IterativeBinningBinaryClassificationModel:
         ] = brier_score_loss,
         bin_model: Any = ModelBiasBinaryClassificationConstantShift(step_size=0.1),
     ):
+        super().__init__()
         self.n_bins = n_bins
         self.max_rounds = max_rounds
         self.min_prob_bin = min_prob_bin
@@ -36,7 +38,6 @@ class IterativeBinningBinaryClassificationModel:
         self.bin_model = bin_model
         self._bin_types = bin_types
         self._supported_bin_types = ["=", "<=", ">="]
-        self._params = None
         self._bin_edges = None
 
     def fit(
@@ -116,7 +117,7 @@ class IterativeBinningBinaryClassificationModel:
     def predict(
         self, probs: np.ndarray, groups: Optional[np.ndarray] = None
     ) -> np.ndarray:
-        return (self.predict_proba(probs, groups) >= 0.5).astype(int)
+        return (self.predict_proba(probs, groups) > 0.5).astype(int)
 
     def _weighted_bin_loss_fn(
         self, targets: np.ndarray, probs: np.ndarray, mask: np.ndarray

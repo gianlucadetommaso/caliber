@@ -2,12 +2,16 @@ import numpy as np
 from scipy.special import logit
 from sklearn.linear_model import LogisticRegression
 
+from caliber.binary_classification.base import AbstractBinaryClassificationModel
 
-class GroupConditionalUnbiasedBinaryClassificationModel:
+
+class GroupConditionalUnbiasedBinaryClassificationModel(
+    AbstractBinaryClassificationModel
+):
     def __init__(
         self,
     ):
-        self._params = None
+        super().__init__()
 
     def fit(
         self,
@@ -26,7 +30,7 @@ class GroupConditionalUnbiasedBinaryClassificationModel:
         return self._params.predict_proba(self._get_features(probs, groups))[:, 1]
 
     def predict(self, probs: np.ndarray, groups: np.ndarray) -> np.ndarray:
-        return (self.predict_proba(probs, groups) >= 0.5).astype(int)
+        return (self.predict_proba(probs, groups) > 0.5).astype(int)
 
     @staticmethod
     def _predict_proba(

@@ -1,13 +1,19 @@
 import numpy as np
 
+from caliber.multiclass_classification.base import AbstractMulticlassClassificationModel
+from caliber.multiclass_classification.pred_from_probs_mixin import (
+    PredFromProbsMulticlassClassificationMixin,
+)
 
-class HistogramBinningMulticlassClassificationModel:
+
+class HistogramBinningMulticlassClassificationModel(
+    PredFromProbsMulticlassClassificationMixin, AbstractMulticlassClassificationModel
+):
     def __init__(self, n_prob_bins: int = 10, min_prob_bin: float = 0.0):
+        super().__init__()
         self.n_prob_bins = n_prob_bins
         self._min_prob_bin = min_prob_bin
-        self._params = None
         self._prob_bin_edges = None
-        self._n_classes = None
 
     def fit(self, probs: np.ndarray, targets: np.ndarray):
         self._n_classes = probs.shape[1]
@@ -41,9 +47,6 @@ class HistogramBinningMulticlassClassificationModel:
                 if not np.isnan(self._params[i - 1, c]):
                     probs[mask, c] = self._params[i - 1, c]
         return probs
-
-    def predict(self, probs: np.ndarray) -> np.ndarray:
-        return np.argmax(self.predict_proba(probs), axis=1)
 
     def _get_prob_bin_edges(self) -> np.ndarray:
         return np.linspace(0, 1, self.n_prob_bins + 1)

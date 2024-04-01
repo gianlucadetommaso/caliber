@@ -1,8 +1,12 @@
 import numpy as np
 from scipy.stats import expon
 
+from caliber.multiclass_classification.base import AbstractMulticlassClassificationModel
 
-class DistanceAwareHistogramBinningMulticlassClassificationModel:
+
+class DistanceAwareHistogramBinningMulticlassClassificationModel(
+    AbstractMulticlassClassificationModel
+):
     def __init__(
         self,
         n_prob_bins: int = 10,
@@ -10,11 +14,11 @@ class DistanceAwareHistogramBinningMulticlassClassificationModel:
         conf_distance: float = 0.95,
         min_prob_bin: float = 0.01,
     ):
+        super().__init__()
         self.n_prob_bins = n_prob_bins
         self.n_dist_bins = n_dist_bins
         self.conf_distance = conf_distance
         self._min_prob_bin = min_prob_bin
-        self._params = None
         self._quantile_distance = None
         self._prob_bin_edges = None
         self._dist_bin_edges = None

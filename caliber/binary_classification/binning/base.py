@@ -2,12 +2,19 @@ import abc
 
 import numpy as np
 
+from caliber.binary_classification.base import AbstractBinaryClassificationModel
+from caliber.binary_classification.pred_from_probs_mixin import (
+    PredFromProbsBinaryClassificationMixin,
+)
 
-class BinningBinaryClassificationModel:
+
+class BinningBinaryClassificationModel(
+    PredFromProbsBinaryClassificationMixin, AbstractBinaryClassificationModel
+):
     def __init__(self, n_bins: int = 10, min_prob_bin: float = 0.0):
+        super().__init__(threshold=0.5)
         self.min_prob_bin = min_prob_bin
         self.n_bins = n_bins
-        self._params = None
         self._bin_edges = None
 
     def fit(self, probs: np.ndarray, targets: np.ndarray):
@@ -29,9 +36,6 @@ class BinningBinaryClassificationModel:
             mask = bin_indices == i
             probs[mask] = self._predict_bin(i, mask, probs)
         return probs
-
-    def predict(self, probs: np.ndarray) -> np.ndarray:
-        return (self.predict_proba(probs) >= 0.5).astype(int)
 
     def _get_bin_edges(self):
         return np.linspace(0, 1, self.n_bins + 1)

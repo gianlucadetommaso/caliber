@@ -5,7 +5,7 @@ from sklearn.metrics import accuracy_score, average_precision_score, roc_auc_sco
 from tabulate import tabulate
 
 from caliber import (
-    CrossEntropyMulticlassClassificationLinearScaling,
+    CrossEntropyLinearScalingMulticlassClassificationModel,
     DistanceAwareExponentialInterpolantMulticlassClassificationModel,
     DistanceAwareHistogramBinningMulticlassClassificationModel,
     DistanceAwareKolmogorovInterpolantMulticlassClassificationModel,
@@ -102,7 +102,7 @@ results["HB"] = dict(
     inout_probs=calib_inout_probs,
 )
 
-ls = CrossEntropyMulticlassClassificationLinearScaling()
+ls = CrossEntropyLinearScalingMulticlassClassificationModel()
 ls.fit(val_probs, val_targets)
 calib_test_probs = ls.predict_proba(test_probs)
 calib_test_preds = ls.predict(test_probs)
@@ -135,7 +135,7 @@ results["DAIHB"] = dict(
 )
 
 daiexpls = DistanceAwareExponentialInterpolantMulticlassClassificationModel(
-    CrossEntropyMulticlassClassificationLinearScaling()
+    CrossEntropyLinearScalingMulticlassClassificationModel()
 )
 daiexpls.fit(val_probs, val_distances, val_targets)
 calib_test_probs = daiexpls.predict_proba(test_probs, test_distances)
@@ -153,7 +153,7 @@ results["DAIEXPLS"] = dict(
 )
 
 daikolmls = DistanceAwareKolmogorovInterpolantMulticlassClassificationModel(
-    CrossEntropyMulticlassClassificationLinearScaling()
+    CrossEntropyLinearScalingMulticlassClassificationModel()
 )
 daikolmls.fit(val_probs, val_distances, val_targets)
 calib_test_probs = daikolmls.predict_proba(test_probs, test_distances)
@@ -171,7 +171,7 @@ results["DAIKOLMLS"] = dict(
 )
 
 kolmls = KolmogorovInterpolantMulticlassClassificationModel(
-    CrossEntropyMulticlassClassificationLinearScaling()
+    CrossEntropyLinearScalingMulticlassClassificationModel()
 )
 kolmls.fit(val_probs, val_embeddings, val_targets)
 calib_test_probs = kolmls.predict_proba(test_probs, test_embeddings)
