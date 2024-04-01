@@ -3,7 +3,7 @@ name = "caliber"
 version = "0.1.14"
 description = "A library for post-hoc model improvements."
 authors = ["Gianluca Detommaso <detommaso.gianluca@gmail.com>"]
-readme = "README.md"
+readme = "README.rst"
 
 [tool.poetry.dependencies]
 python = ">=3.9,<3.12"
@@ -25,10 +25,11 @@ sphinx = {version = "^7.2.6", optional = true}
 sphinx-autodoc-typehints = {version = "^2.0.0", optional = true}
 sphinx-gallery = {version = "^0.15.0", optional = true}
 furo = {version = "^2024.1.29", optional = true}
+sphinx-rtd-theme = {version = "^2.0.0", optional = true}
 
 [tool.poetry.extras]
 torch = ["torch", "torchvision"]
-docs = ["Sphinx", "sphinx-autodoc-typehints", "sphinx-gallery", "furo"]
+docs = ["Sphinx", "sphinx-autodoc-typehints", "sphinx-rtd-theme", "sphinx-gallery", "furo"]
 
 [build-system]
 requires = ["poetry-core"]

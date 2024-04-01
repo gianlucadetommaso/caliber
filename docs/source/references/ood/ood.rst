@@ -1,7 +1,7 @@
 Out-Of-Distribution
 ===================
 
-.. _multiclass_classification:
+.. _ood:
 
 .. toctree::
    :maxdepth: 1
