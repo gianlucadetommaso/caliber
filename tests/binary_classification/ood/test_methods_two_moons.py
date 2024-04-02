@@ -6,7 +6,6 @@ from caliber import (
     DistanceAwareExponentialInterpolantBinaryClassificationModel,
     DistanceAwareHistogramBinningBinaryClassificationModel,
     DistanceAwareKolmogorovInterpolantBinaryClassificationModel,
-    MahalanobisBinaryClassificationModel,
 )
 from data import load_two_moons_data
 
@@ -16,8 +15,6 @@ METHODS = {
     "da_hb": DistanceAwareHistogramBinningBinaryClassificationModel(),
     "da_exponential": DistanceAwareExponentialInterpolantBinaryClassificationModel(),
     "da_kolmogorov": DistanceAwareKolmogorovInterpolantBinaryClassificationModel(),
-    "mahalanobis_without_targets": MahalanobisBinaryClassificationModel(threshold=0.5),
-    "mahalanobis_with_targets": MahalanobisBinaryClassificationModel(threshold=0.5),
 }
 
 
@@ -45,17 +42,9 @@ test_distances = distance_fn(test_inputs, train_inputs)
 @pytest.mark.parametrize("method_name", list(METHODS.keys()))
 def test_method(method_name: str):
     m = METHODS[method_name]
-    if not method_name.startswith("mahalanobis"):
-        m.fit(val_probs, val_distances, val_targets)
-        calib_test_probs = m.predict_proba(test_probs, test_distances)
-        calib_test_preds = m.predict(test_probs, test_distances)
-    else:
-        if method_name == "mahalanobis_with_targets":
-            m.fit(val_inputs, val_targets)
-        else:
-            m.fit(val_inputs)
-        calib_test_probs = m.predict_proba(test_inputs)
-        calib_test_preds = m.predict(test_inputs)
+    m.fit(val_probs, val_distances, val_targets)
+    calib_test_probs = m.predict_proba(test_probs, test_distances)
+    calib_test_preds = m.predict(test_probs, test_distances)
     check_probs_preds(calib_test_probs, calib_test_preds)
 
 
