@@ -59,13 +59,13 @@ class MahalanobisBinaryClassificationModel(AbstractBinaryClassificationModel):
     def _get_probs(
         self, embeddings: np.ndarray, mean: np.ndarray, chol: np.ndarray
     ) -> np.ndarray:
-        scaled_embeddings = self._get_scaled_embeddings(embeddings, mean, chol)
-        return 1 - 2 * stats.norm.sf(np.abs(scaled_embeddings))
+        transformed_embeddings = self._get_transformed_embeddings(
+            embeddings, mean, chol
+        )
+        return stats.chi2(embeddings.shape[1]).cdf(transformed_embeddings)
 
     @staticmethod
-    def _get_scaled_embeddings(
+    def _get_transformed_embeddings(
         embeddings: np.ndarray, mean: np.ndarray, chol: np.ndarray
     ) -> np.ndarray:
-        return np.sum(np.matmul(embeddings - mean[None], chol), axis=1) / np.sqrt(
-            embeddings.shape[1]
-        )
+        return np.sum(np.matmul(embeddings - mean[None], chol) ** 2, axis=1)
