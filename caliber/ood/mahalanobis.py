@@ -12,7 +12,6 @@ class MahalanobisBinaryClassificationModel(AbstractBinaryClassificationModel):
         super().__init__()
         self.threshold = threshold
         self._mean, self._chol = None, None
-        self._quantile = stats.norm.ppf(threshold)
 
     def fit(self, embeddings: np.ndarray, targets: Optional[np.ndarray] = None):
         if targets is None:
