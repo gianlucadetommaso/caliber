@@ -52,14 +52,14 @@ test_preds = np.argmax(test_probs, axis=1)
 
 
 @pytest.mark.parametrize("m", list(METHODS.values()))
-def test_method(m):
+def test_method(m) -> None:
     m.fit(val_probs, val_targets)
     probs = m.predict_proba(test_probs)
     preds = m.predict(test_probs)
     check_probs_preds(probs, preds)
 
 
-def check_probs_preds(probs: np.ndarray, preds: np.ndarray):
+def check_probs_preds(probs: np.ndarray, preds: np.ndarray) -> None:
     assert probs.ndim == 2
     assert np.all(probs <= 1) and np.all(probs >= 0)
     assert preds.ndim == 1

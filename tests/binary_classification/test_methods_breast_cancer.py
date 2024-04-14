@@ -160,14 +160,14 @@ def test_grouped_method(m):
 
 
 @pytest.mark.parametrize("m", list(GROUP_SCORED_METHODS.values()))
-def test_group_scored_method(m):
+def test_group_scored_method(m) -> None:
     m.fit(val_probs, val_targets, val_group_scores)
     probs = m.predict_proba(test_probs, test_group_scores)
     preds = m.predict(test_probs, test_group_scores)
     check_probs_preds(probs, preds)
 
 
-def check_probs_preds(probs: np.ndarray, preds: np.ndarray):
+def check_probs_preds(probs: np.ndarray, preds: np.ndarray) -> None:
     assert probs.ndim == 1
     assert np.all(probs <= 1) and np.all(probs >= 0)
     assert preds.ndim == 1
