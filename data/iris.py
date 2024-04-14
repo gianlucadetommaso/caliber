@@ -1,8 +1,11 @@
+import numpy as np
 import pandas as pd
 from sklearn.model_selection import train_test_split
 
 
-def load_iris_data(random_state: int = 0):
+def load_iris_data(
+    random_state: int = 0,
+) -> tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
     url = "https://archive.ics.uci.edu/ml/machine-learning-databases/iris/iris.data"
     df = pd.read_csv(url, header=None)
     df.columns = [

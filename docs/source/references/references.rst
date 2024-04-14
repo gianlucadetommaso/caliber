@@ -7,4 +7,5 @@ API References
 
    binary_classification/binary_classification
    multiclass_classification/multiclass_classification
+   regression/regression
    ood/ood

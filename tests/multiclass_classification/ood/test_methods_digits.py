@@ -43,14 +43,14 @@ test_distances = distance_fn(test_inputs, train_inputs)
 
 
 @pytest.mark.parametrize("m", list(METHODS.values()))
-def test_method(m):
+def test_method(m) -> None:
     m.fit(val_probs, val_distances, val_targets)
     calib_test_probs = m.predict_proba(test_probs, test_distances)
     calib_test_preds = m.predict(test_probs, test_distances)
     check_probs_preds(calib_test_probs, calib_test_preds)
 
 
-def check_probs_preds(probs: np.ndarray, preds: np.ndarray):
+def check_probs_preds(probs: np.ndarray, preds: np.ndarray) -> None:
     assert probs.ndim == 2
     assert np.all(probs <= 1) and np.all(probs >= 0)
     assert preds.ndim == 1

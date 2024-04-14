@@ -14,7 +14,7 @@ train_inputs, test_inputs, train_targets, test_targets = load_two_moons_data()
 
 
 @pytest.mark.parametrize("method_name", list(METHODS.keys()))
-def test_method(method_name: str):
+def test_method(method_name: str) -> None:
     m = METHODS[method_name]
     if method_name == "mahalanobis_with_targets":
         m.fit(train_inputs, train_targets)
@@ -25,7 +25,7 @@ def test_method(method_name: str):
     check_probs_preds(test_probs, test_preds)
 
 
-def check_probs_preds(probs: np.ndarray, preds: np.ndarray):
+def check_probs_preds(probs: np.ndarray, preds: np.ndarray) -> None:
     assert probs.ndim == 1
     assert np.all(probs <= 1) and np.all(probs >= 0)
     assert preds.ndim == 1

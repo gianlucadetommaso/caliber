@@ -90,3 +90,6 @@ from caliber.multiclass_classification.ood.kolmogorov_interpolant import (
     KolmogorovInterpolantMulticlassClassificationModel,
 )
 from caliber.ood.mahalanobis import MahalanobisBinaryClassificationModel
+from caliber.regression.conformal_regression.cqr.base import (
+    ConformalizedQuantileRegressionModel,
+)

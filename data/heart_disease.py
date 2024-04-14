@@ -1,8 +1,11 @@
+import numpy as np
 import pandas as pd
 from sklearn.model_selection import train_test_split
 
 
-def load_heart_disease_data(random_state: int = 0):
+def load_heart_disease_data(
+    random_state: int = 0,
+) -> tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
     heart_disease_url = "https://archive.ics.uci.edu/ml/machine-learning-databases/heart-disease/processed.cleveland.data"
     column_names = [
         "age",
