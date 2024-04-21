@@ -23,7 +23,7 @@ class IterativeBinningRegressionModel(IterativeBinningModel, AbstractRegressionM
         split: float = 0.8,
         seed: int = 0,
         bin_types: Tuple[str] = ("<=", ">="),
-        bin_model: Any | None = None,
+        bin_model: Optional[Any] = None,
     ):
         self.confidence = confidence
         super().__init__(
