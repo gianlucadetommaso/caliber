@@ -17,7 +17,7 @@ from caliber import (
     IterativeBinningBinaryClassificationModel,
     IterativeFittingBinaryClassificationModel,
     IterativeSmoothHistogramBinningBinaryClassificationModel,
-    ModelBiasBinaryClassificationConstantShift,
+    ModelBiasConstantShiftBinaryClassificationModel,
     NegativeF1LinearScalingBinaryClassificationModel,
     PositiveF1LinearScalingBinaryClassificationModel,
     PositiveNegativeRatesLinearScalingBinaryClassificationModel,
@@ -87,7 +87,7 @@ METHODS = {
     "ece_temperature_scaling": ECELinearScalingBinaryClassificationModel(
         has_intercept=False
     ),
-    "constant_shift": ModelBiasBinaryClassificationConstantShift(),
+    "constant_shift": ModelBiasConstantShiftBinaryClassificationModel(),
     "histogram_binning": HistogramBinningBinaryClassificationModel(),
     "iterative_smooth_histogram_binning": IterativeSmoothHistogramBinningBinaryClassificationModel(),
     "isotonic_regression": IsotonicRegressionBinaryClassificationModel(),
@@ -144,7 +144,7 @@ test_preds = (test_probs >= THRESHOLD).astype(int)
 
 
 @pytest.mark.parametrize("m", list(METHODS.values()))
-def test_method(m):
+def test_method(m) -> None:
     m.fit(val_probs, val_targets)
     probs = m.predict_proba(test_probs)
     preds = m.predict(test_probs)
@@ -152,7 +152,7 @@ def test_method(m):
 
 
 @pytest.mark.parametrize("m", list(GROUPED_METHODS.values()))
-def test_grouped_method(m):
+def test_grouped_method(m) -> None:
     m.fit(val_probs, val_targets, val_groups)
     probs = m.predict_proba(test_probs, test_groups)
     preds = m.predict(test_probs, test_groups)

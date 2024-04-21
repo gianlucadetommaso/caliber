@@ -23,7 +23,7 @@ from caliber import (
     IterativeBinningBinaryClassificationModel,
     IterativeFittingBinaryClassificationModel,
     IterativeSmoothHistogramBinningBinaryClassificationModel,
-    ModelBiasBinaryClassificationConstantShift,
+    ModelBiasConstantShiftBinaryClassificationModel,
     NegativeF1LinearScalingBinaryClassificationModel,
     PositiveF1LinearScalingBinaryClassificationModel,
     PositiveNegativeRatesLinearScalingBinaryClassificationModel,
@@ -123,7 +123,7 @@ for dataset_name, dataset in datasets.items():
         "focal_temperature_scaling": FocalLinearScalingBinaryClassificationModel(
             has_intercept=False
         ),
-        "constant_shift": ModelBiasBinaryClassificationConstantShift(),
+        "constant_shift": ModelBiasConstantShiftBinaryClassificationModel(),
         "histogram_binning": HistogramBinningBinaryClassificationModel(),
         "isotonic_regression": IsotonicRegressionBinaryClassificationModel(),
         "iterative_smooth_histogram_binning": IterativeSmoothHistogramBinningBinaryClassificationModel(),

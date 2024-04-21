@@ -8,3 +8,4 @@ Regression
    :caption: Contents:
 
    conformal_regression/conformal_regression
+   binning/binning

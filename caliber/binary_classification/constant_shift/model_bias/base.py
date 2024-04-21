@@ -7,7 +7,7 @@ from caliber.binary_classification.pred_from_probs_mixin import (
 )
 
 
-class ModelBiasBinaryClassificationConstantShift(
+class ModelBiasConstantShiftBinaryClassificationModel(
     PredFromProbsBinaryClassificationMixin, AbstractBinaryClassificationModel
 ):
     def __init__(self, step_size: float = 1.0):

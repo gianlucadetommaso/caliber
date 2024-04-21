@@ -11,7 +11,7 @@ from caliber.binary_classification.binning.iterative_binning.base import (
     IterativeBinningBinaryClassificationModel,
 )
 from caliber.binary_classification.constant_shift.model_bias.base import (
-    ModelBiasBinaryClassificationConstantShift,
+    ModelBiasConstantShiftBinaryClassificationModel,
 )
 from caliber.binary_classification.group_conditional_unbiased.base import (
     GroupConditionalUnbiasedBinaryClassificationModel,
@@ -90,6 +90,12 @@ from caliber.multiclass_classification.ood.kolmogorov_interpolant import (
     KolmogorovInterpolantMulticlassClassificationModel,
 )
 from caliber.ood.mahalanobis import MahalanobisBinaryClassificationModel
+from caliber.regression.binning.iterative.mean import (
+    IterativeBinningMeanRegressionModel,
+)
+from caliber.regression.binning.iterative.quantile import (
+    IterativeBinningQuantileRegressionModel,
+)
 from caliber.regression.conformal_regression.cqr.base import (
     ConformalizedQuantileRegressionModel,
 )
