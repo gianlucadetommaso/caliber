@@ -4,7 +4,11 @@ import numpy as np
 from sklearn.linear_model import QuantileRegressor
 from tabulate import tabulate
 
-from caliber import ConformalizedQuantileRegressionModel
+from caliber import (
+    ConformalizedQuantileRegressionModel,
+    IterativeBinningMeanRegressionModel,
+    IterativeBinningQuantileRegressionModel,
+)
 from caliber.regression.metrics import (
     prediction_interval_average_length,
     prediction_interval_coverage_probability,
@@ -25,19 +29,29 @@ for dataset_name, dataset in datasets.items():
     train_inputs, val_inputs = train_inputs[:train_size], train_inputs[train_size:]
     train_targets, val_targets = train_targets[:train_size], train_targets[train_size:]
 
-    confidences = [1 - CONFIDENCE, CONFIDENCE]
+    confidences = [0.5 * (1 - CONFIDENCE), 0.5 * (1 + CONFIDENCE)]
     val_quantiles, test_quantiles = [], []
     for confidence in confidences:
-        model = MODEL_CLS(quantile=confidence)
-        model.fit(train_inputs, train_targets)
-        val_quantiles.append(model.predict(val_inputs))
-        test_quantiles.append(model.predict(test_inputs))
+        quantile_model = MODEL_CLS(quantile=confidence)
+        quantile_model.fit(train_inputs, train_targets)
+        val_quantiles.append(quantile_model.predict(val_inputs))
+        test_quantiles.append(quantile_model.predict(test_inputs))
     val_quantiles = np.stack(val_quantiles, axis=1)
     test_quantiles = np.stack(test_quantiles, axis=1)
 
+    pred_model = MODEL_CLS(quantile=0.5)
+    pred_model.fit(train_inputs, train_targets)
+    val_preds = pred_model.predict(val_inputs)
+    test_preds = pred_model.predict(test_inputs)
+
     calib_models = {
-        "cqr": ConformalizedQuantileRegressionModel(
+        "cqr": ConformalizedQuantileRegressionModel(confidence=CONFIDENCE),
+        "ibqr": IterativeBinningQuantileRegressionModel(
+            confidence=CONFIDENCE, min_prob_bin=0
+        ),
+        "ibmr": IterativeBinningMeanRegressionModel(
             confidence=CONFIDENCE,
+            min_prob_bin=0,
         ),
     }
     calibration_metrics = {
@@ -61,8 +75,14 @@ for dataset_name, dataset in datasets.items():
             )
 
     for m_name, m in calib_models.items():
-        m.fit(val_quantiles, val_targets)
-        calib_test_quantiles = m.predict_interval(test_quantiles)
+        if m_name != "ibmr":
+            m.fit(val_quantiles, val_targets)
+            calib_test_quantiles = m.predict(test_quantiles)
+            calib_val_quantiles = m.predict(val_quantiles)
+        else:
+            m.fit(val_preds, val_targets)
+            calib_test_quantiles = m.predict(test_preds)
+            calib_val_quantiles = m.predict(val_preds)
         for metric_name, metric in calibration_metrics.items():
             if metric_name == "pial":
                 results[m_name][metric_name] = metric(calib_test_quantiles)

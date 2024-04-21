@@ -17,7 +17,7 @@ from caliber import (
     IterativeBinningBinaryClassificationModel,
     IterativeFittingBinaryClassificationModel,
     IterativeSmoothHistogramBinningBinaryClassificationModel,
-    ModelBiasBinaryClassificationConstantShift,
+    ModelBiasConstantShiftBinaryClassificationModel,
     NegativeF1LinearScalingBinaryClassificationModel,
     PositiveF1LinearScalingBinaryClassificationModel,
     PositiveNegativeRatesLinearScalingBinaryClassificationModel,
@@ -87,7 +87,7 @@ METHODS = {
     "ece_temperature_scaling": ECELinearScalingBinaryClassificationModel(
         has_intercept=False
     ),
-    "constant_shift": ModelBiasBinaryClassificationConstantShift(),
+    "constant_shift": ModelBiasConstantShiftBinaryClassificationModel(),
     "histogram_binning": HistogramBinningBinaryClassificationModel(),
     "iterative_smooth_histogram_binning": IterativeSmoothHistogramBinningBinaryClassificationModel(),
     "isotonic_regression": IsotonicRegressionBinaryClassificationModel(),
