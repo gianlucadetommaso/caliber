@@ -2,7 +2,9 @@ from typing import Literal
 
 import numpy as np
 
-from caliber.regression.base import AbstractRegressionModel
+from caliber.regression.conformal_regression.base import (
+    ConformalizedScoreRegressionModel,
+)
 from caliber.utils.interval_type_error import interval_type_error
 from caliber.utils.quantile_checks import (
     left_tailed_quantile_check,
@@ -11,7 +13,7 @@ from caliber.utils.quantile_checks import (
 )
 
 
-class ConformalizedQuantileRegressionModel(AbstractRegressionModel):
+class ConformalizedQuantileRegressionModel(ConformalizedScoreRegressionModel):
     def __init__(
         self,
         confidence: float,
@@ -19,14 +21,10 @@ class ConformalizedQuantileRegressionModel(AbstractRegressionModel):
             "two-tailed", "left-tailed", "right-tailed"
         ] = "two-tailed",
     ):
-        super().__init__()
-        self.confidence = confidence
+        super().__init__(confidence=confidence)
         self.interval_type = interval_type
-        self._params = None
 
     def fit(self, quantiles: np.ndarray, targets: np.ndarray) -> None:
-        size = len(quantiles)
-        adjusted_confidence = np.ceil((size + 1) * self.confidence) / size
         if self.interval_type == "two-tailed":
             two_tailed_quantile_check(quantiles)
             scores = np.maximum(quantiles[:, 0] - targets, targets - quantiles[:, 1])
@@ -38,7 +36,7 @@ class ConformalizedQuantileRegressionModel(AbstractRegressionModel):
             scores = targets - quantiles
         else:
             interval_type_error(self.interval_type)
-        self._params = np.quantile(scores, adjusted_confidence)
+        super().fit(scores, targets)
 
     def predict(self, quantiles: np.ndarray) -> np.ndarray:
         if self.interval_type == "two-tailed":
