@@ -21,7 +21,7 @@ class PerformanceLinearScalingBinaryClassificationModel(
         minimize_options: Optional[dict] = None,
         has_intercept: bool = True,
     ):
-        super().__init__(loss_fn, threshold, minimize_options, has_intercept)
+        super().__init__(loss_fn, threshold, minimize_options, has_intercept, has_bivariate_slope=False)
 
     def _get_output_for_loss(self, params: np.ndarray, probs: np.ndarray) -> np.ndarray:
         return (self._predict_proba(params, probs) >= self.threshold).astype(int)
