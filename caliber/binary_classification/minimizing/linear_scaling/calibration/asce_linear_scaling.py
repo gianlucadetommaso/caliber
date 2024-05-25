@@ -14,11 +14,14 @@ class ASCELinearScalingBinaryClassificationModel(
     CalibrationLinearScalingBinaryClassificationModel,
 ):
     def __init__(
-        self, minimize_options: Optional[dict] = None, has_intercept: bool = True, has_bivariate_slope: bool = False
+        self,
+        minimize_options: Optional[dict] = None,
+        has_intercept: bool = True,
+        has_bivariate_slope: bool = False,
     ):
         super().__init__(
             loss_fn=average_squared_calibration_error,
             minimize_options=minimize_options,
             has_intercept=has_intercept,
-            has_bivariate_slope=has_bivariate_slope
+            has_bivariate_slope=has_bivariate_slope,
         )

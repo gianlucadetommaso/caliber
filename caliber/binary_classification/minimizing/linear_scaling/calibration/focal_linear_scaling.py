@@ -25,5 +25,5 @@ class FocalLinearScalingBinaryClassificationModel(
             loss_fn=partial(focal_loss, gamma=gamma),
             minimize_options=minimize_options,
             has_intercept=has_intercept,
-            has_bivariate_slope=has_bivariate_slope
+            has_bivariate_slope=has_bivariate_slope,
         )
