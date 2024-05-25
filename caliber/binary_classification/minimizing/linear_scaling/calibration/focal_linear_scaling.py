@@ -18,10 +18,12 @@ class FocalLinearScalingBinaryClassificationModel(
         self,
         minimize_options: Optional[dict] = None,
         has_intercept: bool = True,
+        has_bivariate_slope: bool = False,
         gamma: float = 2.0,
     ):
         super().__init__(
             loss_fn=partial(focal_loss, gamma=gamma),
             minimize_options=minimize_options,
             has_intercept=has_intercept,
+            has_bivariate_slope=has_bivariate_slope,
         )
