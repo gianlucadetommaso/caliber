@@ -24,7 +24,7 @@ class BalancedAccuracyLinearScalingBinaryClassificationModel(
         )
 
 
-def _balanced_accuracy_loss_fn(preds: np.ndarray, targets: np.ndarray) -> float:
+def _balanced_accuracy_loss_fn(targets: np.ndarray, preds: np.ndarray) -> float:
     n_pos_targets = np.sum(targets)
     n_neg_targets = len(targets) - n_pos_targets
     tpr = np.sum(targets * preds) / n_pos_targets if n_pos_targets > 0 else 0.0

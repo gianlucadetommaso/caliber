@@ -25,7 +25,7 @@ class PositiveNegativeRatesLinearScalingBinaryClassificationModel(
 
 
 def _true_positive_negative_rates_loss_fn(
-    preds: np.ndarray, targets: np.ndarray
+    targets: np.ndarray, preds: np.ndarray
 ) -> float:
     n_pos_targets = np.sum(targets)
     n_neg_targets = len(targets) - n_pos_targets

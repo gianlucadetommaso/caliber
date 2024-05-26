@@ -34,6 +34,9 @@ from caliber.binary_classification.minimizing.linear_scaling.calibration.ece_lin
 from caliber.binary_classification.minimizing.linear_scaling.calibration.focal_linear_scaling import (
     FocalLinearScalingBinaryClassificationModel,
 )
+from caliber.binary_classification.minimizing.linear_scaling.calibration.knee import (
+    KneePointDistanceLinearScalingBinaryClassificationModel,
+)
 from caliber.binary_classification.minimizing.linear_scaling.performance.bal_acc_linear_scaling import (
     BalancedAccuracyLinearScalingBinaryClassificationModel,
 )
