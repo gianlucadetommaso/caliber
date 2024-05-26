@@ -18,6 +18,9 @@ Linear Scaling Binary Classification Model
 .. autoclass:: caliber.binary_classification.minimizing.linear_scaling.calibration.focal_linear_scaling.FocalLinearScalingBinaryClassificationModel
     :members:
 
+.. autoclass:: caliber.binary_classification.minimizing.linear_scaling.calibration.focal_linear_scaling.KneePointLinearScalingBinaryClassificationModel
+    :members:
+
 .. autoclass:: caliber.binary_classification.minimizing.linear_scaling.performance.bal_acc_linear_scaling.BalancedAccuracyLinearScalingBinaryClassificationModel
     :members:
 

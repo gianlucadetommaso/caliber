@@ -41,7 +41,7 @@ class NegativeF1LinearScalingBinaryClassificationModel(
         )
 
 
-def _pos_f1_loss_fn(preds: np.ndarray, targets: np.ndarray) -> float:
+def _pos_f1_loss_fn(targets: np.ndarray, preds: np.ndarray) -> float:
     p1_ = np.mean(targets)
     p_1 = np.mean(preds)
     p11 = np.mean(targets * preds)
@@ -49,7 +49,7 @@ def _pos_f1_loss_fn(preds: np.ndarray, targets: np.ndarray) -> float:
     return -p11 / p1sum if p1sum != 0 else np.nan
 
 
-def _neg_f1_loss_fn(preds: np.ndarray, targets: np.ndarray) -> float:
+def _neg_f1_loss_fn(targets: np.ndarray, preds: np.ndarray) -> float:
     p0_ = 1 - np.mean(targets)
     p_0 = 1 - np.mean(preds)
     p00 = np.mean((1 - targets) * (1 - preds))

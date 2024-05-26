@@ -24,7 +24,7 @@ class RighteousnessLinearScalingBinaryClassificationModel(
         )
 
 
-def _righteousness_loss_fn(preds: np.ndarray, targets: np.ndarray) -> float:
+def _righteousness_loss_fn(targets: np.ndarray, preds: np.ndarray) -> float:
     p11 = np.sum(targets * preds)
     p00 = np.sum((1 - targets) * (1 - preds))
     p01 = np.sum((1 - targets) * preds)

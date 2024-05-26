@@ -24,7 +24,7 @@ class PredictiveValuesLinearScalingBinaryClassificationModel(
         )
 
 
-def _predictive_values_loss_fn(preds: np.ndarray, targets: np.ndarray) -> float:
+def _predictive_values_loss_fn(targets: np.ndarray, preds: np.ndarray) -> float:
     n_pos_preds = np.sum(preds)
     n_neg_preds = len(preds) - n_pos_preds
     ppv = np.sum(targets * preds) / n_pos_preds if n_pos_preds > 0 else 0.0
