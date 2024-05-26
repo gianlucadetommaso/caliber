@@ -17,7 +17,7 @@ from caliber import (
     IterativeBinningBinaryClassificationModel,
     IterativeFittingBinaryClassificationModel,
     IterativeSmoothHistogramBinningBinaryClassificationModel,
-    KneePointDistanceLinearScalingBinaryClassificationModel,
+    KneePointLinearScalingBinaryClassificationModel,
     ModelBiasConstantShiftBinaryClassificationModel,
     NegativeF1LinearScalingBinaryClassificationModel,
     PositiveF1LinearScalingBinaryClassificationModel,
@@ -80,8 +80,8 @@ METHODS = {
     "focal_temperature_scaling": FocalLinearScalingBinaryClassificationModel(
         has_intercept=False
     ),
-    "knee_linear_scaling": KneePointDistanceLinearScalingBinaryClassificationModel(),
-    "knee_temperature_scaling": KneePointDistanceLinearScalingBinaryClassificationModel(
+    "knee_linear_scaling": KneePointLinearScalingBinaryClassificationModel(),
+    "knee_temperature_scaling": KneePointLinearScalingBinaryClassificationModel(
         has_intercept=False
     ),
     "asce_linear_scaling": ASCELinearScalingBinaryClassificationModel(),

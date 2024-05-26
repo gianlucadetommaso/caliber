@@ -10,7 +10,7 @@ from caliber.binary_classification.minimizing.linear_scaling.linear_scaling_brut
 )
 
 
-class KneePointDistanceLinearScalingBinaryClassificationModel(
+class KneePointLinearScalingBinaryClassificationModel(
     LinearScalingBruteFitBinaryClassificationMixin,
     CalibrationLinearScalingBinaryClassificationModel,
 ):
