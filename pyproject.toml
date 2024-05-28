@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "caliber"
-version = "0.1.16"
+version = "0.1.17"
 description = "Model-agnostic calibration and performance enhancement."
 authors = ["Gianluca Detommaso <detommaso.gianluca@gmail.com>"]
 license = "Apache-2.0"
