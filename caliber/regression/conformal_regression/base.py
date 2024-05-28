@@ -1,7 +1,7 @@
 import abc
+from typing import Optional
 
 import numpy as np
-from typing import Optional
 
 from caliber.regression.base import AbstractRegressionModel
 

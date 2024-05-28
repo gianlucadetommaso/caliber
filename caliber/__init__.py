@@ -99,7 +99,9 @@ from caliber.regression.binning.iterative.mean import (
 from caliber.regression.binning.iterative.quantile import (
     IterativeBinningQuantileRegressionModel,
 )
+from caliber.regression.conformal_regression.base import (
+    ConformalizedScoreRegressionModel,
+)
 from caliber.regression.conformal_regression.cqr.base import (
     ConformalizedQuantileRegressionModel,
 )
-from caliber.regression.conformal_regression.base import ConformalizedScoreRegressionModel
