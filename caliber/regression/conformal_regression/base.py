@@ -1,4 +1,5 @@
 import abc
+from typing import Optional
 
 import numpy as np
 
@@ -13,7 +14,7 @@ class ConformalizedScoreRegressionModel(AbstractRegressionModel, abc.ABC):
         super().__init__()
         self.confidence = confidence
 
-    def fit(self, scores: np.ndarray, targets: np.ndarray) -> None:
+    def fit(self, scores: np.ndarray, targets: Optional[np.ndarray] = None) -> None:
         size = len(scores)
         adjusted_confidence = np.ceil((size + 1) * self.confidence) / size
         self._params = np.quantile(scores, adjusted_confidence)
