@@ -18,8 +18,7 @@ N_GROUPS = 5
 METHODS = {
     "histogram_binning": HistogramBinningMulticlassClassificationModel(),
     "cross_entropy_linear_scaling_shared_slope_no_cross": CrossEntropyLinearScalingMulticlassClassificationModel(
-        has_shared_slope=True,
-        has_cross_slopes=False
+        has_shared_slope=True, has_cross_slopes=False
     ),
     "brier_linear_scaling_shared_no_intercept": BrierLinearScalingMulticlassClassificationModel(
         has_intercept=False
