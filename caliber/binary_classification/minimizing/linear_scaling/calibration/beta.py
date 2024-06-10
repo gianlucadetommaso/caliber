@@ -5,7 +5,7 @@ from caliber.binary_classification.minimizing.linear_scaling.calibration.cross_e
 )
 
 
-class BetaBinaryCalibrationModel(CrossEntropyLinearScalingBinaryClassificationModel):
+class BetaBinaryClassificationModel(CrossEntropyLinearScalingBinaryClassificationModel):
     def __init__(
         self,
         minimize_options: Optional[dict] = None,
@@ -17,7 +17,7 @@ class BetaBinaryCalibrationModel(CrossEntropyLinearScalingBinaryClassificationMo
         )
 
 
-class DiagBetaBinaryCalibrationModel(
+class DiagBetaBinaryClassificationModel(
     CrossEntropyLinearScalingBinaryClassificationModel
 ):
     def __init__(

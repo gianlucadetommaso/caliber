@@ -23,8 +23,8 @@ from caliber.binary_classification.minimizing.linear_scaling.calibration.asce_li
     ASCELinearScalingBinaryClassificationModel,
 )
 from caliber.binary_classification.minimizing.linear_scaling.calibration.beta import (
-    BetaBinaryCalibrationModel,
-    DiagBetaBinaryCalibrationModel,
+    BetaBinaryClassificationModel,
+    DiagBetaBinaryClassificationModel,
 )
 from caliber.binary_classification.minimizing.linear_scaling.calibration.brier_linear_scaling import (
     BrierLinearScalingBinaryClassificationModel,
