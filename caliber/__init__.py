@@ -22,6 +22,10 @@ from caliber.binary_classification.iterative_fitting.base import (
 from caliber.binary_classification.minimizing.linear_scaling.calibration.asce_linear_scaling import (
     ASCELinearScalingBinaryClassificationModel,
 )
+from caliber.binary_classification.minimizing.linear_scaling.calibration.beta import (
+    BetaBinaryClassificationModel,
+    DiagBetaBinaryClassificationModel,
+)
 from caliber.binary_classification.minimizing.linear_scaling.calibration.brier_linear_scaling import (
     BrierLinearScalingBinaryClassificationModel,
 )
@@ -77,8 +81,14 @@ from caliber.multiclass_classification.minimizing.linear_scaling.calibration.bri
 from caliber.multiclass_classification.minimizing.linear_scaling.calibration.cross_entropy_linear_scaling import (
     CrossEntropyLinearScalingMulticlassClassificationModel,
 )
+from caliber.multiclass_classification.minimizing.linear_scaling.calibration.dirichlet import (
+    DirichletMulticlassClassificationModel,
+)
 from caliber.multiclass_classification.minimizing.linear_scaling.calibration.focal_linear_scaling import (
     FocalLinearScalingMulticlassClassificationModel,
+)
+from caliber.multiclass_classification.minimizing.linear_scaling.calibration.temp_scaling import (
+    TemperatureScalingMulticlassClassificationModel,
 )
 from caliber.multiclass_classification.ood.da_exp_interpolant import (
     DistanceAwareExponentialInterpolantMulticlassClassificationModel,

@@ -14,10 +14,18 @@ class BrierLinearScalingMulticlassClassificationModel(
     CalibrationLinearScalingMulticlassClassificationModel,
 ):
     def __init__(
-        self, minimize_options: Optional[dict] = None, has_shared_slope: bool = True
+        self,
+        minimize_options: Optional[dict] = None,
+        has_intercept: bool = True,
+        has_shared_intercept: bool = False,
+        has_cross_slopes: bool = True,
+        has_shared_slope: bool = False,
     ):
         super().__init__(
-            loss_fn=brier_score_loss,
-            minimize_options=minimize_options,
+            brier_score_loss,
+            minimize_options,
+            has_intercept=has_intercept,
+            has_shared_intercept=has_shared_intercept,
             has_shared_slope=has_shared_slope,
+            has_cross_slopes=has_cross_slopes,
         )

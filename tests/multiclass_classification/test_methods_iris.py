@@ -17,23 +17,17 @@ N_GROUPS = 5
 
 METHODS = {
     "histogram_binning": HistogramBinningMulticlassClassificationModel(),
-    "cross_entropy_linear_scaling_shared": CrossEntropyLinearScalingMulticlassClassificationModel(
-        has_shared_slope=True
+    "cross_entropy_linear_scaling_shared_slope_no_cross": CrossEntropyLinearScalingMulticlassClassificationModel(
+        has_shared_slope=True, has_cross_slopes=False
     ),
-    "brier_linear_scaling_shared": BrierLinearScalingMulticlassClassificationModel(
-        has_shared_slope=True
+    "brier_linear_scaling_shared_no_intercept": BrierLinearScalingMulticlassClassificationModel(
+        has_intercept=False
     ),
-    "focal_linear_scaling_shared": FocalLinearScalingMulticlassClassificationModel(
-        has_shared_slope=True
+    "focal_linear_scaling_shared_shared_intercept": FocalLinearScalingMulticlassClassificationModel(
+        has_shared_intercept=True
     ),
-    "cross_entropy_linear_scaling_unshared": CrossEntropyLinearScalingMulticlassClassificationModel(
-        has_shared_slope=False
-    ),
-    "brier_linear_scaling_unshared": BrierLinearScalingMulticlassClassificationModel(
-        has_shared_slope=False
-    ),
-    "focal_linear_scaling_unshared": FocalLinearScalingMulticlassClassificationModel(
-        has_shared_slope=False
+    "cross_entropy_linear_scaling_unshared_no_cross": CrossEntropyLinearScalingMulticlassClassificationModel(
+        has_cross_slopes=False
     ),
 }
 

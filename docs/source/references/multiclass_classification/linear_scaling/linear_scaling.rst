@@ -11,3 +11,9 @@ Linear Scaling Multiclass Classification Model
 
 .. autoclass:: caliber.multiclass_classification.minimizing.linear_scaling.calibration.focal_linear_scaling.FocalLinearScalingMulticlassClassificationModel
     :members:
+
+.. autoclass:: caliber.multiclass_classification.minimizing.linear_scaling.calibration.dirichlet.DirichletMulticlassClassificationModel
+    :members:
+
+.. autoclass:: caliber.multiclass_classification.minimizing.linear_scaling.calibration.temp_scaling.TemperatureScalingMulticlassClassificationModel
+    :members:

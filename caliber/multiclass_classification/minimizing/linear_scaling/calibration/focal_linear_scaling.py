@@ -17,11 +17,17 @@ class FocalLinearScalingMulticlassClassificationModel(
     def __init__(
         self,
         minimize_options: Optional[dict] = None,
+        has_intercept: bool = True,
+        has_shared_intercept: bool = False,
+        has_cross_slopes: bool = True,
         has_shared_slope: bool = False,
         gamma: float = 2.0,
     ):
         super().__init__(
-            loss_fn=partial(focal_loss, gamma=gamma),
-            minimize_options=minimize_options,
+            partial(focal_loss, gamma=gamma),
+            minimize_options,
+            has_intercept=has_intercept,
+            has_shared_intercept=has_shared_intercept,
             has_shared_slope=has_shared_slope,
+            has_cross_slopes=has_cross_slopes,
         )
