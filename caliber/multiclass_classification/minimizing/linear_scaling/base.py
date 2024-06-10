@@ -35,7 +35,7 @@ class LinearScalingMulticlassClassificationModel(
         probs = np.clip(probs, 1e-6, np.inf)
         if self._has_intercept:
             if self._has_shared_intercept:
-                intercept = params[0], params[1:]
+                intercept, slope = params[0], params[1:]
             else:
                 intercept, slope = params[: self._n_classes], params[self._n_classes :]
         else:
