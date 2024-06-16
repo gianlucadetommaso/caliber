@@ -13,6 +13,7 @@ class BalancedAccuracyLinearScalingBinaryClassificationModel(
     def __init__(
         self,
         threshold: float,
+        lam: float = 0.01,
         minimize_options: Optional[dict] = None,
         has_intercept: bool = True,
     ):
@@ -22,6 +23,7 @@ class BalancedAccuracyLinearScalingBinaryClassificationModel(
             minimize_options=minimize_options,
             has_intercept=has_intercept,
         )
+        self._lam = lam
 
 
 def _balanced_accuracy_loss_fn(targets: np.ndarray, preds: np.ndarray) -> float:

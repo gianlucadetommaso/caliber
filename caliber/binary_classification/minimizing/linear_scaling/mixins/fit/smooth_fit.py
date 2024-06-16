@@ -2,7 +2,7 @@ from typing import List
 
 import numpy as np
 
-from caliber.binary_classification.minimizing.smooth_fit_mixin import (
+from caliber.binary_classification.minimizing.mixins.fit.smooth_fit import (
     SmoothFitBinaryClassificationMixin,
 )
 
@@ -14,8 +14,6 @@ class LinearScalingSmoothFitBinaryClassificationMixin(
         super().__init__(*args, **kwargs)
         if "bounds" not in self._minimize_options:
             self._minimize_options["bounds"] = self._get_bounds()
-        if "method" not in self._minimize_options:
-            self._minimize_options["method"] = "Nelder-Mead"
 
     def _get_x0(self) -> np.ndarray:
         if self._has_intercept:

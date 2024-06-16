@@ -28,6 +28,7 @@ from caliber import (
     NegativeF1LinearScalingBinaryClassificationModel,
     PositiveF1LinearScalingBinaryClassificationModel,
     PositiveNegativeRatesLinearScalingBinaryClassificationModel,
+    PrecisionRecallLinearScalingBinaryClassificationModel,
     PredictiveValuesLinearScalingBinaryClassificationModel,
     RighteousnessLinearScalingBinaryClassificationModel,
 )
@@ -111,6 +112,9 @@ for dataset_name, dataset in datasets.items():
         ),
         "righteousness_temperature_scaling": RighteousnessLinearScalingBinaryClassificationModel(
             threshold=THRESHOLD, has_intercept=False
+        ),
+        "precrec_linear_scaling": PrecisionRecallLinearScalingBinaryClassificationModel(
+            threshold=THRESHOLD
         ),
         "brier_linear_scaling": BrierLinearScalingBinaryClassificationModel(),
         "brier_temperature_scaling": BrierLinearScalingBinaryClassificationModel(

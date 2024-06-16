@@ -13,6 +13,7 @@ class PositiveNegativeRatesLinearScalingBinaryClassificationModel(
     def __init__(
         self,
         threshold: float,
+        lam: float = 0.01,
         minimize_options: Optional[dict] = None,
         has_intercept: bool = True,
     ):
@@ -22,6 +23,7 @@ class PositiveNegativeRatesLinearScalingBinaryClassificationModel(
             minimize_options=minimize_options,
             has_intercept=has_intercept,
         )
+        self._lam = lam
 
 
 def _true_positive_negative_rates_loss_fn(

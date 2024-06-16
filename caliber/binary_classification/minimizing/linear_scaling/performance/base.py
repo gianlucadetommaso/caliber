@@ -5,7 +5,7 @@ import numpy as np
 from caliber.binary_classification.minimizing.linear_scaling.base import (
     LinearScalingBinaryClassificationModel,
 )
-from caliber.binary_classification.minimizing.linear_scaling.linear_scaling_brute_fit_mixin import (
+from caliber.binary_classification.minimizing.linear_scaling.mixins.fit.brute_fit import (
     LinearScalingBruteFitBinaryClassificationMixin,
 )
 
