@@ -22,9 +22,9 @@ from caliber import (
     NegativeF1LinearScalingBinaryClassificationModel,
     PositiveF1LinearScalingBinaryClassificationModel,
     PositiveNegativeRatesLinearScalingBinaryClassificationModel,
+    PrecisionRecallLinearScalingBinaryClassificationModel,
     PredictiveValuesLinearScalingBinaryClassificationModel,
     RighteousnessLinearScalingBinaryClassificationModel,
-    PrecisionRecallLinearScalingBinaryClassificationModel
 )
 from data import load_breast_cancer_data
 
@@ -69,7 +69,9 @@ METHODS = {
     "righteousness_temperature_scaling": RighteousnessLinearScalingBinaryClassificationModel(
         threshold=THRESHOLD, has_intercept=False
     ),
-    "precrec_linear_scaling": PrecisionRecallLinearScalingBinaryClassificationModel(threshold=0.8),
+    "precrec_linear_scaling": PrecisionRecallLinearScalingBinaryClassificationModel(
+        threshold=0.8
+    ),
     "precrec_linear_scaling_wo_thresh": PrecisionRecallLinearScalingBinaryClassificationModel(),
     "brier_linear_scaling": BrierLinearScalingBinaryClassificationModel(),
     "brier_temperature_scaling": BrierLinearScalingBinaryClassificationModel(
