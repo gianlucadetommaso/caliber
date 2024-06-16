@@ -13,6 +13,7 @@ class PositiveF1LinearScalingBinaryClassificationModel(
     def __init__(
         self,
         threshold: float,
+        lam: float = 0.01,
         minimize_options: Optional[dict] = None,
         has_intercept: bool = True,
     ):
@@ -22,6 +23,7 @@ class PositiveF1LinearScalingBinaryClassificationModel(
             minimize_options=minimize_options,
             has_intercept=has_intercept,
         )
+        self._lam = lam
 
 
 class NegativeF1LinearScalingBinaryClassificationModel(
@@ -30,6 +32,7 @@ class NegativeF1LinearScalingBinaryClassificationModel(
     def __init__(
         self,
         threshold: float,
+        lam: float = 0.01,
         minimize_options: Optional[dict] = None,
         has_intercept: bool = True,
     ):
@@ -39,6 +42,7 @@ class NegativeF1LinearScalingBinaryClassificationModel(
             minimize_options=minimize_options,
             has_intercept=has_intercept,
         )
+        self._lam = lam
 
 
 def _pos_f1_loss_fn(targets: np.ndarray, preds: np.ndarray) -> float:

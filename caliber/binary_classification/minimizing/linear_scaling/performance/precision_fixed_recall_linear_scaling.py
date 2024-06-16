@@ -14,6 +14,7 @@ class PrecisionFixedRecallLinearScalingBinaryClassificationModel(
     def __init__(
         self,
         threshold: float,
+        lam: float = 0.01,
         minimize_options: Optional[dict] = None,
         has_intercept: bool = True,
         min_recall: float = 0.8,
@@ -24,6 +25,7 @@ class PrecisionFixedRecallLinearScalingBinaryClassificationModel(
             minimize_options=minimize_options,
             has_intercept=has_intercept,
         )
+        self._lam = lam
 
 
 def _precision_fixed_recall(

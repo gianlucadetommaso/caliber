@@ -5,7 +5,7 @@ from caliber.binary_classification.metrics.focal_loss import focal_loss
 from caliber.binary_classification.minimizing.linear_scaling.calibration.base import (
     CalibrationLinearScalingBinaryClassificationModel,
 )
-from caliber.binary_classification.minimizing.linear_scaling.linear_scaling_smooth_fit_mixin import (
+from caliber.binary_classification.minimizing.linear_scaling.mixins.fit.smooth_fit import (
     LinearScalingSmoothFitBinaryClassificationMixin,
 )
 
