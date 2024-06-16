@@ -21,6 +21,9 @@ Linear Scaling Binary Classification Model
 .. autoclass:: caliber.binary_classification.minimizing.linear_scaling.calibration.knee.KneePointLinearScalingBinaryClassificationModel
     :members:
 
+.. autoclass:: caliber.binary_classification.minimizing.linear_scaling.calibration.precrec.PrecisionRecallLinearScalingBinaryClassificationModel
+    :members:
+
 .. autoclass:: caliber.binary_classification.minimizing.linear_scaling.calibration.beta.BetaBinaryClassificationModel
     :members:
 
