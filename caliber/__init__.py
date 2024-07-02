@@ -118,3 +118,9 @@ from caliber.regression.conformal_regression.base import (
 from caliber.regression.conformal_regression.cqr.base import (
     ConformalizedQuantileRegressionModel,
 )
+from caliber.regression.minimizing.heteroskedastic.base import (
+    HeteroskedasticRegressionModel,
+)
+from caliber.regression.minimizing.heteroskedastic.linear.base import (
+    HeteroskedasticLinearRegressionModel,
+)
