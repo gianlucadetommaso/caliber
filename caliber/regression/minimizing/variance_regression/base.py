@@ -12,16 +12,16 @@ class MinimizeOptions(TypedDict):
     x0: np.ndarray
 
 
-class HeteroskedasticRegressionModel(MinimizingRegressionModel):
+class LogStdRegressionModel(MinimizingRegressionModel):
     def __init__(
         self,
-        mean_logstd_predict_fn: Callable[
-            [np.ndarray, np.ndarray], Tuple[np.ndarray, np.ndarray]
-        ],
+        mean_model,
+        logstd_predict_fn: Callable[[np.ndarray, np.ndarray], np.ndarray],
         minimize_options: MinimizeOptions,
     ):
         super().__init__(loss_fn=self._loss_fn, minimize_options=minimize_options)
-        self._mean_logstd_predict_fn = mean_logstd_predict_fn
+        self._mean_model = mean_model
+        self._logstd_predict_fn = logstd_predict_fn
 
     @staticmethod
     def _loss_fn(
@@ -34,9 +34,10 @@ class HeteroskedasticRegressionModel(MinimizingRegressionModel):
     def fit(self, inputs: np.ndarray, targets: np.ndarray) -> dict:
         self._check_targets(targets)
         self._check_inputs(inputs)
+        means = self._mean_model.predict(inputs)
 
         def _loss_fn(params):
-            means, logstds = self._mean_logstd_predict_fn(params, inputs)
+            logstds = self._logstd_predict_fn(params, inputs)
             return self._loss_fn(targets, means, logstds)
 
         status = minimize(_loss_fn, **self._minimize_options)
@@ -56,10 +57,10 @@ class HeteroskedasticRegressionModel(MinimizingRegressionModel):
         assert targets.ndim == 1
 
     def predict(self, inputs: np.ndarray) -> np.ndarray:
-        return self._mean_logstd_predict_fn(self._params, inputs)[0]
+        return self._mean_model.predict(inputs)
 
     def predict_std(self, inputs: np.ndarray) -> np.ndarray:
-        return np.exp(self._mean_logstd_predict_fn(self._params, inputs)[1])
+        return np.exp(self._logstd_predict_fn(self._params, inputs))
 
     def predict_var(self, inputs: np.ndarray) -> np.ndarray:
         return self.predict_std(inputs) ** 2
