@@ -1,8 +1,9 @@
-from caliber import HeteroskedasticLinearRegressionModel
-from data import load_regression_data
-import numpy as np
 from typing import Tuple
 
+import numpy as np
+
+from caliber import HeteroskedasticLinearRegressionModel
+from data import load_regression_data
 
 CONFIDENCE = 0.95
 TRAIN_VAL_SPLIT = 0.5
@@ -19,8 +20,12 @@ test_inputs -= test_inputs.mean()
 test_inputs /= test_inputs.std()
 
 
-def mean_logstd_predict_fn(params: np.ndarray, features: np.ndarray) -> Tuple[np.ndarray, np.ndarray]:
-    return params[0] + np.dot(features, params[1:3]), params[3] + np.dot(features, params[4:6])
+def mean_logstd_predict_fn(
+    params: np.ndarray, features: np.ndarray
+) -> Tuple[np.ndarray, np.ndarray]:
+    return params[0] + np.dot(features, params[1:3]), params[3] + np.dot(
+        features, params[4:6]
+    )
 
 
 def test_heteroskedastic_regression_model() -> None:

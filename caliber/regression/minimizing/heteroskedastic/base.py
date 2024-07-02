@@ -1,8 +1,10 @@
 from copy import deepcopy
-from typing import Optional, Union, Callable, Tuple, TypedDict
-from scipy import stats
+from typing import Callable, Optional, Tuple, TypedDict, Union
+
 import numpy as np
+from scipy import stats
 from scipy.optimize import minimize
+
 from caliber.regression.minimizing.base import MinimizingRegressionModel
 
 
@@ -13,15 +15,21 @@ class MinimizeOptions(TypedDict):
 class HeteroskedasticRegressionModel(MinimizingRegressionModel):
     def __init__(
         self,
-        mean_logstd_predict_fn: Callable[[np.ndarray, np.ndarray], Tuple[np.ndarray, np.ndarray]],
+        mean_logstd_predict_fn: Callable[
+            [np.ndarray, np.ndarray], Tuple[np.ndarray, np.ndarray]
+        ],
         minimize_options: MinimizeOptions,
     ):
         super().__init__(loss_fn=self._loss_fn, minimize_options=minimize_options)
         self._mean_logstd_predict_fn = mean_logstd_predict_fn
 
     @staticmethod
-    def _loss_fn(targets: np.ndarray, mean_preds: np.ndarray, logstd_preds: np.ndarray) -> float:
-        return np.sum(0.5 * ((targets - mean_preds) / np.exp(logstd_preds)) ** 2 + logstd_preds)
+    def _loss_fn(
+        targets: np.ndarray, mean_preds: np.ndarray, logstd_preds: np.ndarray
+    ) -> float:
+        return np.sum(
+            0.5 * ((targets - mean_preds) / np.exp(logstd_preds)) ** 2 + logstd_preds
+        )
 
     def fit(self, features: np.ndarray, targets: np.ndarray) -> dict:
         self._check_targets(targets)
@@ -54,7 +62,7 @@ class HeteroskedasticRegressionModel(MinimizingRegressionModel):
         return np.exp(self._mean_logstd_predict_fn(self._params, features)[1])
 
     def predict_var(self, features: np.ndarray) -> np.ndarray:
-        return self.predict_std(features)**2
+        return self.predict_std(features) ** 2
 
     def predict_quantile(self, features: np.ndarray, confidence: float) -> np.ndarray:
         means = self.predict(features)
