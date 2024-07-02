@@ -1,6 +1,6 @@
 import numpy as np
 
-from caliber.binary_classification.minimizing.regularizers.base import Regularizer
+from caliber.regularizers.base import Regularizer
 
 
 class L2Regularizer(Regularizer):
