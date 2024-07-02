@@ -124,3 +124,7 @@ from caliber.regression.minimizing.heteroskedastic.base import (
 from caliber.regression.minimizing.heteroskedastic.linear.base import (
     HeteroskedasticLinearRegressionModel,
 )
+from caliber.regression.minimizing.variance_regression.base import LogStdRegressionModel
+from caliber.regression.minimizing.variance_regression.linear.base import (
+    LogStdLinearRegressionModel,
+)
