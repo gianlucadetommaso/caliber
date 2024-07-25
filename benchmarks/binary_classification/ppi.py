@@ -1,3 +1,4 @@
+import numpy as np
 from sklearn.metrics import (
     accuracy_score,
     balanced_accuracy_score,
@@ -7,7 +8,6 @@ from sklearn.metrics import (
     precision_score,
     recall_score,
 )
-import numpy as np
 from tabulate import tabulate
 from xgboost import XGBClassifier
 
@@ -25,7 +25,7 @@ from data import load_two_moons_data
 THRESHOLD = 0.5
 TRAIN_VAL_SPLIT = 0.5
 N_GROUPS = 5
-PSEUDO_FRAC = 0.2
+LABELED_FRAC = 0.8
 
 
 datasets = {
@@ -47,11 +47,11 @@ for dataset_name, dataset in datasets.items():
     test_preds = (test_probs >= THRESHOLD).astype(int)
 
     # use probs as pseudo targets
-    val_pseudo_size = int(np.ceil(len(val_targets) * PSEUDO_FRAC))
-    val_pseudo_indices = np.arange(val_pseudo_size)
-    val_non_pseudo_probs = val_probs[val_pseudo_size:]
-    val_non_pseudo_targets = val_targets[val_pseudo_size:]
-    val_targets = np.concatenate((val_probs[:val_pseudo_size], val_non_pseudo_targets))
+    val_labeled_size = int(np.ceil(len(val_targets) * LABELED_FRAC))
+    val_labeled_indices = np.arange(val_labeled_size)
+    val_labeled_targets = val_targets[:val_labeled_size]
+    val_labeled_probs = val_probs[:val_labeled_size]
+    val_pseudo_targets = val_probs
 
     posthoc_models = {
         "hb": HistogramBinningBinaryClassificationModel(),
@@ -88,11 +88,11 @@ for dataset_name, dataset in datasets.items():
 
     for m_name, m in posthoc_models.items():
         if "ppi" not in m_name:
-            m.fit(val_non_pseudo_probs, val_non_pseudo_targets)
+            m.fit(val_labeled_probs, val_labeled_targets)
             posthoc_test_probs = m.predict_proba(test_probs)
             posthoc_test_preds = m.predict(test_probs)
         else:
-            m.fit(val_probs, val_targets, val_pseudo_indices)
+            m.fit(val_probs, val_targets, val_pseudo_targets, val_labeled_indices)
             posthoc_test_probs = m.predict_proba(test_probs)
             posthoc_test_preds = m.predict(test_probs)
         for metric_name, metric in performance_metrics.items():
