@@ -22,9 +22,20 @@ class PPIHistogramBinningBinaryClassificationModel(
         is_labeled = np.zeros(len(targets), dtype=bool)
         is_labeled[labeled_indices] = True
 
+        var_pseudo_targets = np.var(pseudo_targets)
+        pseudo_targets_size = len(pseudo_targets)
+        targets_size = len(labeled_indices)
+        if var_pseudo_targets > 0:
+            cov_true_pseudo_targets = np.cov(targets[is_labeled], pseudo_targets[is_labeled])[0, 1]
+            lam = cov_true_pseudo_targets / (
+                    (1 + targets_size / (pseudo_targets_size - targets_size)) * var_pseudo_targets
+            )
+        else:
+            lam = 1
+
         for i in range(1, self.n_bins + 2):
             mask = bin_indices == i
-            self._fit_bin(i, mask, probs, targets, pseudo_targets, is_labeled)
+            self._fit_bin(i, mask, probs, targets, pseudo_targets, is_labeled, lam)
 
     def _fit_bin(
         self,
@@ -34,11 +45,12 @@ class PPIHistogramBinningBinaryClassificationModel(
         targets: np.ndarray,
         pseudo_targets: np.ndarray,
         is_labeled: np.ndarray,
+        lam: float
     ):
         prob_bin = np.mean(mask)
         masked_targets = targets[mask]
         masked_probs = probs[mask]
-        masked_pseudo_targets = pseudo_targets[mask]
+        masked_pseudo_targets = lam * pseudo_targets[mask]
         masked_is_labeled = is_labeled[mask]
 
         self._params.append(
