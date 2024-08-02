@@ -5,29 +5,29 @@ import numpy as np
 
 def prediction_interval_coverage_probability(
     targets: np.ndarray,
-    bounds: np.ndarray,
+    quantiles: np.ndarray,
     which_quantile: Literal["both", "lower", "upper"],
 ) -> np.ndarray:
     if targets.ndim > 1:
         raise ValueError("`targets` must be a 1-dimensional array.")
     if which_quantile == "both":
-        if bounds.ndim != 2 or bounds.shape[1] != 2:
+        if quantiles.ndim != 2 or quantiles.shape[1] != 2:
             raise ValueError(
-                "`bounds` must be a two-dimensional array of bounds with `bounds.shape[1]` equal 2."
+                "`quantiles` must be a two-dimensional array of quantiles with `quantiles.shape[1]` equal 2."
             )
-        conds = (targets <= bounds[:, 1]) * (targets >= bounds[:, 0])
+        conds = (targets <= quantiles[:, 1]) * (targets >= quantiles[:, 0])
     elif which_quantile == "lower":
-        if bounds.ndim != 1:
+        if quantiles.ndim != 1:
             raise ValueError(
-                "`bounds` must be a one-dimensional array of right quantiles."
+                "`quantiles` must be a one-dimensional array of lower quantiles."
             )
-        conds = targets <= bounds
+        conds = targets >= quantiles
     elif which_quantile == "upper":
-        if bounds.ndim != 1:
+        if quantiles.ndim != 1:
             raise ValueError(
-                "`bounds` must be a one-dimensional array of left quantiles."
+                "`quantiles` must be a one-dimensional array of upper quantiles."
             )
-        conds = targets >= bounds
+        conds = targets <= quantiles
     else:
         raise ValueError(f"`which_quantile={which_quantile}` not recognized.")
     return np.mean(conds)
