@@ -1,2 +1,2 @@
-def interval_type_error(interval_type) -> None:
-    raise ValueError(f"`interval_type={interval_type}` not recognized.")
+def which_quantile_error(which_quantile) -> None:
+    raise ValueError(f"`which_quantile={which_quantile}` not recognized.")
