@@ -5,10 +5,10 @@ import numpy as np
 from caliber.regression.binning.iterative.base import IterativeBinningRegressionModel
 from caliber.utils.quantile_checks import (
     left_tailed_quantile_check,
-    right_tailed_quantile_check,
-    two_tailed_quantile_check,
+    upper_quantile_check,
+    both_quantile_check,
 )
-from caliber.utils.which_quantile_error import which_quantile_error
+from caliber.utils.quantile_error import which_quantile_error
 
 
 class IterativeBinningQuantileRegressionModel(IterativeBinningRegressionModel):
@@ -41,7 +41,7 @@ class IterativeBinningQuantileRegressionModel(IterativeBinningRegressionModel):
     ) -> np.ndarray:
         if self.which_quantile == "both":
             quantiles += np.array([-1, 1]) * score_quantiles[:, None]
-        elif self.which_quantile == "lower":
+        elif self.which_quantile == "upper":
             quantiles += score_quantiles
         else:
             quantiles -= score_quantiles
@@ -49,10 +49,10 @@ class IterativeBinningQuantileRegressionModel(IterativeBinningRegressionModel):
 
     def _check_quantiles(self, quantiles: np.ndarray) -> None:
         if self.which_quantile == "both":
-            two_tailed_quantile_check(quantiles)
+            both_quantile_check(quantiles)
         elif self.which_quantile == "lower":
             left_tailed_quantile_check(quantiles)
         elif self.which_quantile == "upper":
-            right_tailed_quantile_check(quantiles)
+            upper_quantile_check(quantiles)
         else:
             which_quantile_error(quantiles)

@@ -29,7 +29,7 @@ class IterativeBinningMeanRegressionModel(IterativeBinningRegressionModel):
             quantiles = np.stack(
                 (preds - score_quantiles, preds + score_quantiles), axis=1
             )
-        elif self.which_quantile == "lower":
+        elif self.which_quantile == "upper":
             quantiles = preds + score_quantiles
         else:
             quantiles = preds - score_quantiles

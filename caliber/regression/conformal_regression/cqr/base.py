@@ -6,11 +6,11 @@ from caliber.regression.conformal_regression.base import (
     ConformalizedScoreRegressionModel,
 )
 from caliber.utils.quantile_checks import (
-    left_tailed_quantile_check,
-    right_tailed_quantile_check,
-    two_tailed_quantile_check,
+    lower_quantile_check,
+    upper_quantile_check,
+    both_quantile_check,
 )
-from caliber.utils.which_quantile_error import which_quantile_error
+from caliber.utils.quantile_error import which_quantile_error
 
 
 class ConformalizedQuantileRegressionModel(ConformalizedScoreRegressionModel):
@@ -24,13 +24,13 @@ class ConformalizedQuantileRegressionModel(ConformalizedScoreRegressionModel):
 
     def fit(self, quantiles: np.ndarray, targets: np.ndarray) -> None:
         if self.which_quantile == "both":
-            two_tailed_quantile_check(quantiles)
+            both_quantile_check(quantiles)
             scores = np.maximum(quantiles[:, 0] - targets, targets - quantiles[:, 1])
         elif self.which_quantile == "lower":
-            left_tailed_quantile_check(quantiles)
+            lower_quantile_check(quantiles)
             scores = quantiles - targets
         elif self.which_quantile == "upper":
-            right_tailed_quantile_check(quantiles)
+            upper_quantile_check(quantiles)
             scores = targets - quantiles
         else:
             which_quantile_error(self.which_quantile)
@@ -38,15 +38,15 @@ class ConformalizedQuantileRegressionModel(ConformalizedScoreRegressionModel):
 
     def predict(self, quantiles: np.ndarray) -> np.ndarray:
         if self.which_quantile == "both":
-            two_tailed_quantile_check(quantiles)
+            both_quantile_check(quantiles)
             lowers = quantiles[:, 0] - self._params
             uppers = quantiles[:, 1] + self._params
             bounds = np.stack((lowers, uppers), axis=1)
         elif self.which_quantile == "lower":
-            left_tailed_quantile_check(quantiles)
+            lower_quantile_check(quantiles)
             bounds = quantiles - self._params
         elif self.which_quantile == "upper":
-            right_tailed_quantile_check(quantiles)
+            upper_quantile_check(quantiles)
             bounds = quantiles + self._params
         else:
             which_quantile_error(self.which_quantile)
