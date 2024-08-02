@@ -4,9 +4,9 @@ import numpy as np
 
 from caliber.regression.binning.iterative.base import IterativeBinningRegressionModel
 from caliber.utils.quantile_checks import (
-    both_quantile_check,
-    left_tailed_quantile_check,
+    lower_quantile_check,
     upper_quantile_check,
+    both_quantile_check,
 )
 from caliber.utils.quantile_error import which_quantile_error
 
@@ -50,8 +50,8 @@ class IterativeBinningQuantileRegressionModel(IterativeBinningRegressionModel):
     def _check_quantiles(self, quantiles: np.ndarray) -> None:
         if self.which_quantile == "both":
             both_quantile_check(quantiles)
-        elif self.which_quantile == "lower":
-            left_tailed_quantile_check(quantiles)
+        elif self.which_quantile == "lower": 
+            lower_quantile_check(quantiles)
         elif self.which_quantile == "upper":
             upper_quantile_check(quantiles)
         else:
