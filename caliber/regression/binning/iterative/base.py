@@ -14,9 +14,7 @@ class IterativeBinningRegressionModel(IterativeBinningModel, AbstractRegressionM
     def __init__(
         self,
         confidence: float,
-        interval_type: Literal[
-            "two-tailed", "left-tailed", "right-tailed"
-        ] = "two-tailed",
+        which_quantile: Literal["both", "lower", "upper"] = "both",
         n_bins: int = 100,
         max_rounds: int = 1000,
         min_prob_bin: float = 0.01,
@@ -40,7 +38,7 @@ class IterativeBinningRegressionModel(IterativeBinningModel, AbstractRegressionM
                 loss_fn=self._get_absolute_score_bias,
             ),
         )
-        self.interval_type = interval_type
+        self.which_quantile = which_quantile
 
     def fit(
         self,

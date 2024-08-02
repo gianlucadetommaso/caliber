@@ -25,11 +25,11 @@ class IterativeBinningMeanRegressionModel(IterativeBinningRegressionModel):
     def _get_inverse_scores(
         self, preds: np.ndarray, score_quantiles: np.ndarray
     ) -> np.ndarray:
-        if self.interval_type == "two-tailed":
+        if self.which_quantile == "both":
             quantiles = np.stack(
                 (preds - score_quantiles, preds + score_quantiles), axis=1
             )
-        elif self.interval_type == "left-tailed":
+        elif self.which_quantile == "upper":
             quantiles = preds + score_quantiles
         else:
             quantiles = preds - score_quantiles

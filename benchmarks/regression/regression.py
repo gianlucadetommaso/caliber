@@ -56,7 +56,7 @@ for dataset_name, dataset in datasets.items():
     }
     calibration_metrics = {
         "picp": partial(
-            prediction_interval_coverage_probability, interval_type="two-tailed"
+            prediction_interval_coverage_probability, which_quantile="both"
         ),
         "pial": prediction_interval_average_length,
     }
