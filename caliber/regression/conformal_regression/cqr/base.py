@@ -6,9 +6,9 @@ from caliber.regression.conformal_regression.base import (
     ConformalizedScoreRegressionModel,
 )
 from caliber.utils.quantile_checks import (
+    both_quantile_check,
     lower_quantile_check,
     upper_quantile_check,
-    both_quantile_check,
 )
 from caliber.utils.quantile_error import which_quantile_error
 
