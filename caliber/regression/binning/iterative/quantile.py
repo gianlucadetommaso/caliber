@@ -3,12 +3,12 @@ from typing import Optional
 import numpy as np
 
 from caliber.regression.binning.iterative.base import IterativeBinningRegressionModel
-from caliber.utils.which_quantile_error import which_quantile_error
 from caliber.utils.quantile_checks import (
     left_tailed_quantile_check,
     right_tailed_quantile_check,
     two_tailed_quantile_check,
 )
+from caliber.utils.which_quantile_error import which_quantile_error
 
 
 class IterativeBinningQuantileRegressionModel(IterativeBinningRegressionModel):

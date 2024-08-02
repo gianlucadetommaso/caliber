@@ -14,9 +14,7 @@ class IterativeBinningRegressionModel(IterativeBinningModel, AbstractRegressionM
     def __init__(
         self,
         confidence: float,
-        which_quantile: Literal[
-            "both", "lower", "upper"
-        ] = "both",
+        which_quantile: Literal["both", "lower", "upper"] = "both",
         n_bins: int = 100,
         max_rounds: int = 1000,
         min_prob_bin: float = 0.01,

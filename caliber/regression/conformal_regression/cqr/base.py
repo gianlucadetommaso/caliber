@@ -5,21 +5,19 @@ import numpy as np
 from caliber.regression.conformal_regression.base import (
     ConformalizedScoreRegressionModel,
 )
-from caliber.utils.which_quantile_error import which_quantile_error
 from caliber.utils.quantile_checks import (
     left_tailed_quantile_check,
     right_tailed_quantile_check,
     two_tailed_quantile_check,
 )
+from caliber.utils.which_quantile_error import which_quantile_error
 
 
 class ConformalizedQuantileRegressionModel(ConformalizedScoreRegressionModel):
     def __init__(
         self,
         confidence: float,
-        which_quantile: Literal[
-            "both", "lower", "upper"
-        ] = "both",
+        which_quantile: Literal["both", "lower", "upper"] = "both",
     ):
         super().__init__(confidence=confidence)
         self.which_quantile = which_quantile
