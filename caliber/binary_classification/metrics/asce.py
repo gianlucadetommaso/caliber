@@ -9,7 +9,7 @@ def average_squared_calibration_error(
     bin_indices = np.digitize(probs, bin_edges)
 
     asce = 0
-    for i in range(1, n_bins + 1):
+    for i in range(1, n_bins + 2):
         mask = bin_indices == i
         prob_bin = np.mean(mask)
         if prob_bin > min_prob_bin:
@@ -21,7 +21,7 @@ def average_smooth_squared_calibration_error(
     targets: np.ndarray, probs: np.ndarray, n_bins: int = 10, smoothness: float = 0.1
 ) -> float:
     assce = 0
-    for i in range(1, n_bins + 1):
+    for i in range(1, n_bins + 2):
         kernels = norm.pdf(probs, i, smoothness)
         assce += np.mean(kernels) * np.mean(kernels * (targets - probs)) ** 2
     return assce
