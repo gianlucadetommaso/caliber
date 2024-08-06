@@ -26,9 +26,12 @@ class PPIHistogramBinningBinaryClassificationModel(
         pseudo_targets_size = len(pseudo_targets)
         targets_size = len(labeled_indices)
         if var_pseudo_targets > 0:
-            cov_true_pseudo_targets = np.cov(targets[is_labeled], pseudo_targets[is_labeled])[0, 1]
+            cov_true_pseudo_targets = np.cov(
+                targets[is_labeled], pseudo_targets[is_labeled]
+            )[0, 1]
             lam = cov_true_pseudo_targets / (
-                    (1 + targets_size / (pseudo_targets_size - targets_size)) * var_pseudo_targets
+                (1 + targets_size / (pseudo_targets_size - targets_size))
+                * var_pseudo_targets
             )
         else:
             lam = 1
@@ -45,7 +48,7 @@ class PPIHistogramBinningBinaryClassificationModel(
         targets: np.ndarray,
         pseudo_targets: np.ndarray,
         is_labeled: np.ndarray,
-        lam: float
+        lam: float,
     ):
         prob_bin = np.mean(mask)
         masked_targets = targets[mask]
@@ -55,10 +58,14 @@ class PPIHistogramBinningBinaryClassificationModel(
 
         self._params.append(
             (
-                np.mean(masked_pseudo_targets[~masked_is_labeled])
-                + np.mean(
-                    masked_targets[masked_is_labeled]
-                    - masked_pseudo_targets[masked_is_labeled]
+                np.mean(masked_pseudo_targets)
+                + (
+                    np.mean(
+                        masked_targets[masked_is_labeled]
+                        - masked_pseudo_targets[masked_is_labeled]
+                    )
+                    if np.sum(masked_is_labeled) > 0
+                    else 0.0
                 )
                 - np.mean(masked_probs)
                 if len(masked_pseudo_targets[~masked_is_labeled]) > 0

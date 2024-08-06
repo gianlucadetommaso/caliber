@@ -1,7 +1,9 @@
+import json
+import os
+
 import numpy as np
 import torch
-import os
-import json
+from tabulate import tabulate
 
 from caliber import (
     HistogramBinningBinaryClassificationModel,
@@ -11,12 +13,12 @@ from caliber.binary_classification.metrics import (
     average_squared_calibration_error,
     expected_calibration_error,
 )
-from tabulate import tabulate
 
 CALIB_FRAC = 0.5
-LABELED_FRAC = 0.001
+LABELED_SIZE = 100
 DATA_DIR = "/Users/gianluca.detommaso/predictions/"
 METRICS_DIR = "/Users/gianluca.detommaso/caliber/benchmarks/ppi/"
+DO_STRATIFIED_SAMPLING = True
 DO_TRAIN = True
 
 if DO_TRAIN:
@@ -28,6 +30,10 @@ if DO_TRAIN:
             continue
         filename = os.path.join(data_dir, os.listdir(data_dir)[0])
         data = torch.load(filename)
+        #####
+        if "Text" in data:
+            continue
+        ####
 
         if "Target" not in data:
             continue
@@ -41,10 +47,12 @@ if DO_TRAIN:
         indices = np.argmax(probs, axis=1)
         probs = np.max(probs, axis=1)
         targets = np.array(targets == indices, dtype=int)
-        pseudo_targets = data["AuxiliaryPredictionProb"][:, 0][np.arange(len(indices)), indices]
+        pseudo_targets = data["AuxiliaryPredictionProb"][:, 0][
+            np.arange(len(indices)), indices
+        ]
 
         asces, eces, ppi_asces, ppi_eces = [], [], [], []
-        for seed in range(1000):
+        for seed in range(100):
             rng = np.random.default_rng(seed)
             perm = rng.choice(len(targets), len(targets))
             targets = targets[perm]
@@ -59,10 +67,28 @@ if DO_TRAIN:
                 pseudo_targets[calib_size:],
             )
 
-            labeled_size = int(np.ceil(len(calib_targets) * LABELED_FRAC))
-            labeled_calib_indices = np.arange(labeled_size)
-            labeled_calib_targets = calib_targets[:labeled_size]
-            labeled_calib_probs = calib_probs[:labeled_size]
+            if DO_STRATIFIED_SAMPLING:
+                bin_edges = np.linspace(0, 1, 10 + 1)
+                bin_indices = np.digitize(calib_probs, bin_edges)
+                bin_size = int(np.ceil(LABELED_SIZE / len(bin_edges)))
+                labeled_calib_indices = []
+                budgets = np.ceil(
+                    np.array([np.sum(bin_indices == i) for i in range(1, 12)])
+                    / len(calib_probs)
+                    * LABELED_SIZE
+                ).astype(int)
+                for budget, b in zip(budgets, range(1, 12)):
+                    if budget == 0:
+                        continue
+                    idx = np.where(bin_indices == b)[0]
+                    labeled_calib_indices += np.random.choice(
+                        idx, budget, replace=False
+                    ).tolist()
+            else:
+                labeled_calib_indices = np.arange(LABELED_SIZE)
+
+            labeled_calib_targets = calib_targets[labeled_calib_indices]
+            labeled_calib_probs = calib_probs[labeled_calib_indices]
 
             model = HistogramBinningBinaryClassificationModel()
             model.fit(labeled_calib_probs, labeled_calib_targets)
@@ -75,7 +101,9 @@ if DO_TRAIN:
                 calib_probs, calib_targets, calib_pseudo_targets, labeled_calib_indices
             )
             ppi_predicted_test_probs = ppi_model.predict_proba(test_probs)
-            ppi_asce = average_squared_calibration_error(test_targets, ppi_predicted_test_probs)
+            ppi_asce = average_squared_calibration_error(
+                test_targets, ppi_predicted_test_probs
+            )
             ppi_ece = expected_calibration_error(test_targets, ppi_predicted_test_probs)
 
             eces.append(ece)
@@ -99,8 +127,9 @@ if DO_TRAIN:
         json.dump(metrics, json_file)
 
 metrics = json.load(open(os.path.join(METRICS_DIR, "metrics.json")))
-metrics = {t:
-    {name: {k: round(v, 4) for k, v in m.items()} for name, m in _metrics.items()} for t, _metrics in metrics.items()
+metrics = {
+    t: {name: {k: round(v, 4) for k, v in m.items()} for name, m in _metrics.items()}
+    for t, _metrics in metrics.items()
 }
 
 headers = ["", "ASCE", "PPI ASCE", "ECE", "PPI_ECE"]
@@ -112,6 +141,7 @@ for _metrics in metrics.values():
             f"{m['mean_ppi_asce']} ({m['std_asce']})",
             f"{m['mean_ece']} ({m['std_ece']})",
             f"{m['mean_ppi_ece']} ({m['std_ece']})",
-        ] for k, m in _metrics.items()
+        ]
+        for k, m in _metrics.items()
     ]
     print(tabulate(table, tablefmt="rounded_outline", headers=headers))
