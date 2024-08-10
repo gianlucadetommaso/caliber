@@ -24,6 +24,7 @@ from caliber.binary_classification.metrics import (
     expected_calibration_error,
     grouped_average_squared_calibration_error
 )
+from tqdm import tqdm
 
 
 CALIB_FRAC = 0.5
@@ -84,7 +85,7 @@ def _avg_metrics(_metrics: dict[str, list[float]]) -> dict[str, float]:
 if DO_TRAIN:
     metrics = dict(text=dict(), vision=dict())
 
-    for dir_name in os.listdir(DATA_DIR):
+    for dir_name in tqdm(os.listdir(DATA_DIR), desc="Dataset"):
         data_dir = os.path.join(DATA_DIR, dir_name)
         if not os.path.isdir(data_dir):
             continue
@@ -108,11 +109,11 @@ if DO_TRAIN:
         features = data["Features"]
         
         
-        for model_name, model in MODELS.items():
+        for model_name, model in tqdm(MODELS.items(), desc="Model"):
             if model_name not in metrics[dataset_type][dir_name]:
                 metrics[dataset_type][dir_name][model_name] = _init_metrics()
                 
-                for seed in range(NUM_SEEDS):
+                for seed in tqdm(range(NUM_SEEDS), desc="Seed"):
                     rng = np.random.default_rng(seed)
                     perm = rng.choice(len(targets), len(targets))
                     targets = targets[perm]
