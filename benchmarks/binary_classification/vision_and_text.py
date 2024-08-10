@@ -151,7 +151,7 @@ if DO_TRAIN:
                         else:
                             raise ValueError(f"model_name={model_name} not supported.")
                     else:
-                        if model_name == "uncalib":
+                        if model_name in ["uncalib", "gcu"]:
                             new_test_probs = test_probs
                         else:
                             model.fit(calib_probs, calib_targets)
