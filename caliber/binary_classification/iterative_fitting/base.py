@@ -41,10 +41,11 @@ class IterativeFittingBinaryClassificationModel(AbstractBinaryClassificationMode
             targets[perm[:calib_size]],
             targets[perm[calib_size:]],
         )
-        calib_groups, val_groups = (
-            groups[perm[:calib_size]],
-            groups[perm[calib_size:]],
-        )
+        if groups is not None:
+            calib_groups, val_groups = (
+                    groups[perm[:calib_size]],
+                    groups[perm[calib_size:]],
+                )
 
         self._bin_edges = self._get_bin_edges()
         calib_features = self._get_features(calib_probs, calib_groups)
