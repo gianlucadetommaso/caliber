@@ -153,7 +153,7 @@ if DO_TRAIN:
                     else:
                         if model_name == "uncalib":
                             new_test_probs = test_probs
-                        elif model_name in ["beta", "hb", "ir", "focal", "sl"]:
+                        else:
                             model.fit(calib_probs, calib_targets)
                             new_test_probs = model.predict_proba(test_probs)
                     
