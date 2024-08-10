@@ -173,7 +173,7 @@ metrics = json.load(open(os.path.join(METRICS_DIR, metrics_filename)))
 
 for metric_name in METRICS_TO_PRINT:
     if metric_name != "gasce":
-        for dataset_type, _metrics in metrics.items():
+        for dataset_type, _metrics in sorted(metrics.items()):
             print(f"\n\n### Dataset type: {dataset_type}")
             dataset_names = list(_metrics.keys())
             model_names = list(_metrics[dataset_names[0]].keys())
@@ -181,7 +181,7 @@ for metric_name in METRICS_TO_PRINT:
             print(tabulate(table, tablefmt="rounded_outline", headers=[metric_name.upper()] + model_names))
     else:
         for _metrics in metrics.values():
-            for dataset_name, dataset_metrics in _metrics.items():
+            for dataset_name, dataset_metrics in sorted(_metrics.items()):
                 print(f"Dataset: {dataset_name}")
                 model_names = list(dataset_metrics.keys())
                 table = [[f"Group: {i + 1}"] + [dataset_metrics[model_name][metric_name][i] for model_name in model_names] for i in range(len(dataset_metrics[model_names[0]][metric_name])-1)]
