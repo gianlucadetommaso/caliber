@@ -55,6 +55,6 @@ class OneShotKernelizedBinaryClassificationModel(BinaryClassificationChecksMixin
         if groups is not None:
             features = np.array([kernel * groups[:, i] for kernel in kernels for i in range(groups.shape[1])]).T
         else:
-            features = np.array(kernels)
+            features = np.array(kernels).T
         return np.dot(features, softmax(params))
 
