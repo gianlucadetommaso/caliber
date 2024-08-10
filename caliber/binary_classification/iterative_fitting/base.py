@@ -3,9 +3,9 @@ from typing import Callable, Optional
 
 import numpy as np
 from scipy.optimize import minimize
-from sklearn.metrics import log_loss
 
 from caliber.binary_classification.base import AbstractBinaryClassificationModel
+from caliber.binary_classification.metrics.log_loss import log_loss
 
 
 class IterativeFittingBinaryClassificationModel(AbstractBinaryClassificationModel):

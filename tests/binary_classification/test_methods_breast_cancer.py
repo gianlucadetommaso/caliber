@@ -16,7 +16,7 @@ from caliber import (
     IsotonicRegressionBinaryClassificationModel,
     IterativeBinningBinaryClassificationModel,
     IterativeFittingBinaryClassificationModel,
-    IterativeSmoothHistogramBinningBinaryClassificationModel,
+    IterativeKernelizedBinningBinaryClassificationModel,
     KneePointLinearScalingBinaryClassificationModel,
     ModelBiasConstantShiftBinaryClassificationModel,
     NegativeF1LinearScalingBinaryClassificationModel,
@@ -99,7 +99,7 @@ METHODS = {
     ),
     "constant_shift": ModelBiasConstantShiftBinaryClassificationModel(),
     "histogram_binning": HistogramBinningBinaryClassificationModel(),
-    "iterative_smooth_histogram_binning": IterativeSmoothHistogramBinningBinaryClassificationModel(),
+    "iterative_smooth_histogram_binning": IterativeKernelizedBinningBinaryClassificationModel(),
     "isotonic_regression": IsotonicRegressionBinaryClassificationModel(),
     "iterative_histogram_binning": IterativeBinningBinaryClassificationModel(),
     "iterative_linear_binning": IterativeBinningBinaryClassificationModel(
@@ -118,7 +118,7 @@ GROUPED_METHODS = {
 }
 
 GROUP_SCORED_METHODS = {
-    "iterative_smooth_grouped_histogram_binning": IterativeSmoothHistogramBinningBinaryClassificationModel(),
+    "iterative_smooth_grouped_histogram_binning": IterativeKernelizedBinningBinaryClassificationModel(),
 }
 
 

@@ -10,7 +10,7 @@ from caliber.binary_classification.metrics.asce import (
 )
 
 
-class IterativeSmoothHistogramBinningBinaryClassificationModel(
+class IterativeKernelizedBinningBinaryClassificationModel(
     AbstractBinaryClassificationModel
 ):
     def __init__(
@@ -18,7 +18,7 @@ class IterativeSmoothHistogramBinningBinaryClassificationModel(
         n_bins: int = 10,
         split: float = 0.8,
         seed: int = 0,
-        smoothness: float = 0.1,
+        sigma: float = 0.1,
         max_rounds: int = 1000,
     ):
         super().__init__()
@@ -26,7 +26,7 @@ class IterativeSmoothHistogramBinningBinaryClassificationModel(
         self._rng = np.random.default_rng(seed)
         self.split = split
         self._bin_edges = None
-        self.smoothness = smoothness
+        self.sigma = sigma
         self.max_rounds = max_rounds
 
     def fit(
@@ -55,7 +55,7 @@ class IterativeSmoothHistogramBinningBinaryClassificationModel(
 
         val_assces = [
             average_smooth_squared_calibration_error(
-                val_targets, val_probs, smoothness=self.smoothness
+                val_targets, val_probs, sigma=self.sigma
             )
         ]
 
@@ -65,7 +65,7 @@ class IterativeSmoothHistogramBinningBinaryClassificationModel(
             val_probs = self._update_proba(params, val_probs, val_groups)
             val_assces.append(
                 average_smooth_squared_calibration_error(
-                    val_targets, val_probs, smoothness=self.smoothness
+                    val_targets, val_probs, sigma=self.sigma
                 )
             )
 
@@ -101,15 +101,15 @@ class IterativeSmoothHistogramBinningBinaryClassificationModel(
         probs = np.copy(probs)
         if groups is None:
             groups = self._initialize_groups(len(probs))
-        kernels = self._get_kernels(probs, self.smoothness)
+        kernels = self._get_kernels(probs, self.sigma)
         probs += np.sum(params * kernels[:, :, None] * groups[:, None], (1, 2))
         return np.clip(probs, 0, 1)
 
     def _get_bin_edges(self):
         return np.linspace(0, 1, self.n_bins + 1)
 
-    def _get_kernels(self, probs: np.ndarray, smoothness) -> np.ndarray:
-        return np.stack([norm.pdf(probs, i, smoothness) for i in self._bin_edges]).T
+    def _get_kernels(self, probs: np.ndarray, sigma) -> np.ndarray:
+        return np.stack([norm.pdf(probs, i, sigma) for i in self._bin_edges]).T
 
     @staticmethod
     def _initialize_groups(size: int):
@@ -118,7 +118,7 @@ class IterativeSmoothHistogramBinningBinaryClassificationModel(
     def _get_params(
         self, probs: np.ndarray, targets: np.ndarray, groups: np.ndarray
     ) -> np.ndarray:
-        kernels = self._get_kernels(probs, self.smoothness)
+        kernels = self._get_kernels(probs, self.sigma)
         A = np.mean(
             kernels[:, :, None, None, None]
             * kernels[:, None, None, :, None]
