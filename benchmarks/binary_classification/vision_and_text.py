@@ -134,22 +134,28 @@ if DO_TRAIN:
                         test_groups = test_group_scores > group_threshold
                         test_groups = np.concatenate((test_groups, np.ones((len(test_groups), 1), dtype=bool)), axis=1)
                 
-                    if model_name == "uncalib":
-                        new_test_probs = test_probs
-                    elif model_name in ["beta", "hb", "ir", "focal", "sl"]:
-                        model.fit(calib_probs, calib_targets)
-                        new_test_probs = model.predict_proba(test_probs)
-                    elif model_name in ["ihb", "ibls"]:
-                        model.fit(calib_probs, calib_targets, calib_groups)
-                        new_test_probs = model.predict_proba(test_probs, test_groups)
-                    elif model_name in ["gcu", "if", "osk", "ik"]:
-                        if model_name == "gcu" and len(set(calib_targets)) == 1:
-                            new_test_probs == 1
+                        if model_name == "uncalib":
+                            new_test_probs = test_probs
+                        elif model_name in ["beta", "hb", "ir", "focal", "sl"]:
+                            model.fit(calib_probs, calib_targets)
+                            new_test_probs = model.predict_proba(test_probs)
+                        elif model_name in ["ihb", "ibls"]:
+                            model.fit(calib_probs, calib_targets, calib_groups)
+                            new_test_probs = model.predict_proba(test_probs, test_groups)
+                        elif model_name in ["gcu", "if", "osk", "ik"]:
+                            if model_name == "gcu" and len(set(calib_targets)) == 1:
+                                new_test_probs == 1
+                            else:
+                                model.fit(calib_probs, calib_targets, calib_group_scores)
+                                new_test_probs = model.predict_proba(test_probs, test_group_scores)
                         else:
-                            model.fit(calib_probs, calib_targets, calib_group_scores)
-                            new_test_probs = model.predict_proba(test_probs, test_group_scores)
+                            raise ValueError(f"model_name={model_name} not supported.")
                     else:
-                        raise ValueError(f"model_name={model_name} not supported.")
+                        if model_name == "uncalib":
+                            new_test_probs = test_probs
+                        elif model_name in ["beta", "hb", "ir", "focal", "sl"]:
+                            model.fit(calib_probs, calib_targets)
+                            new_test_probs = model.predict_proba(test_probs)
                     
                     metrics[dataset_type][dir_name][model_name] = _update_metrics(
                         metrics[dataset_type][dir_name][model_name], 
