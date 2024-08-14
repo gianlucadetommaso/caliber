@@ -19,7 +19,7 @@ class OneShotKernelizedBinaryClassificationModel(BinaryClassificationChecksMixin
         sigma: float = 0.1
     ):
         self._n_bins = n_bins
-        self._loss_fn = partial(grouped_average_smooth_squared_calibration_error, sigma=sigma)
+        self._loss_fn = partial(grouped_average_smooth_squared_calibration_error, sigma=sigma, n_bins=n_bins)
         self._sigma = sigma
         self._mesh = np.linspace(0, 1, n_bins + 1)
         self._params = None
@@ -37,7 +37,7 @@ class OneShotKernelizedBinaryClassificationModel(BinaryClassificationChecksMixin
                 
         
         def _loss_fn(params):
-            return self._loss_fn(targets, self._predict_proba(params, probs, groups))
+            return self._loss_fn(targets, self._predict_proba(params, probs, groups), groups)
 
         status = minimize(_loss_fn, **self._minimize_options)
         self._params = status.x
