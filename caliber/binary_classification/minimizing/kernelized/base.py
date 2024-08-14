@@ -2,7 +2,7 @@ from typing import Optional
 
 import numpy as np
 
-from caliber.binary_classification.metrics.asce import average_smooth_squared_calibration_error
+from caliber.binary_classification.metrics.asce import grouped_average_smooth_squared_calibration_error
 from functools import partial
 from scipy.special import softmax
 from scipy.optimize import minimize
@@ -19,7 +19,7 @@ class OneShotKernelizedBinaryClassificationModel(BinaryClassificationChecksMixin
         sigma: float = 0.1
     ):
         self._n_bins = n_bins
-        self._loss_fn = partial(average_smooth_squared_calibration_error, sigma=sigma)
+        self._loss_fn = partial(grouped_average_smooth_squared_calibration_error, sigma=sigma)
         self._sigma = sigma
         self._mesh = np.linspace(0, 1, n_bins + 1)
         self._params = None
@@ -28,15 +28,16 @@ class OneShotKernelizedBinaryClassificationModel(BinaryClassificationChecksMixin
     def fit(self, probs: np.ndarray, targets: np.ndarray, groups: Optional[np.ndarray] = None) -> dict:
         self._check_targets(targets)
         self._check_probs(probs)
-
-        def _loss_fn(params):
-            return self._loss_fn(targets, self._predict_proba(params, probs, groups))
         
         if "x0" not in self._minimize_options:
             if groups is None:
-                self._minimize_options["x0"] = np.ones(self._n_bins + 1)
-            else:
-                self._minimize_options["x0"] = np.ones((self._n_bins + 1) * groups.shape[1])
+                groups = np.ones((len(probs), 1))
+                
+            self._minimize_options["x0"] = np.ones((self._n_bins + 1) * groups.shape[1])
+                
+        
+        def _loss_fn(params):
+            return self._loss_fn(targets, self._predict_proba(params, probs, groups))
 
         status = minimize(_loss_fn, **self._minimize_options)
         self._params = status.x
