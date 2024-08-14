@@ -29,10 +29,10 @@ class OneShotKernelizedBinaryClassificationModel(BinaryClassificationChecksMixin
         self._check_targets(targets)
         self._check_probs(probs)
         
+        if groups is None:
+            groups = np.ones((len(probs), 1))
+        
         if "x0" not in self._minimize_options:
-            if groups is None:
-                groups = np.ones((len(probs), 1))
-                
             self._minimize_options["x0"] = np.ones((self._n_bins + 1) * groups.shape[1])
                 
         
@@ -53,9 +53,8 @@ class OneShotKernelizedBinaryClassificationModel(BinaryClassificationChecksMixin
 
     def _predict_proba(self, params: np.ndarray, probs: np.ndarray, groups: Optional[np.ndarray] = None) -> np.ndarray:
         kernels = [norm.pdf(probs, loc=p, scale=self._sigma) for p in self._mesh]
-        if groups is not None:
-            features = np.array([kernel * groups[:, i] for kernel in kernels for i in range(groups.shape[1])]).T
-        else:
-            features = np.array(kernels).T
+        if groups is None:
+            groups = np.ones((len(probs), 1))
+        features = np.array([kernel * groups[:, i] for kernel in kernels for i in range(groups.shape[1])]).T
         return np.dot(features, softmax(params))
 
