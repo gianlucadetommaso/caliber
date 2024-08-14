@@ -76,9 +76,9 @@ def _update_metrics(_metrics: dict[str, list[float]], targets: np.ndarray, probs
 def _avg_metrics(_metrics: dict[str, list[float]]) -> dict[str, float]:
     for key, vals in _metrics.items():
         if key != "gasce":
-            _metrics[key] = np.mean(vals)
+            _metrics[key] = np.nanmean(vals)
         else:
-            _metrics[key] = np.mean(vals, 0).tolist()
+            _metrics[key] = np.nanmean(vals, 0).tolist()
     return _metrics
 
 

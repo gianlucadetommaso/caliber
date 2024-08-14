@@ -75,13 +75,14 @@ def grouped_average_smooth_squared_calibration_error(
 
     gasce = []
     for j in range(groups.shape[1]):
-        gasce.append(0.0)
         group = groups[:, j]
         
         mean_g = np.mean(group)
         if mean_g == 0:
             gasce.append(np.nan)
         else:
+            gasce.append(0.0)
+            
             for i, p in enumerate(bin_edges):
                 mask = bin_indices == i + 1
                 mean_pg = np.mean(group[mask])
