@@ -45,13 +45,14 @@ def grouped_average_squared_calibration_error(
 
     gasce = []
     for j in range(groups.shape[1]):
-        gasce.append(0.0)
         group = groups[:, j]
         
         mean_g = np.mean(group)
         if mean_g == 0:
             gasce.append(np.nan)
         else:
+            gasce.append(0.0)
+            
             for i in range(1, n_bins + 2):
                 mask = bin_indices == i
                 mean_pg = np.mean(group * mask)
