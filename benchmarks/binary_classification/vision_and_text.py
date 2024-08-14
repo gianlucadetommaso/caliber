@@ -30,7 +30,7 @@ from tqdm import tqdm
 CALIB_FRAC = 0.5
 DATA_DIR = "/Users/gianluca.detommaso/predictions/"
 METRICS_DIR = "/Users/gianluca.detommaso/caliber/benchmarks/binary_classification"
-DO_TRAIN = False
+DO_TRAIN = True
 NUM_SEEDS = 30
 WITH_GROUPS = True
 GROUP_MODEL = GaussianMixture(n_components=5)
@@ -131,8 +131,8 @@ if DO_TRAIN:
                         calib_groups = calib_group_scores > group_threshold
                         calib_groups = np.concatenate((calib_groups, np.ones((len(calib_groups), 1), dtype=bool)), axis=1)
                         test_group_scores = GROUP_MODEL.predict_proba(test_features)
-                        test_groups = test_group_scores > group_threshold
-                        test_groups = np.concatenate((test_groups, np.ones((len(test_groups), 1), dtype=bool)), axis=1)
+                        test_group_binaries = test_group_scores > group_threshold
+                        test_group_binaries = np.concatenate((test_group_binaries, np.ones((len(test_group_binaries), 1), dtype=bool)), axis=1)
                 
                         if model_name == "uncalib":
                             new_test_probs = test_probs
@@ -141,7 +141,7 @@ if DO_TRAIN:
                             new_test_probs = model.predict_proba(test_probs)
                         elif model_name in ["ihb", "ibls"]:
                             model.fit(calib_probs, calib_targets, calib_groups)
-                            new_test_probs = model.predict_proba(test_probs, test_groups)
+                            new_test_probs = model.predict_proba(test_probs, test_group_binaries)
                         elif model_name in ["gcu", "if", "osk", "ik"]:
                             if model_name == "gcu" and len(set(calib_targets)) == 1:
                                 new_test_probs == 1
@@ -161,7 +161,7 @@ if DO_TRAIN:
                         metrics[dataset_type][dir_name][model_name], 
                         test_targets, 
                         new_test_probs,
-                        groups=test_groups if WITH_GROUPS else None
+                        groups=test_group_scores if WITH_GROUPS else None
                     )
                     
             metrics[dataset_type][dir_name][model_name] = _avg_metrics(metrics[dataset_type][dir_name][model_name])
@@ -184,5 +184,5 @@ for metric_name in METRICS_TO_PRINT:
             for dataset_name, dataset_metrics in sorted(_metrics.items()):
                 print(f"Dataset: {dataset_name}")
                 model_names = list(dataset_metrics.keys())
-                table = [[f"Group: {i + 1}"] + [dataset_metrics[model_name][metric_name][i] for model_name in model_names] for i in range(len(dataset_metrics[model_names[0]][metric_name])-1)]
+                table = [[f"Group: {i + 1}"] + [dataset_metrics[model_name][metric_name][i] for model_name in model_names] for i in range(len(dataset_metrics[model_names[0]][metric_name]))]
                 print(tabulate(table, tablefmt="rounded_outline", headers=model_names))

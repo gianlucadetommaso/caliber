@@ -11,7 +11,7 @@ from caliber.binary_classification.metrics.log_loss import log_loss
 class IterativeFittingBinaryClassificationModel(AbstractBinaryClassificationModel):
     def __init__(
         self,
-        max_rounds: int = 1000,
+        max_rounds: int = 10,
         split: float = 0.8,
         seed: int = 0,
         loss_fn: Callable[[np.ndarray, np.ndarray], float] = log_loss,
