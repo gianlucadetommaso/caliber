@@ -31,7 +31,7 @@ CALIB_FRAC = 0.5
 DATA_DIR = "/Users/gianluca.detommaso/predictions/"
 METRICS_DIR = "/Users/gianluca.detommaso/caliber/benchmarks/binary_classification"
 DO_TRAIN = True
-NUM_SEEDS = 30
+NUM_SEEDS = 1
 WITH_GROUPS = True
 GROUP_MODEL = GaussianMixture(n_components=5)
 GROUP_SCORES_THRESHOLD = 0.8
