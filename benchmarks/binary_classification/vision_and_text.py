@@ -41,15 +41,10 @@ MODELS = {
     "uncalib": None,
     "beta": BetaBinaryClassificationModel(),
     "hb": HistogramBinningBinaryClassificationModel(),
-    "ir": IsotonicRegressionBinaryClassificationModel(),
-    "focal": FocalLinearScalingBinaryClassificationModel(),
     "sl": SmoothLinearScalingBinaryClassificationModel(),
-    "gcu": GroupConditionalUnbiasedBinaryClassificationModel(),
-    "ihb": IterativeBinningBinaryClassificationModel(),
     "ibls": IterativeBinningBinaryClassificationModel(
         bin_model=BrierLinearScalingBinaryClassificationModel(),
     ),
-    "if": IterativeFittingBinaryClassificationModel(),
     "osk": OneShotKernelizedBinaryClassificationModel(),
     "ik": IterativeKernelizedBinningBinaryClassificationModel(),
 }
