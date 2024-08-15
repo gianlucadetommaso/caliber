@@ -17,19 +17,28 @@ def average_squared_calibration_error(
     return asce
 
 
+# def average_smooth_squared_calibration_error(
+#     targets: np.ndarray, probs: np.ndarray, n_bins: int = 10, sigma: float = 0.1
+# ) -> float:
+#     bin_edges = np.linspace(0, 1, n_bins + 1)
+#     bin_indices = np.digitize(probs, bin_edges)
+    
+#     assce = 0.
+#     for i, p in enumerate(bin_edges):
+#         mask = bin_indices == i + 1
+#         mean_p = np.mean(mask)
+        
+#         kernels = norm.pdf(probs, loc=p, scale=sigma)
+#         assce += np.mean(kernels * (targets - probs) ** 2)
+#     return assce
 def average_smooth_squared_calibration_error(
     targets: np.ndarray, probs: np.ndarray, n_bins: int = 10, sigma: float = 0.1
 ) -> float:
-    bin_edges = np.linspace(0, 1, n_bins + 1)
-    bin_indices = np.digitize(probs, bin_edges)
-    
-    assce = 0.
-    for i, p in enumerate(bin_edges):
-        mask = bin_indices == i + 1
-        mean_p = np.mean(mask)
-        
+    assce = 0
+    for p in np.linspace(0, 1, n_bins + 1):
         kernels = norm.pdf(probs, loc=p, scale=sigma)
-        assce += mean_p * np.mean(kernels * (targets - probs)) ** 2
+        assce += np.mean(kernels * (targets - probs) ** 2)
+    assce /= n_bins + 1
     return assce
 
 

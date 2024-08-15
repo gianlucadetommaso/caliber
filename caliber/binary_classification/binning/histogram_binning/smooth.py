@@ -6,7 +6,7 @@ from scipy.stats import norm
 
 from caliber.binary_classification.base import AbstractBinaryClassificationModel
 from caliber.binary_classification.metrics.asce import (
-    average_smooth_squared_calibration_error,
+    average_squared_calibration_error, average_smooth_squared_calibration_error
 )
 
 
@@ -54,9 +54,8 @@ class IterativeKernelizedBinningBinaryClassificationModel(
         )
 
         val_assces = [
-            average_smooth_squared_calibration_error(
-                val_targets, val_probs, sigma=self.sigma
-            )
+            # average_squared_calibration_error(val_targets, val_probs)
+            average_smooth_squared_calibration_error(val_targets, val_probs, sigma=self.sigma)
         ]
 
         for t in range(self.max_rounds):
@@ -64,9 +63,8 @@ class IterativeKernelizedBinningBinaryClassificationModel(
 
             val_probs = self._update_proba(params, val_probs, val_groups)
             val_assces.append(
-                average_smooth_squared_calibration_error(
-                    val_targets, val_probs, sigma=self.sigma
-                )
+                # average_squared_calibration_error(val_targets, val_probs)
+                average_smooth_squared_calibration_error(val_targets, val_probs, sigma=self.sigma)
             )
 
             if val_assces[-1] >= val_assces[-2]:

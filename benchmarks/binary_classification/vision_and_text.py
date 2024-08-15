@@ -31,25 +31,25 @@ CALIB_FRAC = 0.5
 DATA_DIR = "/Users/gianluca.detommaso/predictions/"
 METRICS_DIR = "/Users/gianluca.detommaso/caliber/benchmarks/binary_classification"
 DO_TRAIN = True
-NUM_SEEDS = 1
-WITH_GROUPS = True
+NUM_SEEDS = 30
+WITH_GROUPS = False
 GROUP_MODEL = GaussianMixture(n_components=5)
 GROUP_SCORES_THRESHOLD = 0.8
-METRICS_TO_PRINT = ["gasce"]
+METRICS_TO_PRINT = ["asce"]
 
 MODELS = {
-    "uncalib": None,
-    "beta": BetaBinaryClassificationModel(),
-    "hb": HistogramBinningBinaryClassificationModel(),
-    "sl": SmoothLinearScalingBinaryClassificationModel(),
-    "ibls": IterativeBinningBinaryClassificationModel(
-        bin_model=BrierLinearScalingBinaryClassificationModel(),
-    ),
-    "osk": OneShotKernelizedBinaryClassificationModel(),
+    #"uncalib": None,
+    #"beta": BetaBinaryClassificationModel(),
+    #"hb": HistogramBinningBinaryClassificationModel(),
+    #"sl": SmoothLinearScalingBinaryClassificationModel(),
+    #"ibls": IterativeBinningBinaryClassificationModel(
+    #    bin_model=BrierLinearScalingBinaryClassificationModel(),
+    #),
+    #"osk": OneShotKernelizedBinaryClassificationModel(),
     "ik": IterativeKernelizedBinningBinaryClassificationModel(),
 }
 
-metrics_filename = "metrics" + ("_w_" if WITH_GROUPS else "_wo_") + "groups.json" 
+metrics_filename = "metrics" + ("_w_" if WITH_GROUPS else "_wo_") + "groups_only_ik.json" 
 
 
 def _init_metrics() -> dict[str, list[float]]:
