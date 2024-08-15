@@ -29,7 +29,7 @@ def average_smooth_squared_calibration_error(
         mean_p = np.mean(mask)
         
         kernels = norm.pdf(probs, loc=p, scale=sigma)
-        assce += mean_p * (np.mean(kernels * (targets - probs)) / np.mean(kernels)) ** 2
+        assce += mean_p * np.mean(kernels * (targets - probs)) ** 2
     return assce
 
 
@@ -57,7 +57,7 @@ def grouped_average_squared_calibration_error(
                 mask = bin_indices == i
                 mean_pg = np.mean(group * mask)
                 if mean_pg > min_prob_bin:
-                    gasce[-1] += np.mean(group * mask * (targets - probs)) ** 2 / mean_pg
+                    gasce[-1] += np.mean(group[mask] * (targets[mask] - probs[mask])) ** 2
             gasce[-1] /= mean_g
 
     return gasce
@@ -86,12 +86,11 @@ def grouped_average_smooth_squared_calibration_error(
             
             for i, p in enumerate(bin_edges):
                 mask = bin_indices == i + 1
-                mean_pg = np.mean(group[mask])
+                mean_pg = np.mean(mask * group)
                 
                 if mean_pg > min_prob_bin:
                     kernels = norm.pdf(probs, loc=p, scale=sigma)
-                    mean_kg = np.mean(kernels * group)
-                    gasce[-1] += mean_pg * (np.mean(kernels * group * (targets - probs)) / mean_kg) ** 2
+                    gasce[-1] += mean_pg * np.mean(kernels * group * (targets - probs)) ** 2
             gasce[-1] /= mean_g
 
     return gasce
