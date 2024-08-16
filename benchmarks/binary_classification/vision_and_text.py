@@ -38,18 +38,18 @@ GROUP_SCORES_THRESHOLD = 0.8
 METRICS_TO_PRINT = ["asce"]
 
 MODELS = {
-    #"uncalib": None,
-    #"beta": BetaBinaryClassificationModel(),
-    #"hb": HistogramBinningBinaryClassificationModel(),
-    #"sl": SmoothLinearScalingBinaryClassificationModel(),
-    #"ibls": IterativeBinningBinaryClassificationModel(
-    #    bin_model=BrierLinearScalingBinaryClassificationModel(),
-    #),
-    #"osk": OneShotKernelizedBinaryClassificationModel(),
+    "uncalib": None,
+    "beta": BetaBinaryClassificationModel(),
+    "hb": HistogramBinningBinaryClassificationModel(),
+    "sl": SmoothLinearScalingBinaryClassificationModel(),
+    "ibls": IterativeBinningBinaryClassificationModel(
+        bin_model=BrierLinearScalingBinaryClassificationModel(),
+    ),
+    "osk": OneShotKernelizedBinaryClassificationModel(),
     "ik": IterativeKernelizedBinningBinaryClassificationModel(),
 }
 
-metrics_filename = "metrics" + ("_w_" if WITH_GROUPS else "_wo_") + "groups_only_ik.json" 
+metrics_filename = "metrics" + ("_w_" if WITH_GROUPS else "_wo_") + "groups_attempt.json" 
 
 
 def _init_metrics() -> dict[str, list[float]]:
@@ -82,6 +82,8 @@ if DO_TRAIN:
 
     for dir_name in tqdm(os.listdir(DATA_DIR), desc="Dataset"):
         data_dir = os.path.join(DATA_DIR, dir_name)
+        if dir_name != "mnist":
+            continue
         if not os.path.isdir(data_dir):
             continue
         filename = os.path.join(data_dir, os.listdir(data_dir)[0])
@@ -102,6 +104,7 @@ if DO_TRAIN:
         probs = np.max(probs, axis=1)
         targets = np.array(targets == indices, dtype=int)
         features = data["Features"]
+        calib_size = int(np.ceil(len(targets) * CALIB_FRAC))
         
         
         for model_name, model in tqdm(MODELS.items(), desc="Model"):
@@ -110,14 +113,12 @@ if DO_TRAIN:
                 
                 for seed in tqdm(range(NUM_SEEDS), desc="Seed"):
                     rng = np.random.default_rng(seed)
-                    perm = rng.choice(len(targets), len(targets))
-                    targets = targets[perm]
-                    probs = probs[perm]
+                    perm = rng.choice(len(targets), len(targets), replace=False)
+                    calib_perm, test_perm = perm[:calib_size], perm[calib_size:]
 
-                    calib_size = int(np.ceil(len(targets) * CALIB_FRAC))
-                    calib_targets, test_targets = targets[:calib_size], targets[calib_size:]
-                    calib_probs, test_probs = probs[:calib_size], probs[calib_size:]
-                    calib_features, test_features = features[:calib_size], features[calib_size:]
+                    calib_targets, test_targets = targets[calib_perm], targets[test_perm]
+                    calib_probs, test_probs = probs[calib_perm], probs[test_perm]
+                    calib_features, test_features = features[calib_perm], features[test_perm]
                     
                     if WITH_GROUPS:
                         GROUP_MODEL.fit(calib_features)
@@ -139,14 +140,14 @@ if DO_TRAIN:
                             new_test_probs = model.predict_proba(test_probs, test_group_binaries)
                         elif model_name in ["gcu", "if", "osk", "ik"]:
                             if model_name == "gcu" and len(set(calib_targets)) == 1:
-                                new_test_probs == 1
+                                new_test_probs = test_probs
                             else:
                                 model.fit(calib_probs, calib_targets, calib_group_scores)
                                 new_test_probs = model.predict_proba(test_probs, test_group_scores)
                         else:
                             raise ValueError(f"model_name={model_name} not supported.")
                     else:
-                        if model_name in ["uncalib", "gcu"]:
+                        if model_name.startswith("uncalib") or model_name in ["uncalib", "gcu"]:
                             new_test_probs = test_probs
                         else:
                             model.fit(calib_probs, calib_targets)
@@ -169,6 +170,8 @@ metrics = json.load(open(os.path.join(METRICS_DIR, metrics_filename)))
 for metric_name in METRICS_TO_PRINT:
     if metric_name != "gasce":
         for dataset_type, _metrics in sorted(metrics.items()):
+            if len(_metrics) == 0:
+                continue
             print(f"\n\n### Dataset type: {dataset_type}")
             dataset_names = list(_metrics.keys())
             model_names = list(_metrics[dataset_names[0]].keys())

@@ -1,74 +1,53 @@
 import numpy as np
+from typing import Callable
 from scipy.stats import norm
 
 
 def average_squared_calibration_error(
-    targets: np.ndarray, probs: np.ndarray, n_bins: int = 10, min_prob_bin: float = 0.0
+    targets: np.ndarray, probs: np.ndarray, n_bins: int = 10
 ) -> float:
     bin_edges = np.linspace(0, 1, n_bins + 1)
     bin_indices = np.digitize(probs, bin_edges)
 
-    asce = 0
-    for i in range(1, n_bins + 2):
-        mask = bin_indices == i
+    def _fun(i: int) -> float:
+        mask = bin_indices == i + 1
         prob_bin = np.mean(mask)
-        if prob_bin > min_prob_bin:
-            asce += prob_bin * np.mean(targets[mask] - probs[mask]) ** 2
-    return asce
+        return prob_bin * np.mean(targets[mask] - probs[mask]) ** 2 if prob_bin > 0. else 0.
+
+    return trapezoidal_rule(_fun, np.arange(1, n_bins + 2))
 
 
-# def average_smooth_squared_calibration_error(
-#     targets: np.ndarray, probs: np.ndarray, n_bins: int = 10, sigma: float = 0.1
-# ) -> float:
-#     bin_edges = np.linspace(0, 1, n_bins + 1)
-#     bin_indices = np.digitize(probs, bin_edges)
-    
-#     assce = 0.
-#     for i, p in enumerate(bin_edges):
-#         mask = bin_indices == i + 1
-#         mean_p = np.mean(mask)
-        
-#         kernels = norm.pdf(probs, loc=p, scale=sigma)
-#         assce += np.mean(kernels * (targets - probs) ** 2)
-#     return assce
 def average_smooth_squared_calibration_error(
     targets: np.ndarray, probs: np.ndarray, n_bins: int = 10, sigma: float = 0.1
 ) -> float:
-    assce = 0
-    for p in np.linspace(0, 1, n_bins + 1):
+    def _fun(p: float) -> float:
         kernels = norm.pdf(probs, loc=p, scale=sigma)
-        assce += np.mean(kernels * (targets - probs) ** 2)
-    assce /= n_bins + 1
-    return assce
+        return np.mean(kernels * (targets - probs)) ** 2 / np.mean(kernels)
+    
+    return trapezoidal_rule(_fun, np.linspace(0, 1, n_bins + 1))
 
 
 def grouped_average_squared_calibration_error(
-    targets: np.ndarray,
-    probs: np.ndarray,
-    groups: np.ndarray,
-    n_bins: int = 10,
-    min_prob_bin: float = 0.0,
-) -> list[float]:
+    targets: np.ndarray, probs: np.ndarray, groups: np.ndarray, n_bins: int = 10
+) -> float:
     bin_edges = np.linspace(0, 1, n_bins + 1)
     bin_indices = np.digitize(probs, bin_edges)
+    
+    def _fun(i: int) -> float:
+        mask = bin_indices == i + 1
+        mean_gp = np.mean(group * mask)
+        return np.mean(group * mask * (targets - probs)) ** 2 / mean_gp if mean_gp > 0. else 0.
 
-    gasce = []
+    gasce = [] 
     for j in range(groups.shape[1]):
         group = groups[:, j]
-        
         mean_g = np.mean(group)
-        if mean_g == 0:
-            gasce.append(np.nan)
-        else:
-            gasce.append(0.0)
-            
-            for i in range(1, n_bins + 2):
-                mask = bin_indices == i
-                mean_pg = np.mean(group * mask)
-                if mean_pg > min_prob_bin:
-                    gasce[-1] += np.mean(group[mask] * (targets[mask] - probs[mask])) ** 2
+        
+        if mean_g > 0:
+            gasce.append(trapezoidal_rule(_fun, np.arange(0, n_bins + 1)))
             gasce[-1] /= mean_g
-
+        else:
+            gasce.append(np.nan)
     return gasce
 
 
@@ -77,29 +56,33 @@ def grouped_average_smooth_squared_calibration_error(
     probs: np.ndarray,
     groups: np.ndarray,
     n_bins: int = 10,
-    min_prob_bin: float = 0.0, 
     sigma: float = 0.1
 ) -> list[float]:
-    bin_edges = np.linspace(0, 1, n_bins + 1)
-    bin_indices = np.digitize(probs, bin_edges)
+    def _fun(p: float) -> float:
+        kernels = norm.pdf(probs, loc=p, scale=sigma)
+        mean_gk = np.mean(group * kernels)
+        return np.mean(group * kernels * (targets - probs)) ** 2 / mean_gk
 
-    gasce = []
+    gassce = [] 
     for j in range(groups.shape[1]):
         group = groups[:, j]
-        
         mean_g = np.mean(group)
-        if mean_g == 0:
-            gasce.append(np.nan)
+        
+        if mean_g > 0:
+            gassce.append(trapezoidal_rule(_fun, np.linspace(0, 1, n_bins + 1)))
+            gassce[-1] / mean_g
         else:
-            gasce.append(0.0)
-            
-            for i, p in enumerate(bin_edges):
-                mask = bin_indices == i + 1
-                mean_pg = np.mean(mask * group)
-                
-                if mean_pg > min_prob_bin:
-                    kernels = norm.pdf(probs, loc=p, scale=sigma)
-                    gasce[-1] += mean_pg * np.mean(kernels * group * (targets - probs)) ** 2
-            gasce[-1] /= mean_g
+            gassce.append(np.nan)
+    return gassce
 
-    return gasce
+
+def trapezoidal_rule(fun: Callable, args: np.array) -> float:
+    size = len(args)
+    area = 0
+    for i, arg in enumerate(args):
+        delta = fun(arg)
+        if i == 0 or i == size - 1:
+            delta /= 2
+        area += delta
+    area *= 1 / (size - 1)
+    return area

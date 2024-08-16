@@ -3,6 +3,7 @@ from typing import Optional
 
 import numpy as np
 from scipy.stats import norm
+from scipy.linalg import lstsq
 
 from caliber.binary_classification.base import AbstractBinaryClassificationModel
 from caliber.binary_classification.metrics.asce import (
@@ -127,6 +128,10 @@ class IterativeKernelizedBinningBinaryClassificationModel(
         b = np.mean(
             kernels[:, :, None] * groups[:, None] * (targets - probs)[:, None, None], 0
         ).flatten()
-        return np.linalg.lstsq(A, b, rcond=None)[0].reshape(
+        # return np.linalg.lstsq(A, b, rcond=None)[0].reshape(
+        #     self.n_bins + 1, groups.shape[1]
+        # )
+        return lstsq(A, b, cond=None, lapack_driver="gelsy")[0].reshape(
             self.n_bins + 1, groups.shape[1]
         )
+        
