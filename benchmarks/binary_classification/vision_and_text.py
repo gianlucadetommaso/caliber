@@ -24,6 +24,7 @@ from caliber.binary_classification.metrics import (
     expected_calibration_error,
     grouped_average_squared_calibration_error
 )
+from scipy.stats import laplace
 from tqdm import tqdm
 
 
@@ -32,21 +33,22 @@ DATA_DIR = "/Users/gianluca.detommaso/predictions/"
 METRICS_DIR = "/Users/gianluca.detommaso/caliber/benchmarks/binary_classification"
 DO_TRAIN = True
 NUM_SEEDS = 30
-WITH_GROUPS = False
+WITH_GROUPS = True
 GROUP_MODEL = GaussianMixture(n_components=5)
 GROUP_SCORES_THRESHOLD = 0.8
-METRICS_TO_PRINT = ["asce"]
+METRICS_TO_PRINT = ["gasce"]
 
 MODELS = {
     "uncalib": None,
-    "beta": BetaBinaryClassificationModel(),
+    # "beta": BetaBinaryClassificationModel(),
     "hb": HistogramBinningBinaryClassificationModel(),
-    "sl": SmoothLinearScalingBinaryClassificationModel(),
-    "ibls": IterativeBinningBinaryClassificationModel(
-        bin_model=BrierLinearScalingBinaryClassificationModel(),
-    ),
-    "osk": OneShotKernelizedBinaryClassificationModel(),
+    # "sl": SmoothLinearScalingBinaryClassificationModel(),
+    # "ibls": IterativeBinningBinaryClassificationModel(
+    #     bin_model=BrierLinearScalingBinaryClassificationModel(),
+    # ),
+    # "osk": OneShotKernelizedBinaryClassificationModel(),
     "ik": IterativeKernelizedBinningBinaryClassificationModel(),
+    # "ik_lap": IterativeKernelizedBinningBinaryClassificationModel(kernel=laplace),
 }
 
 metrics_filename = "metrics" + ("_w_" if WITH_GROUPS else "_wo_") + "groups_attempt.json" 

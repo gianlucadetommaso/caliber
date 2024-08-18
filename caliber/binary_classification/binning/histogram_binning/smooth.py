@@ -2,7 +2,7 @@ import logging
 from typing import Optional
 
 import numpy as np
-from scipy.stats import norm
+from scipy.stats import norm, laplace
 from scipy.linalg import lstsq
 
 from caliber.binary_classification.base import AbstractBinaryClassificationModel
@@ -21,6 +21,7 @@ class IterativeKernelizedBinningBinaryClassificationModel(
         seed: int = 0,
         sigma: float = 0.1,
         max_rounds: int = 1000,
+        kernel = norm
     ):
         super().__init__()
         self.n_bins = n_bins
@@ -29,6 +30,7 @@ class IterativeKernelizedBinningBinaryClassificationModel(
         self._bin_edges = None
         self.sigma = sigma
         self.max_rounds = max_rounds
+        self.kernel = kernel
 
     def fit(
         self,
@@ -55,8 +57,8 @@ class IterativeKernelizedBinningBinaryClassificationModel(
         )
 
         val_assces = [
-            # average_squared_calibration_error(val_targets, val_probs)
-            average_smooth_squared_calibration_error(val_targets, val_probs, sigma=self.sigma)
+            average_squared_calibration_error(val_targets, val_probs)
+            # average_smooth_squared_calibration_error(val_targets, val_probs, sigma=self.sigma)
         ]
 
         for t in range(self.max_rounds):
@@ -64,8 +66,8 @@ class IterativeKernelizedBinningBinaryClassificationModel(
 
             val_probs = self._update_proba(params, val_probs, val_groups)
             val_assces.append(
-                # average_squared_calibration_error(val_targets, val_probs)
-                average_smooth_squared_calibration_error(val_targets, val_probs, sigma=self.sigma)
+                average_squared_calibration_error(val_targets, val_probs)
+                # average_smooth_squared_calibration_error(val_targets, val_probs, sigma=self.sigma)
             )
 
             if val_assces[-1] >= val_assces[-2]:
@@ -108,7 +110,7 @@ class IterativeKernelizedBinningBinaryClassificationModel(
         return np.linspace(0, 1, self.n_bins + 1)
 
     def _get_kernels(self, probs: np.ndarray, sigma) -> np.ndarray:
-        return np.stack([norm.pdf(probs, i, sigma) for i in self._bin_edges]).T
+        return np.stack([self.kernel.pdf(probs, i, sigma) for i in self._bin_edges]).T
 
     @staticmethod
     def _initialize_groups(size: int):
