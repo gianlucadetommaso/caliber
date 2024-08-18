@@ -7,9 +7,7 @@ from caliber.binary_classification.minimizing.mixins.fit.smooth_fit import (
 )
 
 
-class KernelisedFitBinaryClassificationMixin(
-    SmoothFitBinaryClassificationMixin
-):
+class KernelisedFitBinaryClassificationMixin(SmoothFitBinaryClassificationMixin):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 

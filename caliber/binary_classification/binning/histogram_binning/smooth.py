@@ -2,12 +2,13 @@ import logging
 from typing import Optional
 
 import numpy as np
-from scipy.stats import norm, laplace
 from scipy.linalg import lstsq
+from scipy.stats import laplace, norm
 
 from caliber.binary_classification.base import AbstractBinaryClassificationModel
 from caliber.binary_classification.metrics.asce import (
-    average_squared_calibration_error, average_smooth_squared_calibration_error
+    average_smooth_squared_calibration_error,
+    average_squared_calibration_error,
 )
 
 
@@ -21,7 +22,7 @@ class IterativeKernelizedBinningBinaryClassificationModel(
         seed: int = 0,
         sigma: float = 0.1,
         max_rounds: int = 1000,
-        kernel = norm
+        kernel=norm,
     ):
         super().__init__()
         self.n_bins = n_bins
@@ -136,4 +137,3 @@ class IterativeKernelizedBinningBinaryClassificationModel(
         return lstsq(A, b, cond=None, lapack_driver="gelsy")[0].reshape(
             self.n_bins + 1, groups.shape[1]
         )
-        

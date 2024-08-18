@@ -1,13 +1,17 @@
+from functools import partial
 from typing import Optional
 
 import numpy as np
 
+from caliber.binary_classification.metrics.asce import (
+    average_smooth_squared_calibration_error,
+)
 from caliber.binary_classification.minimizing.linear_scaling.calibration.base import (
     CalibrationLinearScalingBinaryClassificationModel,
 )
-from functools import partial
-from caliber.binary_classification.minimizing.linear_scaling.mixins.fit.smooth_fit import LinearScalingSmoothFitBinaryClassificationMixin
-from caliber.binary_classification.metrics.asce import average_smooth_squared_calibration_error
+from caliber.binary_classification.minimizing.linear_scaling.mixins.fit.smooth_fit import (
+    LinearScalingSmoothFitBinaryClassificationMixin,
+)
 
 
 class SmoothLinearScalingBinaryClassificationModel(
@@ -20,10 +24,12 @@ class SmoothLinearScalingBinaryClassificationModel(
         minimize_options: Optional[dict] = None,
         has_intercept: bool = True,
         sigma: float = 0.1,
-        n_bins: int = 10
+        n_bins: int = 10,
     ) -> None:
         super().__init__(
-            loss_fn=partial(average_smooth_squared_calibration_error, n_bins=n_bins, sigma=sigma),
+            loss_fn=partial(
+                average_smooth_squared_calibration_error, n_bins=n_bins, sigma=sigma
+            ),
             minimize_options=minimize_options,
             has_intercept=has_intercept,
             has_bivariate_slope=False,

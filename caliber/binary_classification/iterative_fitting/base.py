@@ -43,9 +43,9 @@ class IterativeFittingBinaryClassificationModel(AbstractBinaryClassificationMode
         )
         if groups is not None:
             calib_groups, val_groups = (
-                    groups[perm[:calib_size]],
-                    groups[perm[calib_size:]],
-                )
+                groups[perm[:calib_size]],
+                groups[perm[calib_size:]],
+            )
         else:
             calib_groups, val_groups = None, None
 
