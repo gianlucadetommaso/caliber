@@ -3,15 +3,15 @@ from typing import Callable, Optional
 
 import numpy as np
 from scipy.optimize import minimize
-from sklearn.metrics import log_loss
 
 from caliber.binary_classification.base import AbstractBinaryClassificationModel
+from caliber.binary_classification.metrics.log_loss import log_loss
 
 
 class IterativeFittingBinaryClassificationModel(AbstractBinaryClassificationModel):
     def __init__(
         self,
-        max_rounds: int = 1000,
+        max_rounds: int = 10,
         split: float = 0.8,
         seed: int = 0,
         loss_fn: Callable[[np.ndarray, np.ndarray], float] = log_loss,
@@ -41,10 +41,13 @@ class IterativeFittingBinaryClassificationModel(AbstractBinaryClassificationMode
             targets[perm[:calib_size]],
             targets[perm[calib_size:]],
         )
-        calib_groups, val_groups = (
-            groups[perm[:calib_size]],
-            groups[perm[calib_size:]],
-        )
+        if groups is not None:
+            calib_groups, val_groups = (
+                groups[perm[:calib_size]],
+                groups[perm[calib_size:]],
+            )
+        else:
+            calib_groups, val_groups = None, None
 
         self._bin_edges = self._get_bin_edges()
         calib_features = self._get_features(calib_probs, calib_groups)

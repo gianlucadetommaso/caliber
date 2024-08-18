@@ -2,7 +2,7 @@ from caliber.binary_classification.binning.histogram_binning.base import (
     HistogramBinningBinaryClassificationModel,
 )
 from caliber.binary_classification.binning.histogram_binning.smooth import (
-    IterativeSmoothHistogramBinningBinaryClassificationModel,
+    IterativeKernelizedBinningBinaryClassificationModel,
 )
 from caliber.binary_classification.binning.isotonic_regression.base import (
     IsotonicRegressionBinaryClassificationModel,
@@ -18,6 +18,9 @@ from caliber.binary_classification.group_conditional_unbiased.base import (
 )
 from caliber.binary_classification.iterative_fitting.base import (
     IterativeFittingBinaryClassificationModel,
+)
+from caliber.binary_classification.minimizing.kernelized.base import (
+    OneShotKernelizedBinaryClassificationModel,
 )
 from caliber.binary_classification.minimizing.linear_scaling.calibration.asce_linear_scaling import (
     ASCELinearScalingBinaryClassificationModel,
@@ -43,6 +46,9 @@ from caliber.binary_classification.minimizing.linear_scaling.calibration.knee im
 )
 from caliber.binary_classification.minimizing.linear_scaling.calibration.precrec import (
     PrecisionRecallLinearScalingBinaryClassificationModel,
+)
+from caliber.binary_classification.minimizing.linear_scaling.calibration.smooth import (
+    SmoothLinearScalingBinaryClassificationModel,
 )
 from caliber.binary_classification.minimizing.linear_scaling.performance.bal_acc_linear_scaling import (
     BalancedAccuracyLinearScalingBinaryClassificationModel,

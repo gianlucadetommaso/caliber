@@ -22,15 +22,17 @@ from caliber import (
     IsotonicRegressionBinaryClassificationModel,
     IterativeBinningBinaryClassificationModel,
     IterativeFittingBinaryClassificationModel,
-    IterativeSmoothHistogramBinningBinaryClassificationModel,
+    IterativeKernelizedBinningBinaryClassificationModel,
     KneePointLinearScalingBinaryClassificationModel,
     ModelBiasConstantShiftBinaryClassificationModel,
     NegativeF1LinearScalingBinaryClassificationModel,
+    OneShotKernelizedBinaryClassificationModel,
     PositiveF1LinearScalingBinaryClassificationModel,
     PositiveNegativeRatesLinearScalingBinaryClassificationModel,
     PrecisionRecallLinearScalingBinaryClassificationModel,
     PredictiveValuesLinearScalingBinaryClassificationModel,
     RighteousnessLinearScalingBinaryClassificationModel,
+    SmoothLinearScalingBinaryClassificationModel,
 )
 from caliber.binary_classification.metrics import (
     average_smooth_squared_calibration_error,
@@ -77,75 +79,77 @@ for dataset_name, dataset in datasets.items():
     test_preds = (test_probs >= THRESHOLD).astype(int)
 
     posthoc_models = {
-        "balanced_accuracy_linear_scaling": BalancedAccuracyLinearScalingBinaryClassificationModel(
-            threshold=THRESHOLD
-        ),
-        "balanced_accuracy_temperature_scaling": BalancedAccuracyLinearScalingBinaryClassificationModel(
-            threshold=THRESHOLD, has_intercept=False
-        ),
-        "positive_f1_linear_scaling": PositiveF1LinearScalingBinaryClassificationModel(
-            threshold=THRESHOLD
-        ),
-        "positive_f1_temperature_scaling": PositiveF1LinearScalingBinaryClassificationModel(
-            threshold=THRESHOLD, has_intercept=False
-        ),
-        "negative_f1_linear_scaling": NegativeF1LinearScalingBinaryClassificationModel(
-            threshold=THRESHOLD
-        ),
-        "negative_f1_temperature_scaling": NegativeF1LinearScalingBinaryClassificationModel(
-            threshold=THRESHOLD, has_intercept=False
-        ),
-        "predictive_values_linear_scaling": PredictiveValuesLinearScalingBinaryClassificationModel(
-            threshold=THRESHOLD
-        ),
-        "predictive_values_temperature_scaling": PredictiveValuesLinearScalingBinaryClassificationModel(
-            threshold=THRESHOLD, has_intercept=False
-        ),
-        "positive_negative_rates_linear_scaling": PositiveNegativeRatesLinearScalingBinaryClassificationModel(
-            threshold=THRESHOLD
-        ),
-        "positive_negative_rates_temperature_scaling": PositiveNegativeRatesLinearScalingBinaryClassificationModel(
-            threshold=THRESHOLD, has_intercept=False
-        ),
-        "righteousness_linear_scaling": RighteousnessLinearScalingBinaryClassificationModel(
-            threshold=THRESHOLD
-        ),
-        "righteousness_temperature_scaling": RighteousnessLinearScalingBinaryClassificationModel(
-            threshold=THRESHOLD, has_intercept=False
-        ),
-        "precrec_linear_scaling": PrecisionRecallLinearScalingBinaryClassificationModel(
-            threshold=THRESHOLD
-        ),
+        # "balanced_accuracy_linear_scaling": BalancedAccuracyLinearScalingBinaryClassificationModel(
+        #     threshold=THRESHOLD
+        # ),
+        # "balanced_accuracy_temperature_scaling": BalancedAccuracyLinearScalingBinaryClassificationModel(
+        #     threshold=THRESHOLD, has_intercept=False
+        # ),
+        # "positive_f1_linear_scaling": PositiveF1LinearScalingBinaryClassificationModel(
+        #     threshold=THRESHOLD
+        # ),
+        # "positive_f1_temperature_scaling": PositiveF1LinearScalingBinaryClassificationModel(
+        #     threshold=THRESHOLD, has_intercept=False
+        # ),
+        # "negative_f1_linear_scaling": NegativeF1LinearScalingBinaryClassificationModel(
+        #     threshold=THRESHOLD
+        # ),
+        # "negative_f1_temperature_scaling": NegativeF1LinearScalingBinaryClassificationModel(
+        #     threshold=THRESHOLD, has_intercept=False
+        # ),
+        # "predictive_values_linear_scaling": PredictiveValuesLinearScalingBinaryClassificationModel(
+        #     threshold=THRESHOLD
+        # ),
+        # "predictive_values_temperature_scaling": PredictiveValuesLinearScalingBinaryClassificationModel(
+        #     threshold=THRESHOLD, has_intercept=False
+        # ),
+        # "positive_negative_rates_linear_scaling": PositiveNegativeRatesLinearScalingBinaryClassificationModel(
+        #     threshold=THRESHOLD
+        # ),
+        # "positive_negative_rates_temperature_scaling": PositiveNegativeRatesLinearScalingBinaryClassificationModel(
+        #     threshold=THRESHOLD, has_intercept=False
+        # ),
+        # "righteousness_linear_scaling": RighteousnessLinearScalingBinaryClassificationModel(
+        #     threshold=THRESHOLD
+        # ),
+        # "righteousness_temperature_scaling": RighteousnessLinearScalingBinaryClassificationModel(
+        #     threshold=THRESHOLD, has_intercept=False
+        # ),
+        # "precrec_linear_scaling": PrecisionRecallLinearScalingBinaryClassificationModel(
+        #     threshold=THRESHOLD
+        # ),
         "brier_linear_scaling": BrierLinearScalingBinaryClassificationModel(),
-        "brier_temperature_scaling": BrierLinearScalingBinaryClassificationModel(
-            has_intercept=False
-        ),
+        # "brier_temperature_scaling": BrierLinearScalingBinaryClassificationModel(
+        #     has_intercept=False
+        # ),
         "cross_entropy_linear_scaling": CrossEntropyLinearScalingBinaryClassificationModel(),
-        "cross_entropy_temperature_scaling": CrossEntropyLinearScalingBinaryClassificationModel(
-            has_intercept=False
-        ),
+        # "cross_entropy_temperature_scaling": CrossEntropyLinearScalingBinaryClassificationModel(
+        #     has_intercept=False
+        # ),
         "focal_linear_scaling": FocalLinearScalingBinaryClassificationModel(),
-        "focal_temperature_scaling": FocalLinearScalingBinaryClassificationModel(
-            has_intercept=False
-        ),
-        "knee_linear_scaling": KneePointLinearScalingBinaryClassificationModel(),
-        "knee_temperature_scaling": KneePointLinearScalingBinaryClassificationModel(
-            has_intercept=False
-        ),
-        "constant_shift": ModelBiasConstantShiftBinaryClassificationModel(),
+        # "focal_temperature_scaling": FocalLinearScalingBinaryClassificationModel(
+        #     has_intercept=False
+        # ),
+        # "knee_linear_scaling": KneePointLinearScalingBinaryClassificationModel(),
+        # "knee_temperature_scaling": KneePointLinearScalingBinaryClassificationModel(
+        #     has_intercept=False
+        # ),
+        # "constant_shift": ModelBiasConstantShiftBinaryClassificationModel(),
         "histogram_binning": HistogramBinningBinaryClassificationModel(),
         "isotonic_regression": IsotonicRegressionBinaryClassificationModel(),
-        "iterative_smooth_histogram_binning": IterativeSmoothHistogramBinningBinaryClassificationModel(),
-        "iterative_smooth_grouped_histogram_binning": IterativeSmoothHistogramBinningBinaryClassificationModel(),
+        "kernelized": OneShotKernelizedBinaryClassificationModel(),
+        "smooth_linear_scaling": SmoothLinearScalingBinaryClassificationModel(),
+        "iterative_smooth_histogram_binning": IterativeKernelizedBinningBinaryClassificationModel(),
+        # "iterative_smooth_grouped_histogram_binning": IterativeSmoothHistogramBinningBinaryClassificationModel(),
         "iterative_histogram_binning": IterativeBinningBinaryClassificationModel(),
         "iterative_linear_binning": IterativeBinningBinaryClassificationModel(
             bin_model=BrierLinearScalingBinaryClassificationModel(),
         ),
-        "iterative_grouped_linear_binning": IterativeBinningBinaryClassificationModel(
-            bin_model=BrierLinearScalingBinaryClassificationModel(),
-        ),
+        # "iterative_grouped_linear_binning": IterativeBinningBinaryClassificationModel(
+        #     bin_model=BrierLinearScalingBinaryClassificationModel(),
+        # ),
         "grouped_conditional_unbiased": GroupConditionalUnbiasedBinaryClassificationModel(),
-        "iterative_grouped_fitting": IterativeFittingBinaryClassificationModel(),
+        # "iterative_grouped_fitting": IterativeFittingBinaryClassificationModel(),
     }
     performance_metrics = {
         "accuracy": accuracy_score,
