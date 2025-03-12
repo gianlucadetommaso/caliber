@@ -6,7 +6,7 @@ from caliber import (
     ConformalizedQuantileRegressionModel,
     IterativeBinningMeanRegressionModel,
     IterativeBinningQuantileRegressionModel,
-    JackknifePlusRegressionModel
+    JackknifePlusRegressionModel,
 )
 from data import load_diabetes_data
 
@@ -45,7 +45,7 @@ METHODS = {
     "ibmr": IterativeBinningMeanRegressionModel(
         confidence=CONFIDENCE,
     ),
-    "jkp": JackknifePlusRegressionModel(model=pred_model, coverage=0.95, loo_size=3)
+    "jkp": JackknifePlusRegressionModel(model=pred_model, coverage=0.95, loo_size=3),
 }
 
 

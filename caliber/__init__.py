@@ -118,6 +118,9 @@ from caliber.regression.conformal_regression.base import (
 from caliber.regression.conformal_regression.cqr.base import (
     ConformalizedQuantileRegressionModel,
 )
+from caliber.regression.conformal_regression.jackknifeplus.base import (
+    JackknifePlusRegressionModel,
+)
 from caliber.regression.minimizing.heteroskedastic.base import (
     HeteroskedasticRegressionModel,
 )
@@ -128,7 +131,6 @@ from caliber.regression.minimizing.variance_regression.base import LogStdRegress
 from caliber.regression.minimizing.variance_regression.linear.base import (
     LogStdLinearRegressionModel,
 )
-from caliber.regression.conformal_regression.jackknifeplus.base import JackknifePlusRegressionModel
 
 __all__ = [
     "JackknifePlusRegressionModel",
@@ -177,5 +179,5 @@ __all__ = [
     "HistogramBinningBinaryClassificationModel",
     "GroupConditionalUnbiasedBinaryClassificationModel",
     "ECELinearScalingBinaryClassificationModel",
-    "CrossEntropyLinearScalingBinaryClassificationModel"
+    "CrossEntropyLinearScalingBinaryClassificationModel",
 ]
