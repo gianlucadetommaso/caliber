@@ -19,7 +19,13 @@ class CVPlusRegressionModel(AbstractRegressionModel):
     """
 
     def __init__(
-        self, model: Any, coverage: float, num_folds: int = 5, seed: int = 0, cv_prediction: bool = False, max_validation_fold_size: int = 1000
+        self,
+        model: Any,
+        coverage: float,
+        num_folds: int = 5,
+        seed: int = 0,
+        cv_prediction: bool = False,
+        max_validation_fold_size: int = 1000,
     ) -> None:
         """
 
@@ -38,19 +44,27 @@ class CVPlusRegressionModel(AbstractRegressionModel):
         self._rng = np.random.default_rng(seed)
         self._max_validation_fold_size = max_validation_fold_size
 
-    def fit(self, inputs: NDArray[np.float64], targets: NDArray[np.float64]) -> NDArray[np.float64]:
+    def fit(
+        self, inputs: NDArray[np.float64], targets: NDArray[np.float64]
+    ) -> NDArray[np.float64]:
         num_inputs = len(inputs)
         fold_size = num_inputs // self._num_folds
         perm = self._rng.choice(num_inputs, size=num_inputs, replace=False)
-        fold_indices = [[perm[j * fold_size + i] for i in range(fold_size)] for j in range(self._num_folds)]
-        fold_indices[-1].extend(perm[self._num_folds * fold_size:].tolist())
+        fold_indices = [
+            [perm[j * fold_size + i] for i in range(fold_size)]
+            for j in range(self._num_folds)
+        ]
+        fold_indices[-1].extend(perm[self._num_folds * fold_size :].tolist())
 
         self._models = []
         self._cv_errors = []
         for i in tqdm(range(self._num_folds), desc="Cross-Validation"):
-            train_indices = sum(fold_indices[:i] + fold_indices[i+1:], [])
-            val_indices = fold_indices[i][:self._max_validation_fold_size]
-            train_inputs, train_targets = inputs[train_indices, :], targets[train_indices]
+            train_indices = sum(fold_indices[:i] + fold_indices[i + 1 :], [])
+            val_indices = fold_indices[i][: self._max_validation_fold_size]
+            train_inputs, train_targets = (
+                inputs[train_indices, :],
+                targets[train_indices],
+            )
             val_inputs, val_targets = inputs[val_indices], targets[val_indices]
 
             model = deepcopy(self._model)
@@ -59,7 +73,9 @@ class CVPlusRegressionModel(AbstractRegressionModel):
             val_preds = model.predict(val_inputs)
             if val_preds.ndim == 2:
                 if val_preds.shape[1] != 1:
-                    raise ValueError("This method is supported only for scalar targets.")
+                    raise ValueError(
+                        "This method is supported only for scalar targets."
+                    )
                 val_preds = val_preds.squeeze(1)
 
             self._cv_errors.append(np.abs(val_targets - val_preds))
@@ -76,7 +92,9 @@ class CVPlusRegressionModel(AbstractRegressionModel):
                 preds_i = model.predict(inputs)
                 if preds_i.ndim == 2:
                     if preds_i.shape[1] != 1:
-                        raise ValueError("This method is supported only for scalar targets.")
+                        raise ValueError(
+                            "This method is supported only for scalar targets."
+                        )
                     preds_i = preds_i.squeeze(1)
                 preds += preds_i
             preds /= self._loo_size
@@ -90,13 +108,15 @@ class CVPlusRegressionModel(AbstractRegressionModel):
             preds_i = model.predict(inputs)
             if preds_i.ndim == 2:
                 if preds_i.shape[1] != 1:
-                    raise ValueError("This method is supported only for scalar targets.")
+                    raise ValueError(
+                        "This method is supported only for scalar targets."
+                    )
                 preds_i = preds_i.squeeze(1)
             preds.append(preds_i)
-            
+
         lefts_list = []
         rights_list = []
-        
+
         for preds_i in preds:
             lefts_list.append(preds_i - self._cv_errors[i][:, None])
             rights_list.append(preds_i + self._cv_errors[i][:, None])
