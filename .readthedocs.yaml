@@ -1,32 +1,30 @@
-name: CI
+# .readthedocs.yaml configuration file
 
-on:
-  push:
-    branches:
-      - main
-  pull_request:
-    branches:
-      - main
+version: 2
 
-jobs:
-  build:
-    runs-on: ubuntu-20.04
+# Define the build configuration environment
+build:
+  os: ubuntu-20.04
+  tools:
+    python: '3.10'
 
-    steps:
-      - uses: actions/checkout@v3
-      - name: Set up Python 3.10
-        uses: actions/setup-python@v4
-        with:
-          python-version: '3.10'
+# Define dependencies and build steps for your documentation
+python:
+  version: 3.10
+  install:
+    - method: pip
+      path: .
 
-      - name: Install dependencies
-        run: |
-          python -m pip install --upgrade pip
-          pip install poetry==1.2.2
-          poetry config virtualenvs.create false
-          poetry env use python3.10
-          poetry install -E docs
+# Optionally use `uv` if it is indeed a CLI tool for managing
+# dependencies or building the docs, though specifics will vary:
+  # - method: shell
+  #   command: uv install <your-specific-commands>
 
-      - name: Build documentation
-        run: |
-          sphinx-build -b html docs/source docs/build/html
+sphinx:
+  configuration: docs/source/conf.py
+  fail_on_warning: false
+
+# Build extension configuration
+formats:
+  - pdf
+  - epub
