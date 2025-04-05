@@ -22,10 +22,21 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
 
+      # Install the latest versino of uv
+      - name: Install the latest version of uv
+        uses: astral-sh/setup-uv@v5
+
+      # # Configure Poetry to use the virtual environment in the project
+      # - name: Setup Poetry
+      #   run: |
+      #     poetry config virtualenvs.in-project true
+
+      # Install the dependencies
+      - name: Install Package
+        run: |
+          uv sync
+          uv pip install -r pyproject.toml
+
       # Run the unit tests and build the coverage report
       - name: Run Tests
-        run: |
-          curl -LsSf https://astral.sh/uv/install.sh | sh
-          uv venv
-          uv pip install -r pyproject.toml
-          uv run pytest --cov=caliber --cov-report=term-missing --cov-report=xml
+        run: poetry run pytest --cov=caliber --cov-report=term-missing --cov-report=xml
