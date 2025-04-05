@@ -31,7 +31,7 @@ jobs:
       - name: Build the documentation with Sphinx
         run: |
           uv sync
-          uv pip install -r pyproject --extra doc
+          uv pip install -r pyproject --extra docs
           sudo apt install pandoc
           pip install pandoc
           cd docs
