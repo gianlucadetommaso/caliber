@@ -1,36 +1,18 @@
-name: Read the Docs
+version: 2
 
-jobs:
-  build:
-    # Functionality for testing documentation builds on multiple OSes and Python versions
-    name: Build docs (${{ matrix.python-version }}, ${{ matrix.os }})
-    runs-on: "ubuntu-latest"
-    defaults:
-      run:
-        shell: bash -l {0}
-    strategy:
-      matrix:
-        os: ["ubuntu-latest"]
-        python-version: ["3.10"]
-
-    steps:
-      # Grap the latest commit from the branch
+# Set the version of Python and other tools you might need
+build:
+  os: ubuntu-20.04
+  tools:
+    python: '3.10'
+  jobs:
+    post_create_environment:
       - name: Checkout the branch
         uses: actions/checkout@v2.3.1
-        with:
-          persist-credentials: false
-
-      # Install Poetry and build the documentation
-      - name: Install and configure Poetry
-        uses: astral-sh/setup-uv@v5
-
-      - name: Build the documentation with Sphinx
-        run: |
-          uv venv
-          uv pip install -r pyproject.toml --extra docs
+    post_install:
+      - uv pip install -r pyproject.toml --extra docs
 
 # Build documentation in the docs/ directory with Sphinx
 sphinx:
   configuration: docs/source/conf.py
   fail_on_warning: false
-
