@@ -29,9 +29,10 @@ jobs:
       # Install the dependencies
       - name: Install Package
         run: |
-          cd ..
           uv pip install -r pyproject.toml
 
       # Run the unit tests and build the coverage report
       - name: Run Tests
-        run: uv run pytest --cov=caliber --cov-report=term-missing --cov-report=xml
+        run: | 
+          pwd
+          uv run pytest --cov=caliber --cov-report=term-missing --cov-report=xml
