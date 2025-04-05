@@ -34,9 +34,11 @@ jobs:
       # Install the dependencies
       - name: Install Package
         run: |
+          pwd
           uv venv .venv
           pwd
           uv pip install -r pyproject.toml
+          pwd
 
       # Run the unit tests and build the coverage report
       - name: Run Tests
