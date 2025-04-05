@@ -32,12 +32,13 @@ jobs:
       #     poetry config virtualenvs.in-project true
 
       # Install the dependencies
-      - name: Install Package
-        run: |
-          uv venv
-          uv pip install -r pyproject.toml
+      # - name: Install Package
+      #   run: |
+      #     uv sync
+      #     uv pip install -r pyproject.toml
 
       # Run the unit tests and build the coverage report
       - name: Run Tests
         run: |
+          uv sync
           uv run pytest --cov=caliber --cov-report=term-missing --cov-report=xml
