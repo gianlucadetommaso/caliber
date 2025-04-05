@@ -20,7 +20,7 @@ dependencies = [
 ]
 
 [tool.setuptools]
-packages = ["NAME"]
+packages = ["caliber"]
 
 [project.optional-dependencies]
 torch = [
