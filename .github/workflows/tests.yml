@@ -26,16 +26,10 @@ jobs:
       - name: Install the latest version of uv
         uses: astral-sh/setup-uv@v5
 
-      # # Configure Poetry to use the virtual environment in the project
-      # - name: Setup Poetry
-      #   run: |
-      #     poetry config virtualenvs.in-project true
-
       # Install the dependencies
       - name: Install Package
         run: |
-          uv venv
-          pwd
+          uv venv .venv
           uv pip install -r pyproject.toml
 
       # Run the unit tests and build the coverage report
