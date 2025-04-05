@@ -41,4 +41,4 @@ jobs:
       - name: Run Tests
         run: |
           uv sync
-          uv run pytest --cov=caliber --cov-report=term-missing --cov-report=xml
+          uv run -m pytest --cov=caliber --cov-report=term-missing --cov-report=xml
