@@ -11,3 +11,6 @@ Conformal Regression
 
 .. automodule:: caliber.regression.conformal_regression.jackknifeplus.base
     :members:
+
+.. automodule:: caliber.regression.conformal_regression.cvplus.base
+    :members:

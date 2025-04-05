@@ -118,6 +118,7 @@ from caliber.regression.conformal_regression.base import (
 from caliber.regression.conformal_regression.cqr.base import (
     ConformalizedQuantileRegressionModel,
 )
+from caliber.regression.conformal_regression.cvplus.base import CVPlusRegressionModel
 from caliber.regression.conformal_regression.jackknifeplus.base import (
     JackknifePlusRegressionModel,
 )
@@ -140,6 +141,7 @@ __all__ = [
     "HeteroskedasticRegressionModel",
     "ConformalizedQuantileRegressionModel",
     "ConformalizedScoreRegressionModel",
+    "CVPlusRegressionModel",
     "IterativeBinningBinaryClassificationModel",
     "IterativeBinningMeanRegressionModel",
     "IterativeBinningQuantileRegressionModel",
