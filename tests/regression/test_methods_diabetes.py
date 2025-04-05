@@ -4,10 +4,10 @@ from sklearn.linear_model import QuantileRegressor
 
 from caliber import (
     ConformalizedQuantileRegressionModel,
+    CVPlusRegressionModel,
     IterativeBinningMeanRegressionModel,
     IterativeBinningQuantileRegressionModel,
     JackknifePlusRegressionModel,
-    CVPlusRegressionModel
 )
 from data import load_diabetes_data
 
