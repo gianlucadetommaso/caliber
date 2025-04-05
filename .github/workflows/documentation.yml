@@ -26,17 +26,13 @@ jobs:
 
       # Install Poetry and build the documentation
       - name: Install and configure Poetry
-        uses: snok/install-poetry@v1
-        with:
-          version: 1.8.2
-          virtualenvs-create: true
-          virtualenvs-in-project: false
-          installer-parallel: true
+        uses: astral-sh/setup-uv@v5
 
       - name: Build the documentation with Sphinx
         run: |
-          poetry install --all-extras
+          uv sync
+          uv pip install -r pyproject.toml --extra docs
           sudo apt install pandoc
           pip install pandoc
           cd docs
-          poetry run sphinx-build -b html source build/html
+          uv run sphinx-build -b html source build/html

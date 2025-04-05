@@ -118,6 +118,10 @@ from caliber.regression.conformal_regression.base import (
 from caliber.regression.conformal_regression.cqr.base import (
     ConformalizedQuantileRegressionModel,
 )
+from caliber.regression.conformal_regression.cvplus.base import CVPlusRegressionModel
+from caliber.regression.conformal_regression.jackknifeplus.base import (
+    JackknifePlusRegressionModel,
+)
 from caliber.regression.minimizing.heteroskedastic.base import (
     HeteroskedasticRegressionModel,
 )
@@ -128,3 +132,54 @@ from caliber.regression.minimizing.variance_regression.base import LogStdRegress
 from caliber.regression.minimizing.variance_regression.linear.base import (
     LogStdLinearRegressionModel,
 )
+
+__all__ = [
+    "JackknifePlusRegressionModel",
+    "LogStdLinearRegressionModel",
+    "LogStdRegressionModel",
+    "HeteroskedasticLinearRegressionModel",
+    "HeteroskedasticRegressionModel",
+    "ConformalizedQuantileRegressionModel",
+    "ConformalizedScoreRegressionModel",
+    "CVPlusRegressionModel",
+    "IterativeBinningBinaryClassificationModel",
+    "IterativeBinningMeanRegressionModel",
+    "IterativeBinningQuantileRegressionModel",
+    "IterativeSmoothHistogramBinningBinaryClassificationModel",
+    "IterativeFittingBinaryClassificationModel",
+    "MahalanobisBinaryClassificationModel",
+    "KolmogorovInterpolantMulticlassClassificationModel",
+    "DistanceAwareKolmogorovInterpolantBinaryClassificationModel",
+    "DistanceAwareExponentialInterpolantMulticlassClassificationModel",
+    "DistanceAwareHistogramBinningMulticlassClassificationModel",
+    "DistanceAwareHistogramBinningBinaryClassificationModel",
+    "DistanceAwareKolmogorovInterpolantMulticlassClassificationModel",
+    "TemperatureScalingMulticlassClassificationModel",
+    "FocalLinearScalingMulticlassClassificationModel",
+    "DirichletMulticlassClassificationModel",
+    "CrossEntropyLinearScalingMulticlassClassificationModel",
+    "BrierLinearScalingBinaryClassificationModel",
+    "BrierLinearScalingMulticlassClassificationModel",
+    "HistogramBinningMulticlassClassificationModel",
+    "PositiveF1LinearScalingBinaryClassificationModel",
+    "PrecisionFixedRecallLinearScalingBinaryClassificationModel",
+    "PrecisionRecallLinearScalingBinaryClassificationModel",
+    "PredictiveValuesLinearScalingBinaryClassificationModel",
+    "RecallFixedPrecisionLinearScalingBinaryClassificationModel",
+    "RighteousnessLinearScalingBinaryClassificationModel",
+    "DistanceAwareExponentialInterpolantBinaryClassificationModel",
+    "NegativeF1LinearScalingBinaryClassificationModel",
+    "PositiveNegativeRatesLinearScalingBinaryClassificationModel",
+    "BalancedAccuracyLinearScalingBinaryClassificationModel",
+    "KneePointLinearScalingBinaryClassificationModel",
+    "FocalLinearScalingBinaryClassificationModel",
+    "DiagBetaBinaryClassificationModel",
+    "BetaBinaryClassificationModel",
+    "ASCELinearScalingBinaryClassificationModel",
+    "ModelBiasConstantShiftBinaryClassificationModel",
+    "IsotonicRegressionBinaryClassificationModel",
+    "HistogramBinningBinaryClassificationModel",
+    "GroupConditionalUnbiasedBinaryClassificationModel",
+    "ECELinearScalingBinaryClassificationModel",
+    "CrossEntropyLinearScalingBinaryClassificationModel",
+]
