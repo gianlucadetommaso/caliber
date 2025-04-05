@@ -2,7 +2,7 @@ from copy import deepcopy
 from typing import Any
 
 import numpy as np
-import tqdm
+from tqdm import tqdm
 from numpy.typing import NDArray
 
 from caliber.regression.conformal_regression.base import AbstractRegressionModel

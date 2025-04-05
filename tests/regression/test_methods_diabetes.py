@@ -7,6 +7,7 @@ from caliber import (
     IterativeBinningMeanRegressionModel,
     IterativeBinningQuantileRegressionModel,
     JackknifePlusRegressionModel,
+    CVPlusRegressionModel
 )
 from data import load_diabetes_data
 
@@ -46,19 +47,20 @@ METHODS = {
         confidence=CONFIDENCE,
     ),
     "jkp": JackknifePlusRegressionModel(model=pred_model, coverage=0.95, loo_size=3),
+    "cvp": CVPlusRegressionModel(model=pred_model, coverage=0.95, num_folds=3),
 }
 
 
 @pytest.mark.parametrize("m_name", METHODS)
 def test_method(m_name):
     m = METHODS[m_name]
-    if m_name not in ["ibmr", "jkp"]:
+    if m_name not in ["ibmr", "jkp", "cvp"]:
         m.fit(val_quantiles, val_targets)
         calib_test_quantiles = m.predict(test_quantiles)
     elif m_name == "ibmr":
         m.fit(val_preds, val_targets)
         calib_test_quantiles = m.predict(test_preds)
-    elif m_name == "jkp":
+    elif m_name in ["jkp", "cvp"]:
         m.fit(val_inputs, val_targets)
         calib_test_quantiles = m.predict_quantiles(test_inputs)
     check_quantiles(calib_test_quantiles)
