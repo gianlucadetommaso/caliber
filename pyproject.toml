@@ -19,6 +19,9 @@ dependencies = [
     "xgboost>=2.1.4",
 ]
 
+[tool.setuptools]
+packages = ["NAME"]
+
 [project.optional-dependencies]
 torch = [
     "torch>=2.6.0",
