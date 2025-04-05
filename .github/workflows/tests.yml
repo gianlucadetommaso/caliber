@@ -1,41 +1,32 @@
 name: Run Tests
+
 on:
   push:
-    branches:
-      - main
+    branches: [main]
   pull_request:
+    branches: [main]
+
 jobs:
   test:
-    name: Run Tests
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        # Select the Python versions to test against
-        python-version: ['3.9', '3.10', '3.11']
+        python-version: [3.9, 3.10, 3.11]
+
     steps:
-      - name: Check out the code
-        uses: actions/checkout@v3
-        with:
-          fetch-depth: 1
+      - name: Checkout code
+        uses: actions/checkout@v2
+
       - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v2
         with:
           python-version: ${{ matrix.python-version }}
 
-      # Install Poetry
-      - name: Install Poetry
-        uses: snok/install-poetry@v1
-
-      # Configure Poetry to use the virtual environment in the project
-      - name: Setup Poetry
+      - name: Install dependencies
         run: |
-          poetry config virtualenvs.in-project true
+          curl -LsSf https://astral.sh/uv/install.sh | sh
 
-      # Install the dependencies
-      - name: Install Package
+      - name: Run tests
         run: |
-          poetry install
-
-      # Run the unit tests and build the coverage report
-      - name: Run Tests
-        run: poetry run pytest --cov=caliber --cov-report=term-missing --cov-report=xml
+          # Run tests using uv and generate coverage reports.
+          uv run pytest --cov=caliber --cov-report=term-missing --cov-report=xml
