@@ -5,7 +5,7 @@ build:
   os: ubuntu-20.04
   tools:
     python: '3.10'
-    
+
   # Functionality for testing documentation builds on multiple OSes and Python versions
   name: Build docs (${{ matrix.python-version }}, ${{ matrix.os }})
   runs-on: "ubuntu-latest"
