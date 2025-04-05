@@ -1,30 +1,29 @@
-# .readthedocs.yaml configuration file
+name: CI
 
-version: 2
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
 
-# Define the build configuration environment
-build:
-  os: ubuntu-20.04
-  tools:
-    python: '3.10'
+jobs:
+  build:
+    runs-on: ubuntu-20.04
 
-# Define dependencies and build steps for your documentation
-python:
-  version: 3.10
-  install:
-    - method: pip
-      path: .
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up Python 3.10
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
 
-# Optionally use `uv` if it is indeed a CLI tool for managing
-# dependencies or building the docs, though specifics will vary:
-  # - method: shell
-  #   command: uv install <your-specific-commands>
+      - name: Install dependencies
+        run: |
+          curl -LsSf https://astral.sh/uv/install.sh | sh
+          uv pip install -r pyproject.toml --extra docs
 
-sphinx:
-  configuration: docs/source/conf.py
-  fail_on_warning: false
-
-# Build extension configuration
-formats:
-  - pdf
-  - epub
+      - name: Build documentation
+        run: |
+          uv run sphinx-build -b html docs/source docs/build/html

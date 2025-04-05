@@ -26,4 +26,5 @@ jobs:
       - name: Run Tests
         run: |
           curl -LsSf https://astral.sh/uv/install.sh | sh
+          uv pip install -r pyproject.toml
           uv run pytest --cov=caliber --cov-report=term-missing --cov-report=xml
