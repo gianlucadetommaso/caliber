@@ -31,7 +31,7 @@ build:
     - name: Build the documentation with Sphinx
       run: |
         uv sync
-        uv pip install -r pyproject --extra doc
+        uv pip install -r pyproject.toml --extra doc
         sudo apt install pandoc
         pip install pandoc
         cd docs

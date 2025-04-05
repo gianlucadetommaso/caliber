@@ -34,12 +34,10 @@ jobs:
       # Install the dependencies
       - name: Install Package
         run: |
-          uv venv .venv
+          uv venv
           uv pip install -r pyproject.toml
 
       # Run the unit tests and build the coverage report
       - name: Run Tests
         run: |
-          pwd
-          ls .venv
           uv run pytest --cov=caliber --cov-report=term-missing --cov-report=xml
