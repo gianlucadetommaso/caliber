@@ -41,5 +41,5 @@ jobs:
       - name: Run Tests
         run: |
           pwd
-          ls caliber
+          ls .venv
           uv run pytest --cov=caliber --cov-report=term-missing --cov-report=xml
