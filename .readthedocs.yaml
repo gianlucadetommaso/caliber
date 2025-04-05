@@ -14,4 +14,4 @@ build:
          - uv pip install -r pyproject.toml --extra docs
       build:
          html:
-            - uv run sphinx-build -T -b html docs $READTHEDOCS_OUTPUT/html
+            - uv run sphinx-build -T -b html docs/source $READTHEDOCS_OUTPUT/html
