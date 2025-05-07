@@ -18,17 +18,31 @@ class LinearScalingSmoothFitBinaryClassificationMixin(
     def _get_x0(self) -> np.ndarray:
         if self._has_intercept:
             if self._has_bivariate_slope:
-                return np.array([0.0, 1.0, 1.0])
-            return np.array([0.0, 1.0])
-        if self._has_bivariate_slope:
-            return np.array([1.0, 1.0])
-        return np.array(1.0)
+                x0 = np.array([0.0, 1.0, 1.0])
+            else:
+                x0 = np.array([0.0, 1.0])
+        elif self._has_bivariate_slope:
+            x0 = np.array([1.0, 1.0])
+        else:
+            x0 = np.array(1.0)
+
+        if self._num_features > 0:
+            x0 = np.concatenate((x0, np.zeros(self._num_features)))
+
+        return x0
 
     def _get_bounds(self) -> List:
         if self._has_intercept:
             if self._has_bivariate_slope:
-                return [(None, None), (0.0, None), (0.0, None)]
-            return [(None, None), (0.0, None)]
-        if self._has_bivariate_slope:
-            return [(0.0, None), (0.0, None)]
-        return [(0.0, None)]
+                bounds = [(None, None), (0.0, None), (0.0, None)]
+            else:
+                bounds = [(None, None), (0.0, None)]
+        elif self._has_bivariate_slope:
+            bounds = [(0.0, None), (0.0, None)]
+        else:
+            bounds = [(0.0, None)]
+
+        if self._num_features > 0:
+            bounds += [(None, None) for _ in range(self._num_features)]
+
+        return bounds

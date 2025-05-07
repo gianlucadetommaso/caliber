@@ -10,12 +10,20 @@ class SmoothFitBinaryClassificationMixin(abc.ABC):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-    def fit(self, probs: np.ndarray, targets: np.ndarray) -> dict:
+    def fit(
+        self,
+        probs: np.ndarray,
+        targets: np.ndarray,
+        features: Optional[np.ndarray] = None,
+    ) -> dict:
         self._check_targets(targets)
         self._check_probs(probs)
+        self._check_features(features)
 
         def _loss_fn(params):
-            return self._loss_fn(targets, self._get_output_for_loss(params, probs))
+            return self._loss_fn(
+                targets, self._get_output_for_loss(params, probs, features)
+            )
 
         status = minimize(_loss_fn, **self._minimize_options)
         self._params = status.x

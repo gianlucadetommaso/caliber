@@ -22,6 +22,7 @@ class PrecisionRecallLinearScalingBinaryClassificationModel(
         lam: float = 0.01,
         minimize_options: Optional[dict] = None,
         has_intercept: bool = True,
+        num_features: int = 0,
         n_thresholds: int = 100,
     ):
         super().__init__(
@@ -29,6 +30,7 @@ class PrecisionRecallLinearScalingBinaryClassificationModel(
             minimize_options=minimize_options,
             has_intercept=has_intercept,
             has_bivariate_slope=False,
+            num_features=num_features,
         )
         self._lam = lam
         if threshold is None:
