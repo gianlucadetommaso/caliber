@@ -10,4 +10,5 @@ class PredFromProbsBinaryClassificationMixin(BinaryClassificationChecksMixin):
 
     def predict(self, probs: np.ndarray) -> np.ndarray:
         self._check_probs(probs)
+        probs = self.predict_proba(probs)
         return (probs > self.threshold).astype(int)

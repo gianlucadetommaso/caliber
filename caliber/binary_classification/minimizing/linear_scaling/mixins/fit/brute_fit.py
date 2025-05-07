@@ -14,11 +14,18 @@ class LinearScalingBruteFitBinaryClassificationMixin(
     def _get_ranges(self) -> List[Tuple]:
         if self._has_intercept:
             if self._has_bivariate_slope:
-                return [(-2, 2), (0, 4), (0, 4)]
-            return [(-2, 2), (0, 4)]
-        if self._has_bivariate_slope:
-            return [(0, 4), (0, 4)]
-        return [(0, 4)]
+                bounds = [(-2, 2), (0, 4), (0, 4)]
+            else:
+                bounds = [(-2, 2), (0, 4)]
+        elif self._has_bivariate_slope:
+            bounds = [(0, 4), (0, 4)]
+        else:
+            bounds = [(0, 4)]
+
+        if self._num_features > 0:
+            bounds += [(None, None) for _ in range(self._num_features)]
+
+        return bounds
 
     @staticmethod
     def _get_Ns() -> int:

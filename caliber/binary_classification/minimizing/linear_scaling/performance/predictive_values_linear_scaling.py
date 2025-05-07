@@ -16,12 +16,14 @@ class PredictiveValuesLinearScalingBinaryClassificationModel(
         lam: float = 0.01,
         minimize_options: Optional[dict] = None,
         has_intercept: bool = True,
+        num_features: int = 0,
     ):
         super().__init__(
             loss_fn=_predictive_values_loss_fn,
             threshold=threshold,
             minimize_options=minimize_options,
             has_intercept=has_intercept,
+            num_features=num_features,
         )
         self._lam = lam
 

@@ -17,6 +17,7 @@ class PrecisionFixedRecallLinearScalingBinaryClassificationModel(
         lam: float = 0.01,
         minimize_options: Optional[dict] = None,
         has_intercept: bool = True,
+        num_features: int = 0,
         min_recall: float = 0.8,
     ):
         super().__init__(
@@ -24,6 +25,7 @@ class PrecisionFixedRecallLinearScalingBinaryClassificationModel(
             threshold=threshold,
             minimize_options=minimize_options,
             has_intercept=has_intercept,
+            num_features=num_features,
         )
         self._lam = lam
 

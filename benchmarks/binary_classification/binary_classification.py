@@ -67,6 +67,10 @@ for dataset_name, dataset in datasets.items():
     train_size = int(len(train_inputs) * TRAIN_VAL_SPLIT)
     train_inputs, val_inputs = train_inputs[:train_size], train_inputs[train_size:]
     train_targets, val_targets = train_targets[:train_size], train_targets[train_size:]
+    train_group_scores, val_group_scores = (
+        train_groups[:train_size],
+        train_groups[train_size:],
+    )
     train_groups, val_groups = train_groups[:train_size], train_groups[train_size:]
 
     model = XGBClassifier(random_state=42)
@@ -121,6 +125,9 @@ for dataset_name, dataset in datasets.items():
             has_intercept=False
         ),
         "cross_entropy_linear_scaling": CrossEntropyLinearScalingBinaryClassificationModel(),
+        "cross_entropy_linear_scaling_featured": CrossEntropyLinearScalingBinaryClassificationModel(
+            num_features=N_GROUPS
+        ),
         "cross_entropy_temperature_scaling": CrossEntropyLinearScalingBinaryClassificationModel(
             has_intercept=False
         ),
@@ -177,14 +184,18 @@ for dataset_name, dataset in datasets.items():
         )
 
     for m_name, m in posthoc_models.items():
-        if "grouped" not in m_name:
+        if "grouped" not in m_name and "featured" not in m_name:
             m.fit(val_probs, val_targets)
             posthoc_test_probs = m.predict_proba(test_probs)
             posthoc_test_preds = m.predict(test_probs)
-        else:
+        elif "grouped" in m_name:
             m.fit(val_probs, val_targets, val_groups)
             posthoc_test_probs = m.predict_proba(test_probs, test_groups)
             posthoc_test_preds = m.predict(test_probs, test_groups)
+        elif "featured" in m_name:
+            m.fit(val_probs, val_targets, val_group_scores)
+            posthoc_test_probs = m.predict_proba(test_probs, test_group_scores)
+            posthoc_test_preds = m.predict(test_probs, test_group_scores)
         for metric_name, metric in performance_metrics.items():
             results[m_name][metric_name] = metric(test_targets, posthoc_test_preds)
         for metric_name, metric in calibration_metrics.items():

@@ -31,6 +31,7 @@ from data import load_breast_cancer_data
 THRESHOLD = 0.5
 TRAIN_VAL_SPLIT = 0.5
 N_GROUPS = 3
+N_FEATURES = 2
 
 METHODS = {
     "balanced_accuracy_linear_scaling": BalancedAccuracyLinearScalingBinaryClassificationModel(
@@ -108,6 +109,12 @@ METHODS = {
     ),
 }
 
+FEATURED_METHODS = {
+    "cross_entropy_linear_scaling_features": CrossEntropyLinearScalingBinaryClassificationModel(
+        num_features=N_FEATURES
+    ),
+}
+
 GROUPED_METHODS = {
     "iterative_grouped_linear_binning": IterativeBinningBinaryClassificationModel(
         bin_model=BrierLinearScalingBinaryClassificationModel(),
@@ -152,12 +159,23 @@ val_probs = model.predict_proba(val_inputs)[:, 1]
 test_probs = model.predict_proba(test_inputs)[:, 1]
 test_preds = (test_probs >= THRESHOLD).astype(int)
 
+val_features = np.ones((len(val_probs), N_FEATURES))
+test_features = np.ones((len(test_probs), N_FEATURES))
+
 
 @pytest.mark.parametrize("m", list(METHODS.values()))
 def test_method(m) -> None:
     m.fit(val_probs, val_targets)
     probs = m.predict_proba(test_probs)
     preds = m.predict(test_probs)
+    check_probs_preds(probs, preds)
+
+
+@pytest.mark.parametrize("m", list(FEATURED_METHODS.values()))
+def test_featured_method(m) -> None:
+    m.fit(val_probs, val_targets, val_features)
+    probs = m.predict_proba(test_probs, test_features)
+    preds = m.predict(test_probs, test_features)
     check_probs_preds(probs, preds)
 
 
