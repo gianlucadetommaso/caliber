@@ -65,8 +65,8 @@ wheels = [
 
 [[package]]
 name = "caliber"
-version = "0.1.0"
-source = { virtual = "." }
+version = "0.1.20"
+source = { editable = "." }
 dependencies = [
     { name = "absolufy-imports" },
     { name = "matplotlib", version = "3.9.4", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.10'" },
