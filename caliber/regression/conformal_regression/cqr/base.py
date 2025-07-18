@@ -1,15 +1,13 @@
 from typing import Literal
 
 import numpy as np
+from numpy.typing import NDArray
 
 from caliber.regression.conformal_regression.base import (
     ConformalizedScoreRegressionModel,
 )
-from caliber.utils.quantile_checks import (
-    both_quantile_check,
-    lower_quantile_check,
-    upper_quantile_check,
-)
+from caliber.utils.functional import maybe_squeeze
+from caliber.utils.quantile_checks import both_quantile_check, single_quantile_check
 from caliber.utils.quantile_error import which_quantile_error
 
 
@@ -22,32 +20,41 @@ class ConformalizedQuantileRegressionModel(ConformalizedScoreRegressionModel):
         super().__init__(confidence=confidence)
         self.which_quantile = which_quantile
 
-    def fit(self, quantiles: np.ndarray, targets: np.ndarray) -> None:
+    def fit(self, quantiles: NDArray[np.float64], targets: NDArray[np.float64]) -> None:
+        if targets.ndim == 1:
+            targets = targets[:, None]
+        if quantiles.ndim == 1:
+            quantiles = quantiles[:, None]
+        self._y_dim = targets.shape[1]
+
         if self.which_quantile == "both":
-            both_quantile_check(quantiles)
-            scores = np.maximum(quantiles[:, 0] - targets, targets - quantiles[:, 1])
+            both_quantile_check(quantiles, self._y_dim)
+            lowers, uppers = quantiles[:, : self._y_dim], quantiles[:, self._y_dim :]
+            scores = np.maximum(lowers - targets, targets - uppers)
         elif self.which_quantile == "lower":
-            lower_quantile_check(quantiles)
+            single_quantile_check(quantiles, self._y_dim)
             scores = quantiles - targets
         elif self.which_quantile == "upper":
-            upper_quantile_check(quantiles)
+            single_quantile_check(quantiles, self._y_dim)
             scores = targets - quantiles
         else:
             which_quantile_error(self.which_quantile)
         super().fit(scores, targets)
 
-    def predict(self, quantiles: np.ndarray) -> np.ndarray:
+    def predict(self, quantiles: NDArray[np.float64]) -> NDArray[np.float64]:
         if self.which_quantile == "both":
-            both_quantile_check(quantiles)
-            lowers = quantiles[:, 0] - self._params
-            uppers = quantiles[:, 1] + self._params
-            bounds = np.stack((lowers, uppers), axis=1)
+            both_quantile_check(quantiles, self._y_dim)
+            lowers, uppers = quantiles[:, : self._y_dim], quantiles[:, self._y_dim :]
+            return np.concatenate(
+                (lowers - self._params, uppers + self._params), axis=1
+            )
+
         elif self.which_quantile == "lower":
-            lower_quantile_check(quantiles)
-            bounds = quantiles - self._params
+            single_quantile_check(quantiles, self._ydim)
+            return maybe_squeeze(quantiles - self._params, 1)
+
         elif self.which_quantile == "upper":
-            upper_quantile_check(quantiles)
-            bounds = quantiles + self._params
-        else:
-            which_quantile_error(self.which_quantile)
-        return bounds
+            single_quantile_check(quantiles, self._ydim)
+            return maybe_squeeze(quantiles + self._params, 1)
+
+        which_quantile_error(self.which_quantile)

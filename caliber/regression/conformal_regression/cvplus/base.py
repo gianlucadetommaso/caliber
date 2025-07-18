@@ -6,6 +6,7 @@ from numpy.typing import NDArray
 from tqdm import tqdm
 
 from caliber.regression.conformal_regression.base import AbstractRegressionModel
+from caliber.utils.functional import maybe_squeeze
 
 
 class CVPlusRegressionModel(AbstractRegressionModel):
@@ -71,12 +72,14 @@ class CVPlusRegressionModel(AbstractRegressionModel):
             model.fit(train_inputs, train_targets)
 
             val_preds = model.predict(val_inputs)
-            if val_preds.ndim == 2:
-                if val_preds.shape[1] != 1:
-                    raise ValueError(
-                        "This method is supported only for scalar targets."
-                    )
-                val_preds = val_preds.squeeze(1)
+            if val_preds.ndim > 2:
+                raise ValueError(
+                    "Predictions are expected to be one or two dimensional arrays."
+                )
+            if val_preds.ndim == 1:
+                val_preds = val_preds[:, None]
+            if val_targets.ndim == 1:
+                val_targets = val_targets[:, None]
 
             self._cv_errors.append(np.abs(val_targets - val_preds))
 
@@ -89,14 +92,7 @@ class CVPlusRegressionModel(AbstractRegressionModel):
         if self._cv_prediction:
             preds = np.zeros(len(inputs))
             for model in self._models:
-                preds_i = model.predict(inputs)
-                if preds_i.ndim == 2:
-                    if preds_i.shape[1] != 1:
-                        raise ValueError(
-                            "This method is supported only for scalar targets."
-                        )
-                    preds_i = preds_i.squeeze(1)
-                preds += preds_i
+                preds += model.predict(inputs)
             preds /= self._loo_size
             return preds
 
@@ -106,24 +102,24 @@ class CVPlusRegressionModel(AbstractRegressionModel):
         preds = []
         for i, model in enumerate(self._models):
             preds_i = model.predict(inputs)
-            if preds_i.ndim == 2:
-                if preds_i.shape[1] != 1:
-                    raise ValueError(
-                        "This method is supported only for scalar targets."
-                    )
-                preds_i = preds_i.squeeze(1)
+            if preds_i.ndim > 2:
+                raise ValueError(
+                    "Predictions are expected to be one or two dimensional arrays."
+                )
+            if preds_i.ndim == 1:
+                preds_i = preds_i[:, None]
             preds.append(preds_i)
 
         lefts_list = []
         rights_list = []
 
         for preds_i in preds:
-            lefts_list.append(preds_i - self._cv_errors[i][:, None])
-            rights_list.append(preds_i + self._cv_errors[i][:, None])
+            lefts_list.append(preds_i[None] - self._cv_errors[i][:, None])
+            rights_list.append(preds_i[None] + self._cv_errors[i][:, None])
 
-        lefts = np.concatenate(lefts_list)
-        rights = np.concatenate(rights_list)
+        lefts = np.concatenate(lefts_list, axis=0)
+        rights = np.concatenate(rights_list, axis=0)
 
         qleft = np.quantile(lefts, q=1 - self._coverage, axis=0)
         qright = np.quantile(rights, q=self._coverage, axis=0)
-        return np.array(list(zip(qleft, qright)))
+        return np.concatenate((qleft, qright), axis=1)
