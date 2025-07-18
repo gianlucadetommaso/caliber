@@ -3,11 +3,7 @@ from typing import Optional
 import numpy as np
 
 from caliber.regression.binning.iterative.base import IterativeBinningRegressionModel
-from caliber.utils.quantile_checks import (
-    both_quantile_check,
-    lower_quantile_check,
-    upper_quantile_check,
-)
+from caliber.utils.quantile_checks import both_quantile_check, single_quantile_check
 from caliber.utils.quantile_error import which_quantile_error
 
 
@@ -49,10 +45,10 @@ class IterativeBinningQuantileRegressionModel(IterativeBinningRegressionModel):
 
     def _check_quantiles(self, quantiles: np.ndarray) -> None:
         if self.which_quantile == "both":
-            both_quantile_check(quantiles)
+            both_quantile_check(quantiles, y_dim=1)
         elif self.which_quantile == "lower":
-            lower_quantile_check(quantiles)
+            single_quantile_check(quantiles, y_dim=1)
         elif self.which_quantile == "upper":
-            upper_quantile_check(quantiles)
+            single_quantile_check(quantiles, y_dim=1)
         else:
             which_quantile_error(quantiles)

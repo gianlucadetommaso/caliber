@@ -6,6 +6,7 @@ from numpy.typing import NDArray
 from tqdm import tqdm
 
 from caliber.regression.conformal_regression.base import AbstractRegressionModel
+from caliber.utils.functional import maybe_squeeze
 
 
 class JackknifePlusRegressionModel(AbstractRegressionModel):
@@ -48,7 +49,9 @@ class JackknifePlusRegressionModel(AbstractRegressionModel):
         indices = self._rng.choice(len(inputs), size=self._loo_size, replace=False)
 
         self._models = []
-        self._loo_errors: NDArray[np.float64] = np.zeros((self._loo_size,))
+        self._loo_errors: NDArray[np.float64] = np.zeros(
+            (self._loo_size, targets.shape[1] if targets.ndim == 2 else 1)
+        )
         for i, val_idx in enumerate(tqdm(indices, desc="Leave-One-Out")):
             train_indices = [idx for idx in range(len(inputs)) if idx != val_idx]
             train_inputs, train_targets = inputs[train_indices], targets[train_indices]
@@ -58,12 +61,14 @@ class JackknifePlusRegressionModel(AbstractRegressionModel):
             model.fit(train_inputs, train_targets)
 
             val_preds = model.predict(val_inputs)
-            if val_preds.ndim == 2:
-                if val_preds.shape[1] != 1:
-                    raise ValueError(
-                        "This method is supported only for scalar targets."
-                    )
-                val_preds = val_preds.squeeze(1)
+            if val_preds.ndim > 2:
+                raise ValueError(
+                    "Predictions are expected to be one or two dimensional arrays."
+                )
+            if val_preds.ndim == 1:
+                val_preds = val_preds[:, None]
+            if val_targets.ndim == 1:
+                val_targets = val_targets[:, None]
 
             self._loo_errors[i] = np.abs(val_targets - val_preds)[0]
 
@@ -76,29 +81,22 @@ class JackknifePlusRegressionModel(AbstractRegressionModel):
         if self._loo_prediction:
             preds = np.zeros(len(inputs))
             for model in self._models:
-                preds_i = model.predict(inputs)
-                if preds_i.ndim == 2:
-                    if preds_i.shape[1] != 1:
-                        raise ValueError(
-                            "This method is supported only for scalar targets."
-                        )
-                    preds_i = preds_i.squeeze(1)
-                preds += preds_i
+                preds += model.predict(inputs)
             preds /= self._loo_size
             return preds
 
         return self._model.predict(inputs)
 
     def predict_quantiles(self, inputs: NDArray[np.float64]) -> NDArray[np.float64]:
-        loo_preds = np.zeros((self._loo_size, len(inputs)))
+        loo_preds = np.zeros((self._loo_size, len(inputs), self._loo_errors.shape[1]))
         for i, model in enumerate(self._models):
             preds = model.predict(inputs)
-            if preds.ndim == 2:
-                if preds.shape[1] != 1:
-                    raise ValueError(
-                        "This method is supported only for scalar targets."
-                    )
-                preds = preds.squeeze(1)
+            if preds.ndim > 2:
+                raise ValueError(
+                    "Predictions are expected to be one or two dimensional arrays."
+                )
+            if preds.ndim == 1:
+                preds = preds[:, None]
             loo_preds[i] = preds
 
         left = loo_preds - self._loo_errors[:, None]
@@ -106,4 +104,4 @@ class JackknifePlusRegressionModel(AbstractRegressionModel):
 
         qleft = np.quantile(left, q=1 - self._coverage, axis=0)
         qright = np.quantile(right, q=self._coverage, axis=0)
-        return np.array(list(zip(qleft, qright)))
+        return np.concatenate((qleft, qright), axis=1)
