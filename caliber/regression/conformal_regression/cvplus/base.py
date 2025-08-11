@@ -99,7 +99,8 @@ class CVPlusRegressionModel(AbstractRegressionModel):
         return self._model.predict(inputs)
 
     def predict_quantiles(self, inputs: NDArray[np.float64]) -> NDArray[np.float64]:
-        preds = []
+        lefts_list = []
+        rights_list = []
         for i, model in enumerate(self._models):
             preds_i = model.predict(inputs)
             if preds_i.ndim > 2:
@@ -108,12 +109,7 @@ class CVPlusRegressionModel(AbstractRegressionModel):
                 )
             if preds_i.ndim == 1:
                 preds_i = preds_i[:, None]
-            preds.append(preds_i)
 
-        lefts_list = []
-        rights_list = []
-
-        for preds_i in preds:
             lefts_list.append(preds_i[None] - self._cv_errors[i][:, None])
             rights_list.append(preds_i[None] + self._cv_errors[i][:, None])
 
