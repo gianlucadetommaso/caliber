@@ -106,6 +106,7 @@ from caliber.multiclass_classification.ood.kolmogorov_interpolant import (
     KolmogorovInterpolantMulticlassClassificationModel,
 )
 from caliber.ood.mahalanobis import MahalanobisBinaryClassificationModel
+from caliber.ood.propensity_score import PropensityScoreEstimationModel
 from caliber.regression.binning.iterative.mean import (
     IterativeBinningMeanRegressionModel,
 )
