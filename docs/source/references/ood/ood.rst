@@ -8,3 +8,4 @@ Out-Of-Distribution
    :caption: Contents:
 
    mahalanobis/mahalanobis
+   propensity_score/propensity_score
