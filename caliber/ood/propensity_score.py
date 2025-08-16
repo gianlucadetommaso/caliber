@@ -22,10 +22,10 @@ class PropensityScoreEstimationModel:
         
         Args:
             binary_classification_estimation_model (_type_, optional): A binary classification model to classify inputs to source and 
-            target distributions. The model needs to include a `fit` and a `predict_proba` methods, with analogous signature as in 
-            standard Scikit-Learn binary classification models. Defaults to XGBClassifier(objective='binary:logistic').
+                target distributions. The model needs to include a `fit` and a `predict_proba` methods, with analogous signature as in 
+                standard Scikit-Learn binary classification models. Defaults to XGBClassifier(objective='binary:logistic').
             binary_classification_calibration_model (AbstractBinaryClassificationModel | None, optional): A binary classification model 
-            to calibrate the probability returned by the estimation model. Defaults to BetaBinaryClassificationModel().
+                to calibrate the probability returned by the estimation model. Defaults to BetaBinaryClassificationModel().
             calib_frac (float, optional): The fraction of the data reserved for calibration. Defaults to 0.5.
             clip_range (tuple[float, float], optional): The range to clip the propensity score within. Defaults to (0.05, 0.95).
             seed (int, optional): a random seed. Defaults to 0.
