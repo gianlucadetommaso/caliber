@@ -1,8 +1,8 @@
-# Results
+# XGBoost, TabPFN and Calibration Models on Breast Cancer dataset
 
-These results show the performance and confidence calibration of [XGBoost](https://xgboost.readthedocs.io/en/stable/) and [TabPFN](https://github.com/PriorLabs/TabPFN) on the Breast Cancer binary classification dataset, as well as the performance and confidence calibration of post-hoc calibration algorithms built on top of TabPFN.
+We demonstrate the performance and confidence calibration of [XGBoost](https://xgboost.readthedocs.io/en/stable/) and [TabPFN](https://github.com/PriorLabs/TabPFN) on the Breast Cancer binary classification dataset, as well as the performance and confidence calibration of post-hoc calibration algorithms built on top of TabPFN.
 
-Training and test datasets follow a 90%/10% split. To make the evaluation as fair as possible, results for both XGBoost and TabPFN (first two rows) are for models trained on the full 90% of data. For all the following calibration models, instead, we split the training data 50%/50% into sub-training and calibration dataset. A TabPFN is trained on the sub-training datasets, and its outputs are used to train each calibration model on the calibration dataset.
+Training and test datasets follow a 90%/10% split. To make the evaluation as fair as possible, results for both XGBoost and TabPFN (first two rows) are for models trained on the full 90% of data. For all the following calibration models, instead, we split the training data 50%/50% into sub-training and calibration dataset. A TabPFN model is trained on the sub-training dataset, and its outputs are used to train each calibration model on the calibration dataset.
 
 ```
 ╭──────────────────────────┬────────────┬─────────────────────┬─────────────┬──────────┬───────────────┬─────────────────┬───────────────┬────────────┬────────────╮
