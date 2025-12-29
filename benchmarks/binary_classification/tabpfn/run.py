@@ -28,23 +28,28 @@ from data import load_breast_cancer_data
 THRESHOLD = 0.5
 TRAIN_VAL_SPLIT = 0.5
 
-train_inputs, test_inputs, train_targets, test_targets = load_breast_cancer_data()
+trainval_inputs, test_inputs, trainval_targets, test_targets = load_breast_cancer_data()
 
-train_size = int(len(train_inputs) * TRAIN_VAL_SPLIT)
-train_inputs, val_inputs = train_inputs[:train_size], train_inputs[train_size:]
-train_targets, val_targets = train_targets[:train_size], train_targets[train_size:]
+train_size = int(len(trainval_inputs) * TRAIN_VAL_SPLIT)
+train_inputs, val_inputs = trainval_inputs[:train_size], trainval_inputs[train_size:]
+train_targets, val_targets = trainval_targets[:train_size], trainval_targets[train_size:]
 
-xgboost_model = XGBClassifier(objective="binary:logistic")
-xgboost_model.fit(train_inputs, train_targets)
-test_xgboost_probs = xgboost_model.predict_proba(test_inputs)[:, 1]
+trainval_xgboost = XGBClassifier(objective="binary:logistic")
+trainval_xgboost.fit(trainval_inputs, trainval_targets)
+test_xgboost_probs = trainval_xgboost.predict_proba(test_inputs)[:, 1]
 test_xgboost_preds = (test_xgboost_probs >= THRESHOLD).astype(int)
 
-tabpfn_model = TabPFNClassifier()
-tabpfn_model.fit(train_inputs, train_targets)
+trainval_tabpfn = TabPFNClassifier()
+trainval_tabpfn.fit(trainval_inputs, trainval_targets)
+test_tabpfn_probs = trainval_tabpfn.predict_proba(test_inputs)[:, 1]
+test_tabpfn_preds = (test_tabpfn_probs >= THRESHOLD).astype(int)
 
-val_probs = tabpfn_model.predict_proba(val_inputs)[:, 1]
-test_probs = tabpfn_model.predict_proba(test_inputs)[:, 1]
-test_preds = (test_probs >= THRESHOLD).astype(int)
+train_tabpfn = TabPFNClassifier()
+train_tabpfn.fit(train_inputs, train_targets)
+
+val_probs = train_tabpfn.predict_proba(val_inputs)[:, 1]
+test_base_probs = train_tabpfn.predict_proba(test_inputs)[:, 1]
+test_base_preds = (test_base_probs >= THRESHOLD).astype(int)
 
 posthoc_models = {
     "beta": BetaBinaryClassificationModel(),
@@ -69,30 +74,30 @@ calibration_metrics = {
 }
 
 results = {
-    **{xgboost_model.__class__.__name__: dict()},
-    **{tabpfn_model.__class__.__name__: dict()},
+    **{trainval_xgboost.__class__.__name__: dict()},
+    **{trainval_tabpfn.__class__.__name__: dict()},
     **{m_name: dict() for m_name, m in posthoc_models.items()},
 }
 
 for metric_name, metric in performance_metrics.items():
-    results[xgboost_model.__class__.__name__][metric_name] = metric(
+    results[trainval_xgboost.__class__.__name__][metric_name] = metric(
         test_targets, test_xgboost_preds
     )
-    results[tabpfn_model.__class__.__name__][metric_name] = metric(
-        test_targets, test_preds
+    results[trainval_tabpfn.__class__.__name__][metric_name] = metric(
+        test_targets, test_tabpfn_preds
     )
 for metric_name, metric in calibration_metrics.items():
-    results[xgboost_model.__class__.__name__][metric_name] = metric(
+    results[trainval_xgboost.__class__.__name__][metric_name] = metric(
         test_targets, test_xgboost_probs
     )
-    results[tabpfn_model.__class__.__name__][metric_name] = metric(
-        test_targets, test_probs
+    results[trainval_tabpfn.__class__.__name__][metric_name] = metric(
+        test_targets, test_tabpfn_probs
     )
 
 for m_name, m in posthoc_models.items():
     m.fit(val_probs, val_targets)
-    posthoc_test_probs = m.predict_proba(test_probs)
-    posthoc_test_preds = m.predict(test_probs)
+    posthoc_test_probs = m.predict_proba(test_base_probs)
+    posthoc_test_preds = m.predict(test_base_probs)
 
     for metric_name, metric in performance_metrics.items():
         results[m_name][metric_name] = metric(test_targets, posthoc_test_preds)
