@@ -32,7 +32,10 @@ trainval_inputs, test_inputs, trainval_targets, test_targets = load_breast_cance
 
 train_size = int(len(trainval_inputs) * TRAIN_VAL_SPLIT)
 train_inputs, val_inputs = trainval_inputs[:train_size], trainval_inputs[train_size:]
-train_targets, val_targets = trainval_targets[:train_size], trainval_targets[train_size:]
+train_targets, val_targets = (
+    trainval_targets[:train_size],
+    trainval_targets[train_size:],
+)
 
 trainval_xgboost = XGBClassifier(objective="binary:logistic")
 trainval_xgboost.fit(trainval_inputs, trainval_targets)
